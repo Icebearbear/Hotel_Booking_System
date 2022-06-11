@@ -20,3 +20,12 @@ npm install react-bootstrap bootstrap
 cd boking_sys
 npm start
 ```
+
+# Error
+
+if you meet this error: 'react-scripts' is not recognized as an internal or external command, operable program or batch file.
+run
+
+```
+npm update
+```
