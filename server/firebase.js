@@ -32,8 +32,8 @@ const registerWithEmailAndPassword = async (name, email, password) => {
       authProvider: "local",
       email,
     });
-    console.log("signed in");
-  } catch (err) {
+    console.log("registered user");
+  } catch (error) {
     throw error;
   }
 };

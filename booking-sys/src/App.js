@@ -5,25 +5,17 @@ import Register from "./components/Register";
 import UserProfile from "./components/UserProfile";
 import CustomerInformation from "./components/CustomerInformation";
 import PaymentInformation from "./components/PaymentInformation";
+import { BrowserRouter, Routes, Route, Link, Router } from "react-router-dom";
+import Card from "react-bootstrap/Card";
 function App() {
-  const [data, setData] = React.useState(null);
-
-  // // HTTP GET request
-  // React.useEffect(() => {
-  //   fetch("/api/getAll")
-  //     .then((res) => toString(res))
-  //     .then((data) => setData(data.message));
-  // }, []);
-
   return (
-    <div>
-      <h1>{data}</h1>
-      <Register />
-      <Login />
-      {/* <UserProfile/> */}
-      {/* <CustomerInformation /> */}
-      {/* <PaymentInformation /> */}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/registration" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
