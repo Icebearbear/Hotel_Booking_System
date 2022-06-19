@@ -14,6 +14,14 @@
 npm install react-bootstrap bootstrap
 ```
 
+### Axios
+
+to make HTTP requests from Nodejs API
+
+```
+npm install axios
+```
+
 ## To Run React
 
 ```
@@ -71,3 +79,15 @@ npm start
 3. set API in server/index.js and add a respond message through res.json({message: ""})
 4. To get the respond data from server, make an HTTP GET request using useEffect and fetch data from the endpoint
 5. Store the data into a state variable and use it in React components
+
+# Firebase
+
+## installation
+
+```
+npm install firebase
+```
+
+```
+npm install cors
+```

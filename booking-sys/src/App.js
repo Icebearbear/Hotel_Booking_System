@@ -1,24 +1,28 @@
 import "./App.css";
 import React from "react";
-import LoginRegister from "./components/LoginRegister";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import UserProfile from "./components/UserProfile";
 import CustomerInformation from "./components/CustomerInformation";
 import PaymentInformation from "./components/PaymentInformation";
 function App() {
   const [data, setData] = React.useState(null);
 
-  // HTTP GET request
-  React.useEffect(() => {
-    fetch("/api")
-      .then((res) => res.json())
-      .then((data) => setData(data.message));
-  }, []);
+  // // HTTP GET request
+  // React.useEffect(() => {
+  //   fetch("/api/getAll")
+  //     .then((res) => toString(res))
+  //     .then((data) => setData(data.message));
+  // }, []);
 
   return (
     <div>
       <h1>{data}</h1>
-      {/* <LoginRegister /> */}
+      <Register />
+      <Login />
+      {/* <UserProfile/> */}
       {/* <CustomerInformation /> */}
-      <PaymentInformation />
+      {/* <PaymentInformation /> */}
     </div>
   );
 }
