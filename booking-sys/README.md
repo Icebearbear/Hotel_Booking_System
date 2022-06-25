@@ -14,6 +14,20 @@
 npm install react-bootstrap bootstrap
 ```
 
+### Axios
+
+to make HTTP requests from Nodejs API
+
+```
+npm install axios
+```
+
+### React Router
+
+```
+npm install react-router-dom@6
+```
+
 ## To Run React
 
 ```
@@ -71,3 +85,18 @@ npm start
 3. set API in server/index.js and add a respond message through res.json({message: ""})
 4. To get the respond data from server, make an HTTP GET request using useEffect and fetch data from the endpoint
 5. Store the data into a state variable and use it in React components
+
+# Firebase
+
+## installation
+
+```
+npm install firebase
+```
+
+```
+npm install cors
+```
+
+[reference](https://blog.logrocket.com/user-authentication-firebase-react-apps/)
+https://medium.com/wesionary-team/how-to-setup-authentication-using-node-server-and-firebase-cloud-functions-a1fb176a134f
