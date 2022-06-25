@@ -14,6 +14,9 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Register />} />
+        <Route path="/mainpage" element={<UserProfile />} />
+        <Route path="/custinfo" element={<CustomerInformation />} />
+        <Route path="/payinfo" element={<PaymentInformation />} />
       </Routes>
     </BrowserRouter>
   );

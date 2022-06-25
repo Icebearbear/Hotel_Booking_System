@@ -22,6 +22,14 @@ const app = initializeApp(fc.firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const bookHotel = (info) => {
+  try {
+    const hotelBookRef = collection(db, "booking");
+    return addDoc(hotelBookRef, info);
+  } catch (error) {
+    throw error;
+  }
+};
 const registerWithEmailAndPassword = async (name, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
@@ -42,10 +50,13 @@ const Login = async (email, password) => {
   console.log(email, password);
   try {
     const r = await signInWithEmailAndPassword(auth, email, password);
-    console.log(r);
   } catch (error) {
     throw error;
   }
 };
 
-module.exports = { registerWithEmailAndPassword, Login };
+const Logout = () => {
+  signOut(auth);
+};
+
+module.exports = { registerWithEmailAndPassword, Login, Logout, bookHotel };

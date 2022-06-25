@@ -22,6 +22,12 @@ to make HTTP requests from Nodejs API
 npm install axios
 ```
 
+### React Router
+
+```
+npm install react-router-dom@6
+```
+
 ## To Run React
 
 ```
@@ -91,3 +97,6 @@ npm install firebase
 ```
 npm install cors
 ```
+
+[reference](https://blog.logrocket.com/user-authentication-firebase-react-apps/)
+https://medium.com/wesionary-team/how-to-setup-authentication-using-node-server-and-firebase-cloud-functions-a1fb176a134f
