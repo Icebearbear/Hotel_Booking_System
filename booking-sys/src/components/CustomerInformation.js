@@ -4,8 +4,7 @@ import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function CustomerInformation() {
   const [firstName, setFName] = useState("");
@@ -21,6 +20,9 @@ function CustomerInformation() {
   const [babyCotReq, setBabyCotRequest] = useState(false);
   const [airportTransfer, setAirportTransfer] = useState(false);
   const [extraReq, setExtraReq] = useState("");
+
+  const location = useLocation();
+  const { hotelId } = location.state;
 
   const custData = {
     bookForSomeone: bookForSomeone,
@@ -42,8 +44,7 @@ function CustomerInformation() {
     <div className="d-flex justify-content-around">
       <Card style={{ width: "60rem", height: "60rem" }}>
         <Card.Body>
-          {" "}
-          Let us know who you are
+          <h1>Customer Information Page</h1> Let us know who you are
           <Form>
             <Row className="mb-3">
               <Form.Group as={Col} className="mb-3">
@@ -235,7 +236,11 @@ function CustomerInformation() {
                 </Form.Group>
               </Card.Body>
             </Card>
-            <Link className="link" to="/payinfo" state={custData}>
+            <Link
+              className="link"
+              to="/payinfo"
+              state={{ hotelId: hotelId, datas: custData }}
+            >
               <Button variant="primary" type="submit">
                 Proceed to next step
               </Button>

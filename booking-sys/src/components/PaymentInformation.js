@@ -14,8 +14,11 @@ function PaymentInformation() {
   const [cvc, setCVC] = useState("");
 
   const location = useLocation();
-  const data = location.state;
+  const data = location.state.datas;
+  const hotelId = location.state.hotelId;
 
+  console.log(data);
+  console.log(hotelId);
   const cusSubmit = () => {
     const infoObject = {
       destinationID: "destID",
@@ -55,7 +58,7 @@ function PaymentInformation() {
       },
     };
     axios
-      .post("http://localhost:3001/book", infoObject)
+      .post("http://localhost:3001/bookhotel", infoObject)
       .then((res) => {
         // alert(res.status);
         // navigate("/mainpage");
@@ -69,6 +72,8 @@ function PaymentInformation() {
     <div className="d-flex justify-content-around">
       <Card style={{ width: "30rem", height: "30rem" }}>
         <Card.Body>
+          <h1>Payment Information Page</h1>
+
           <Form.Group className="mb-3" controlId="formBasicPaymentMethod">
             <Form.Label>Payment method</Form.Label>
             <Form.Control type="text" placeholder="Visa/Mastercard" readOnly />
