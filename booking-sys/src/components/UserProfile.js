@@ -1,8 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -72,12 +71,6 @@ function UserProfile() {
             <span class="join">Joined May,2021</span>
           </div>
         </div>
-
-        <Link className="link" to="/custinfo">
-          <Button variant="primary" type="submit" className="float-right">
-            Book default Hotel
-          </Button>
-        </Link>
       </div>
     </div>
   );

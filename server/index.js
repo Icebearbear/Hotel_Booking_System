@@ -3,14 +3,72 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 const firebase = require("./firebase");
 const cors = require("cors");
+const axios = require("axios");
 app.use(cors({ origin: true }));
 app.use(express.json());
+const path = require("path");
 
 // server start message
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server" });
 });
 
+//get selected hotel info
+app.get("/viewhotel", (req, res) => {
+  try {
+    axios
+      .get(
+        "https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU",
+        req.body
+      )
+      .then((hotelres) => {
+        res.status(200);
+        res.send(hotelres.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+//get hotel prices. need to match with the hotelID from /hotels route
+//maybe request hotels and its prices at the same time using the same API route
+//match up the hotel and its prices
+//pass a clean data to the front end
+app.get("/hotelprices", (req, res) => {
+  try {
+    axios
+      .get("https://ascendahotels.mocklab.io/api/hotels/diH7/prices/ean")
+      .then((prices) => {
+        res.status(200);
+        res.send(prices.data); //returned data is in prices.data and send it to react frontend
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+//get hotels
+app.get("/hotels", (req, res) => {
+  try {
+    axios
+      .get("https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU")
+      .then((hotelres) => {
+        res.status(200);
+        res.send(hotelres.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
 // get user auth (not fully working)
 app.get("/user", (req, res) => {
   try {
@@ -22,7 +80,7 @@ app.get("/user", (req, res) => {
 });
 
 // book hotel
-app.post("/book", (req, res) => {
+app.post("/bookhotel", (req, res) => {
   try {
     firebase.bookHotel(req.body);
     console.log("booked");
@@ -61,6 +119,11 @@ app.post("/register", async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
+});
+
+app.get("/favicon.ico", (req, res) => {
+  // Use actual relative path to your .ico file here
+  res.sendFile(path.resolve(__dirname, "../favicon.ico"));
 });
 
 // serve at port

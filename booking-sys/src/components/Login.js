@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { Link } from "react-router-dom";
 // import "../App.css";
 
 function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState("");
 
   // useEffect(() => {
   //   axios
@@ -35,9 +32,6 @@ function Login() {
     axios
       .post("http://localhost:3001/login", userObject)
       .then((res) => {
-        // alert(res.status);
-        // navigate("/mainpage");
-
         console.log(res.data);
       })
       .catch((error) => {
@@ -75,7 +69,7 @@ function Login() {
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Keep me signed in" />
             </Form.Group>
-            <Link className="link" to="/mainpage">
+            <Link className="link" to="/searchhotel">
               <Button
                 onClick={onSubmit}
                 variant="primary"
