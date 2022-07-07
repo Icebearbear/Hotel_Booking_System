@@ -1,39 +1,57 @@
-# React
+# Running the Website Locally
 
 ## Installation
 
-#### create react app
+### React (client)
+
+```
+npm install react-bootstrap bootstrap
+npm install axios
+npm install react-router-dom@6
+```
+
+### Node (server)
+
+```
+npm i express
+npm install firebase
+npm install cors
+```
+
+### Firebase (database)
+
+```
+npm install firebase
+npm install cors
+```
+
+## To Run
+
+### Node (server)
+
+```
+npm start
+```
+
+### React (client)
+
+```
+cd booking-sys
+npm start
+```
+
+# Development (Reference only from this point onwards)
+
+### React
+
+1.  Create react app
 
 ```
 >Hotel_Booking_System npx create-react-app booking_sys
 ```
 
-#### [Bootstrap](https://react-bootstrap.github.io/getting-started/introduction/) css frame work
-
-```
-npm install react-bootstrap bootstrap
-```
-
-### Axios
-
-to make HTTP requests from Nodejs API
-
-```
-npm install axios
-```
-
-### React Router
-
-```
-npm install react-router-dom@6
-```
-
-## To Run React
-
-```
-cd boking_sys
-npm start
-```
+2.  React components in /components folder
+3.  React Router links in App.js, which is served by server
 
 # Error
 
@@ -44,11 +62,11 @@ run
 npm update
 ```
 
-# Node
+### Node
 
 ## installation
 
-create a package.json file which will allow us to keep track of all the app scripts and manage dependencies that Node app needs
+1.  Create a package.json file which will allow us to keep track of all the app scripts and manage dependencies that Node app needs
 
 ```
 npm init -y
@@ -56,9 +74,9 @@ npm i express
 mkdir server
 ```
 
-add index.js file and use PORT 3001
+2.  Add index.js file and use PORT 3001
 
-go to package.json and add this under scripts
+3.  Go to package.json and add this under scripts
 
 ```
  "scripts": {
@@ -72,31 +90,24 @@ into booking-sys/package.json add this to allow React make requests to Node serv
   "proxy": "http://localhost:3001",
 ```
 
-## To run Node
-
-```
-npm start
-```
+4.  The server is served on "http://localhost:3001"
+5.  server/index.js contains all of API routes to call from frontend
+6.  firebase.js is used to make any database queries. It is imported to server/index.js for backend usage
 
 # React and Node Together
 
-1. run Node
-2. run React app
-3. set API in server/index.js and add a respond message through res.json({message: ""})
-4. To get the respond data from server, make an HTTP GET request using useEffect and fetch data from the endpoint
-5. Store the data into a state variable and use it in React components
+1. run Node and React App
+2. set API in server/index.js and add a respond message through res.json({message: ""})
+3. To get the respond data from server, make an HTTP GET request using useEffect/onClick functions and fetch data from the API endpoint to frontend
+4. Store the data into a state variable and use it in React components
 
 # Firebase
 
-## installation
+1.  Create firebase console project
+2.  get the config file and add it into server folder
+3.  firebase_config.js is the config file in this project
 
-```
-npm install firebase
-```
+### References
 
-```
-npm install cors
-```
-
-[reference](https://blog.logrocket.com/user-authentication-firebase-react-apps/)
-https://medium.com/wesionary-team/how-to-setup-authentication-using-node-server-and-firebase-cloud-functions-a1fb176a134f
+1.  https://blog.logrocket.com/user-authentication-firebase-react-apps/
+2.  https://medium.com/wesionary-team/how-to-setup-authentication-using-node-server-and-firebase-cloud-functions-a1fb176a134f
