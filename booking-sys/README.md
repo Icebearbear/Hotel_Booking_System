@@ -22,7 +22,12 @@ npm install cors
 
 ```
 npm install firebase
-npm install cors
+```
+
+### Nodemon (to automatically restarting the node application when file changes in the directory are detected)
+
+```
+npm install --save-dev nodemon
 ```
 
 ## To Run

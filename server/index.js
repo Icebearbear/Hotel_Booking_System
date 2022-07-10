@@ -1,12 +1,36 @@
 const express = require("express");
 const PORT = process.env.PORT || 3001;
 const app = express();
-const firebase = require("./firebase");
+//const firebase = require("../booking-sys/src/db/firebase");
 const cors = require("cors");
 const axios = require("axios");
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 const path = require("path");
+
+const { initializeApp } = require("firebase/app");
+const {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut,
+} = require("firebase/auth");
+const {
+  getFirestore,
+  query,
+  getDocs,
+  collection,
+  where,
+  addDoc,
+} = require("firebase/firestore");
+
+const fc = require("./firebase_config");
+// console.log(fc);
+const apps = initializeApp(fc.firebaseConfig);
+const auth = getAuth(apps);
+const db = getFirestore(apps);
 
 // server start message
 app.get("/api", (req, res) => {
@@ -60,6 +84,7 @@ app.get("/hotels", (req, res) => {
       .get("https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU")
       .then((hotelres) => {
         res.status(200);
+        console.log(hotelres.data);
         res.send(hotelres.data);
       })
       .catch((error) => {
@@ -69,20 +94,11 @@ app.get("/hotels", (req, res) => {
     res.status(500).send(err);
   }
 });
-// get user auth (not fully working)
-app.get("/user", (req, res) => {
-  try {
-    const auth = firebase.auth;
-    res.status(200).send(auth);
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
 
 // book hotel
 app.post("/bookhotel", (req, res) => {
   try {
-    firebase.bookHotel(req.body);
+    //firebase.bookHotel(req.body);
     console.log("booked");
     res.status(200).send("booked");
   } catch (err) {
@@ -90,33 +106,58 @@ app.post("/bookhotel", (req, res) => {
   }
 });
 
+// get user auth (not fully working)
+// app.get("/user", (req, res) => {
+//   try {
+//     const auth = firebase.auth;
+//     // console.log(auth);
+
+//     res.status(200).send(auth);
+//   } catch (err) {
+//     res.status(500).send(err);
+//   }
+// });
 // logout user
-app.post("/logout", (req, res) => {
-  firebase.Logout();
-  console.log("signout");
-  res.status(200).send("signed out");
-});
+// app.post("/logout", (req, res) => {
+//   firebase.Logout();
+//   console.log("signout");
+//   res.status(200).send("signed out");
+// });
 
 // login existing user
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    firebase.Login(email, password);
-    console.log("signed in");
-    res.status(200).json({ message: "signin" });
+    const r = await signInWithEmailAndPassword(auth, email, password).then(
+      (userCredentials) => {
+        res.status(200).send(userCredentials);
+      }
+    );
   } catch (err) {
+    console.log("ERROR", err);
     res.status(500).send(err);
   }
 });
 
 // register new user
 app.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { first_name, last_name, email, password } = req.body;
 
   try {
-    firebase.registerWithEmailAndPassword("icebear", email, password);
+    //firebase.registerWithEmailAndPassword("icebear", email, password);
+
+    const r = await createUserWithEmailAndPassword(auth, email, password);
+    const user = r.user;
+    addDoc(collection(db, "users"), {
+      uid: user.uid,
+      first_name,
+      last_name,
+      email,
+    });
+    console.log("registered user");
     res.status(200).send("user added");
   } catch (error) {
+    console.log("ERROR ", error);
     res.status(500).send(error);
   }
 });
