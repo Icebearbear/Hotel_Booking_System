@@ -14,8 +14,6 @@ npm install react-router-dom@6
 
 ```
 npm i express
-npm install firebase
-npm install cors
 ```
 
 ### Firebase (database)
@@ -25,7 +23,16 @@ npm install firebase
 npm install cors
 ```
 
+### Nodemon (to automatically restarting the node application when file changes in the directory are detected)
+
+```
+npm install --save-dev nodemon
+>>>>>>> yuli-branch
+```
+
 ## To Run
+
+Run both server and client in two different terminals at the same time. Only by running both the application works as intended because client and server needs to communicate and both needs to be running
 
 ### Node (server)
 
