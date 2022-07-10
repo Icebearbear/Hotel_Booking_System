@@ -4,7 +4,7 @@ const app = express();
 const firebase = require("./firebase");
 const cors = require("cors");
 const axios = require("axios");
-app.use(cors({ origin: true }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 const path = require("path");
 
