@@ -1,29 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
+import Modal from "react-bootstrap/Modal";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+//import { LoginWithEmail } from "../db/firebase";
+//import { auth, LoginWithEmail } from "../../../server/firebase";
 // import "../App.css";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:3001/user")
-  //     .then((res) => {
-  //       setUser(res);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  //   if (user) {
-  //     navigate("/mainpage");
-  //   }
-  // }, [user]);
-
+  const handleClose = () => setError(false);
   const onSubmit = () => {
     const userObject = {
       email: email,
@@ -32,11 +25,22 @@ function Login() {
     axios
       .post("http://localhost:3001/login", userObject)
       .then((res) => {
-        console.log(res.data);
+        if (res.status === 200) {
+          navigate("/searchhotel");
+        }
+        if (res.status === 500) {
+          setError(true);
+          setErrorMsg(res);
+        }
       })
       .catch((error) => {
-        console.log(error);
+        setError(true);
+        setErrorMsg(error.response.data.code);
       });
+    setEmail("");
+    setPassword("");
+    setError("");
+    setErrorMsg("");
   };
   return (
     <div className="d-flex justify-content-around">
@@ -69,16 +73,13 @@ function Login() {
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Keep me signed in" />
             </Form.Group>
-            <Link className="link" to="/searchhotel">
-              <Button
-                onClick={onSubmit}
-                variant="primary"
-                type="submit"
-                className="float-right"
-              >
-                Submit
-              </Button>
-            </Link>
+            <Button
+              onClick={onSubmit}
+              variant="primary"
+              className="float-right"
+            >
+              Submit
+            </Button>
           </Form>
           <div className="reg-link">
             <Link className="link" to="/registration">
@@ -87,6 +88,20 @@ function Login() {
           </div>
         </Card.Body>
       </Card>
+
+      <Modal show={error} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Error!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {"Error: " + errorMsg + ". Please input correct data "}{" "}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -16,8 +16,8 @@ const {
   addDoc,
 } = require("firebase/firestore");
 
-const fc = require("./firebase_config");
-// console.log(firebaseConfig);
+const fc = require("./firebase_config_old");
+// console.log(fc);
 const app = initializeApp(fc.firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -30,6 +30,7 @@ const bookHotel = (info) => {
     throw error;
   }
 };
+
 const registerWithEmailAndPassword = async (name, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
@@ -46,12 +47,13 @@ const registerWithEmailAndPassword = async (name, email, password) => {
   }
 };
 
-const Login = async (email, password) => {
+const LoginWithEmail = async (email, password) => {
   console.log(email, password);
   try {
     const r = await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
-    throw error;
+    console.log("err");
+    //throw ("LALALAALALAL", error);
   }
 };
 
@@ -59,4 +61,9 @@ const Logout = () => {
   signOut(auth);
 };
 
-module.exports = { registerWithEmailAndPassword, Login, Logout, bookHotel };
+module.exports = {
+  registerWithEmailAndPassword,
+  LoginWithEmail,
+  Logout,
+  bookHotel,
+};
