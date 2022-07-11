@@ -16,7 +16,7 @@ function SearchHotelResult() {
 
   const getHotelDeets = async () => {
     try {
-      const hotelData = await axios.get("http://localhost:3001/hotels", searchData)
+      const hotelData = await axios.get("http://localhost:3001/hotelprices", searchData)
       setHotelDetails(hotelData.data);  // set State
       setHotels(hotelData.data[0]["id"])
     
