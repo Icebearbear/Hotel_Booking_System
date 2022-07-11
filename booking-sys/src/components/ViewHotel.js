@@ -22,6 +22,8 @@ const ViewHotel = () => {
   //       console.log(error);
   //     });
   // });
+  // using hotel ID get rooms from that hotel
+  // filter by requirements
 
   return (
     <div className="d-flex justify-content-around">
