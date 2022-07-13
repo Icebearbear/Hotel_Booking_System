@@ -24,7 +24,7 @@ function CustomerInformation() {
 
   const location = useLocation();
   const { hotelId } = location.state;
-  const payeeId = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
+  const uid = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
 
   const infoObject = {
     destinationID: "destID",
@@ -51,6 +51,7 @@ function CustomerInformation() {
     supplierBookingRespond: "sbrID",
     bookingReference: "bref",
     guestInformation: {
+      userID: uid,
       salutation: "Ms",
       firstName: firstName,
       lastName: lastName,
@@ -60,7 +61,7 @@ function CustomerInformation() {
     },
     payeeInformation: {
       paymentID: "",
-      payeeID: payeeId,
+      payeeID: uid,
     },
   };
 

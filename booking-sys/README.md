@@ -139,6 +139,12 @@ Testing Stripe in checkout page:
 2.  Click Pay.
 3.  You’re redirected to success page.
 
+### Local storage
+
+- USER_DB_ACCOUNT = {first_name: "", last_name: "", email:"", uid:"", dbdocId:""} - contains user account in db
+- USER_ID = {""} - contains user uid in db, stored in login page for booking purpose
+- HOTEL_BOOKING_INFO = infoObject in CustometInformation page - to keep data before checkout and use it after checkout is successful
+
 ## Error
 
 if you meet this error: 'react-scripts' is not recognized as an internal or external command, operable program or batch file.

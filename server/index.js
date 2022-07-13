@@ -26,6 +26,8 @@ const {
   collection,
   where,
   addDoc,
+  updateDoc,
+  doc,
 } = require("firebase/firestore");
 
 const fc = require("./firebase_config");
@@ -146,23 +148,44 @@ app.post("/bookhotel", (req, res) => {
   }
 });
 
-// get user auth (not fully working)
-// app.get("/user", (req, res) => {
-//   try {
-//     const auth = firebase.auth;
-//     // console.log(auth);
+// get user info (not fully working)
+app.get("/user", async (req, res) => {
+  const userID = req.query.uid;
+  try {
+    const q = query(collection(db, "users"), where("uid", "==", userID));
+    const docSnapshot = await getDocs(q);
+    const d = docSnapshot.docs.map((doc) => {
+      res.status(200).json({ id: doc.id, data: doc.data() });
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
 
-//     res.status(200).send(auth);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
+app.post("/edituser", async (req, res) => {
+  const { first_name, last_name, email, uid, dbDocId } = req.body;
+  // console.log(dbDocId, first_name, last_name, email, uid);
+  try {
+    const userRef = doc(db, "users", dbDocId);
+    updateDoc(userRef, {
+      email: email,
+      first_name: first_name,
+      last_name: last_name,
+    });
+    res.status(200).send("updated");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
 // logout user
-// app.post("/logout", (req, res) => {
-//   firebase.Logout();
-//   console.log("signout");
-//   res.status(200).send("signed out");
-// });
+app.post("/logout", (req, res) => {
+  signOut(auth);
+  console.log("signout");
+  res.status(200).send("signed out");
+});
 
 // login existing user
 app.post("/login", async (req, res) => {

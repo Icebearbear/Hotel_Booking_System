@@ -3,6 +3,7 @@ import React from "react";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import UserProfile from "./components/UserProfile";
+import EditProfile from "./components/EditProfile";
 import CustomerInformation from "./components/CustomerInformation";
 import PaymentInformation from "./components/PaymentInformation";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Register />} />
         <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/custinfo" element={<CustomerInformation />} />
         <Route path="/payinfo" element={<PaymentInformation />} />
         <Route path="/searchhotelresult" element={<SearchHotelResult />} />
