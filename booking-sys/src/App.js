@@ -9,6 +9,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SearchHotelResult from "./components/SearchHotelResult";
 import SearchHotel from "./components/SearchHotel";
 import ViewHotel from "./components/ViewHotel";
+import Success from "./components/Success";
+import Cancel from "./components/Cancel";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/searchhotelresult" element={<SearchHotelResult />} />
         <Route path="/searchhotel" element={<SearchHotel />} />
         <Route path="/viewhotel" element={<ViewHotel />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
       </Routes>
     </BrowserRouter>
   );

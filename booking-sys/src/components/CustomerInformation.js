@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 function CustomerInformation() {
   const [firstName, setFName] = useState("");
@@ -23,23 +24,58 @@ function CustomerInformation() {
 
   const location = useLocation();
   const { hotelId } = location.state;
+  const payeeId = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
 
-  const custData = {
-    bookForSomeone: bookForSomeone,
-    smoking: smoking,
-    bedType: bed,
-    highFloor: highFloor,
-    quiteRoom: quiteRoom,
-    babyCotReq: babyCotReq,
-    airportTransfer: airportTransfer,
-    extraReq: extraReq,
-    firstName: firstName,
-    lastName: lastName,
-    email: email,
-    phone: phone,
-    country: country,
+  const infoObject = {
+    destinationID: "destID",
+    hotelID: hotelId,
+    bookingInfo: {
+      noNight: 2,
+      startDate: "3 june 2020",
+      endDate: "5 june 2020",
+      noAdult: 2,
+      noChildren: 2,
+      message: "booking for birthday celebration",
+      roomType: "Suite",
+      bookForSomeone: bookForSomeone,
+      smoking: smoking,
+      bedType: bed,
+      highFloor: highFloor,
+      quiteRoom: quiteRoom,
+      babyCotReq: babyCotReq,
+      airportTransfer: airportTransfer,
+      extraReq: extraReq,
+    },
+    price: 3000,
+    supplierBookingID: "sbID",
+    supplierBookingRespond: "sbrID",
+    bookingReference: "bref",
+    guestInformation: {
+      salutation: "Ms",
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      country: country,
+    },
+    payeeInformation: {
+      paymentID: "",
+      payeeID: payeeId,
+    },
   };
 
+  const onSubmit = () => {
+    axios
+      .post("http://localhost:3001/create-checkout-session", infoObject)
+      .then((res) => {
+        infoObject.payeeInformation.paymentID = res.data.paymentID; // update paymentID from Stripe
+        localStorage.setItem("HOTEL_BOOKING_INFO", JSON.stringify(infoObject)); // store to local storage within react
+        window.open(res.data.url); // serve the checkout page URL returned by Stripe
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <div className="d-flex justify-content-around">
       <Card style={{ width: "60rem", height: "60rem" }}>
@@ -236,15 +272,10 @@ function CustomerInformation() {
                 </Form.Group>
               </Card.Body>
             </Card>
-            <Link
-              className="link"
-              to="/payinfo"
-              state={{ hotelId: hotelId, datas: custData }}
-            >
-              <Button variant="primary" type="submit">
-                Proceed to next step
-              </Button>
-            </Link>
+
+            <Button variant="primary" onClick={onSubmit}>
+              Proceed to next step
+            </Button>
           </Form>
         </Card.Body>
       </Card>

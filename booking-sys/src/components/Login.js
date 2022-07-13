@@ -5,9 +5,6 @@ import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-//import { LoginWithEmail } from "../db/firebase";
-//import { auth, LoginWithEmail } from "../../../server/firebase";
-// import "../App.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -26,6 +23,8 @@ function Login() {
       .post("http://localhost:3001/login", userObject)
       .then((res) => {
         if (res.status === 200) {
+          localStorage.setItem("USER_ID", res.data.userId); // store data from localStorage temporarily
+          localStorage.setItem("USER_EMAIL", res.data.email); // store data from localStorage temporarily
           navigate("/searchhotel");
         }
         if (res.status === 500) {
