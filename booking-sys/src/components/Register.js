@@ -15,10 +15,22 @@ function Register() {
   const [lname, setLName] = useState("");
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [validated, setValidated] = useState(false);
+  const [emailFeedback, setEmailFb] = useState("Please input a valid email");
+  const [pwdFeedback, setPwdFb] = useState("Please input a password");
+
   const navigate = useNavigate();
   const handleClose = () => setError(false);
 
-  const onSubmit = () => {
+  const onSubmit = (event) => {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.log("stuck");
+    }
+    setValidated(true);
+
     const userObject = {
       first_name: fname,
       last_name: lname,
@@ -37,21 +49,31 @@ function Register() {
         }
       })
       .catch((error) => {
+        console.log(error.response);
+        const errMsg = error.response.data.code.split("/")[1].split("-");
+        handleError(errMsg);
         setError(true);
-        setErrorMsg(error.response.data.code);
+        setErrorMsg(errMsg[0] + " " + errMsg[1]);
       });
-    setEmail("");
-    setPassword("");
-    setFName("");
-    setLName("");
+  };
+
+  const handleError = (errMsg) => {
+    if (errMsg[1] === "email") {
+      setEmail("");
+      setEmailFb(errMsg[0] + " " + errMsg[1]);
+    }
+    if (errMsg[1] === "password") {
+      setPassword("");
+      setPwdFb(errMsg[0] + " " + errMsg[1]);
+    }
   };
 
   return (
     <div className="d-flex justify-content-around">
-      <Card style={{ width: "30rem", height: "30rem" }}>
+      <Card style={{ width: "30rem", height: "35rem" }}>
         <Card.Body>
           <h1>Register page</h1>
-          <Form>
+          <Form noValidate validated={validated}>
             <Form.Group className="mb-3" controlId="formBasicFname">
               <Form.Label>First Name</Form.Label>
               <Form.Control
@@ -59,7 +81,11 @@ function Register() {
                 onChange={(e) => setFName(e.target.value)}
                 type="string"
                 placeholder="Enter First Name"
+                required
               />
+              <Form.Control.Feedback type="invalid">
+                Please input first name
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicLname">
               <Form.Label>Last Name</Form.Label>
@@ -68,7 +94,11 @@ function Register() {
                 onChange={(e) => setLName(e.target.value)}
                 type="string"
                 placeholder="Enter Last Name"
+                required
               />
+              <Form.Control.Feedback type="invalid">
+                Please input last name
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
@@ -77,7 +107,11 @@ function Register() {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="Enter email"
+                required
               />
+              <Form.Control.Feedback type="invalid">
+                {emailFeedback}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -87,7 +121,11 @@ function Register() {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="Password"
+                required
               />
+              <Form.Control.Feedback type="invalid">
+                {pwdFeedback}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Button

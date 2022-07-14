@@ -17,6 +17,7 @@ function UserProfile() {
     axios
       .get("http://localhost:3001/user", { params: { uid: userID } })
       .then((res) => {
+        console.log(res);
         /// set user account information on webpage
         setFName(res.data.data.first_name);
         setLName(res.data.data.last_name);
