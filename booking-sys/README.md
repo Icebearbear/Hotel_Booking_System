@@ -1,8 +1,9 @@
 # Running the Website Locally
 
 ## Installation
+Only client installation is inside /booking-sys, while the rest are installed outside of /booking-sys
 
-### React (client)
+### React (client) 
 
 ```
 npm install react-bootstrap bootstrap
