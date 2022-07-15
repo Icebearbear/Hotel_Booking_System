@@ -22,9 +22,23 @@ function Register() {
   const navigate = useNavigate();
   const handleClose = () => setError(false);
 
+  const updateEmail = (errMsg) => {
+    setEmail("");
+    setEmailFb(errMsg);
+  };
+  const updatePwd = (errMsg) => {
+    setPassword("");
+    setPwdFb(errMsg);
+  };
+  const updateError = (errMsg) => {
+    setError(true);
+    setErrorMsg(errMsg);
+  };
+
   const onSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
+      // check input field validation. if true, then stop progressing forward, show error
       event.preventDefault();
       event.stopPropagation();
       console.log("stuck");
@@ -44,28 +58,17 @@ function Register() {
           navigate("/login");
         }
         if (res.status === 500) {
-          setError(true);
-          setErrorMsg(res);
+          updateError(res);
         }
       })
       .catch((error) => {
         console.log(error.response);
-        const errMsg = error.response.data.code.split("/")[1].split("-");
-        handleError(errMsg);
-        setError(true);
-        setErrorMsg(errMsg[0] + " " + errMsg[1]);
+        const errM = error.response.data.code.split("/")[1].split("-");
+        var errMsg = "";
+        errM.forEach((x) => (errMsg = errMsg + " " + x));
+        errMsg.includes("email") ? updateEmail(errMsg) : updatePwd(errMsg);
+        updateError(errMsg);
       });
-  };
-
-  const handleError = (errMsg) => {
-    if (errMsg[1] === "email") {
-      setEmail("");
-      setEmailFb(errMsg[0] + " " + errMsg[1]);
-    }
-    if (errMsg[1] === "password") {
-      setPassword("");
-      setPwdFb(errMsg[0] + " " + errMsg[1]);
-    }
   };
 
   return (

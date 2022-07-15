@@ -10,17 +10,27 @@ import { InputGroup } from "react-bootstrap";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [emailFeedback, setEmailFb] = useState("Please input a valid email");
-  const [pwdFeedback, setPwdFb] = useState("Please input a password");
+  const [error, setError] = useState(false); // boolean if there is error
+  const [errorMsg, setErrorMsg] = useState(""); // for Modal (pop-up) to show error
+  const [emailFeedback, setEmailFb] = useState("Please input a valid email"); // for input field validation feedback
+  const [pwdFeedback, setPwdFb] = useState("Please input a password"); // for input field validation feedback
+  const [validated, setValidated] = useState(false); //for input field validation
 
   const navigate = useNavigate();
 
   const handleClose = () => setError(false);
-
-  const [validated, setValidated] = useState(false);
-
+  const updateEmail = (errMsg) => {
+    setEmail("");
+    setEmailFb(errMsg);
+  };
+  const updatePwd = (errMsg) => {
+    setPassword("");
+    setPwdFb(errMsg);
+  };
+  const updateError = (errMsg) => {
+    setError(true);
+    setErrorMsg(errMsg);
+  };
   const onSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -44,29 +54,16 @@ function Login() {
           navigate("/searchhotel");
         }
         if (res.status === 500) {
-          setError(true);
-          setErrorMsg(res);
+          updateError(res);
         }
       })
       .catch((error) => {
-        const errMsg = error.response.data.code.split("/")[1].split("-");
-        handleError(errMsg);
-        setError("");
-        setErrorMsg("");
-        setError(true);
-        setErrorMsg(errMsg[0] + " " + errMsg[1]);
+        const errM = error.response.data.code.split("/")[1].split("-");
+        var errMsg = "";
+        errM.forEach((x) => (errMsg = errMsg + " " + x));
+        errMsg.includes("email") ? updateEmail(errMsg) : updatePwd(errMsg);
+        updateError(errMsg);
       });
-  };
-
-  const handleError = (errMsg) => {
-    if (errMsg[1] === "email") {
-      setEmail("");
-      setEmailFb(errMsg[0] + " " + errMsg[1]);
-    }
-    if (errMsg[1] === "password") {
-      setPassword("");
-      setPwdFb(errMsg[0] + " " + errMsg[1]);
-    }
   };
 
   return (
