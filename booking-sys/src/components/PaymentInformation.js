@@ -20,43 +20,7 @@ function PaymentInformation() {
   console.log(data);
   console.log(hotelId);
   const cusSubmit = () => {
-    const infoObject = {
-      destinationID: "destID",
-      hotelID: "hotelID",
-      bookingInfo: {
-        noNight: 2,
-        startDate: "3 june 2020",
-        endDate: "5 june 2020",
-        noAdult: 2,
-        noChildren: 2,
-        message: "booking for birthday celebration",
-        roomType: "Suite",
-        bookForSomeone: data.bookForSomeone,
-        smoking: data.smoking,
-        bedType: data.bedType,
-        highFloor: data.highFloor,
-        quiteRoom: data.quiteRoom,
-        babyCotReq: data.babyCotReq,
-        airportTransfer: data.airportTransfer,
-        extraReq: data.extraReq,
-      },
-      price: 3000,
-      supplierBookingID: "sbID",
-      supplierBookingRespond: "sbrID",
-      bookingReference: "bref",
-      guestInformation: {
-        salutation: "Ms",
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        country: data.country,
-      },
-      payeeInformation: {
-        paymentID: "payID",
-        payeeID: "payeeID",
-      },
-    };
+    const infoObject = {};
     axios
       .post("http://localhost:3001/bookhotel", infoObject)
       .then((res) => {
