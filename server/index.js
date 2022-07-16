@@ -78,13 +78,11 @@ app.post("/create-checkout-session", async (req, res) => {
 
 //get selected hotel info
 app.get("/viewhotel", (req, res) => {
+  hotelId = req.query.hotelId;
   try {
-    axios
-      .get(
-        "https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU",
-        req.body
-      )
+    axios.get(`https://hotelapi.loyalty.dev/api/hotels/${hotelId}`)
       .then((hotelres) => {
+        console.log("From API: "+hotelId)
         res.status(200);
         res.send(hotelres.data);
       })
