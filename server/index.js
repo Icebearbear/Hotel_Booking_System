@@ -87,10 +87,10 @@ app.get("/viewhotel", (req, res) => {
         res.send(hotelres.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.message);
       });
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send(err.message);
   }
 });
 
@@ -99,15 +99,17 @@ app.get("/viewhotel", (req, res) => {
 //match up the hotel and its prices
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
+  hotelId = req.query.hotelId;
   try {
     axios
       .get("https://ascendahotels.mocklab.io/api/hotels/diH7/prices/ean")
       .then((prices) => {
+        console.log("got room prices " + prices.data)
         res.status(200);
         res.send(prices.data); //returned data is in prices.data and send it to react frontend
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.message);
       });
   } catch (err) {
     res.status(500).send(err);
