@@ -1,30 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
+import Modal from "react-bootstrap/Modal";
 import axios from "axios";
-import { Link } from "react-router-dom";
-// import "../App.css";
+import { Link, useNavigate } from "react-router-dom";
+import { InputGroup } from "react-bootstrap";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false); // boolean if there is error
+  const [errorMsg, setErrorMsg] = useState(""); // for Modal (pop-up) to show error
+  const [emailFeedback, setEmailFb] = useState("Please input a valid email"); // for input field validation feedback
+  const [pwdFeedback, setPwdFb] = useState("Please input a password"); // for input field validation feedback
+  const [validated, setValidated] = useState(false); //for input field validation
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:3001/user")
-  //     .then((res) => {
-  //       setUser(res);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  //   if (user) {
-  //     navigate("/mainpage");
-  //   }
-  // }, [user]);
+  const navigate = useNavigate();
 
-  const onSubmit = () => {
+  const handleClose = () => setError(false);
+  const updateEmail = (errMsg) => {
+    setEmail("");
+    setEmailFb(errMsg);
+  };
+  const updatePwd = (errMsg) => {
+    setPassword("");
+    setPwdFb(errMsg);
+  };
+  const updateError = (errMsg) => {
+    setError(true);
+    setErrorMsg(errMsg);
+  };
+  const onSubmit = (event) => {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.log("stuck");
+    }
+    setValidated(true);
+
+    console.log("ONSUBMIT");
     const userObject = {
       email: email,
       password: password,
@@ -32,29 +48,44 @@ function Login() {
     axios
       .post("http://localhost:3001/login", userObject)
       .then((res) => {
-        console.log(res.data);
+        if (res.status === 200) {
+          localStorage.setItem("USER_ID", res.data.userId); // store data from localStorage temporarily
+          localStorage.setItem("USER_EMAIL", res.data.email); // store data from localStorage temporarily
+          navigate("/searchhotel");
+        }
+        if (res.status === 500) {
+          updateError(res);
+        }
       })
       .catch((error) => {
-        console.log(error);
+        const errM = error.response.data.code.split("/")[1].split("-");
+        var errMsg = "";
+        errM.forEach((x) => (errMsg = errMsg + " " + x));
+        errMsg.includes("email") ? updateEmail(errMsg) : updatePwd(errMsg);
+        updateError(errMsg);
       });
   };
+
   return (
-    <div className="d-flex justify-content-around">
+    <div class="d-flex justify-content-center">
       <Card style={{ width: "30rem", height: "30rem" }}>
         <Card.Body>
           <h1>Login page</h1>
-          <Form>
+          <Form noValidate validated={validated}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
-              <Form.Control
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                placeholder="Enter email"
-              />
-              <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
-              </Form.Text>
+              <InputGroup hasValidation>
+                <Form.Control
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  placeholder="Enter email"
+                  required
+                />
+                <Form.Control.Feedback type="invalid">
+                  {emailFeedback}
+                </Form.Control.Feedback>
+              </InputGroup>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -64,29 +95,46 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 placeholder="Password"
+                required
               />
+              <Form.Control.Feedback type="invalid">
+                {pwdFeedback}
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Keep me signed in" />
             </Form.Group>
-            <Link className="link" to="/searchhotel">
-              <Button
-                onClick={onSubmit}
-                variant="primary"
-                type="submit"
-                className="float-right"
-              >
-                Submit
-              </Button>
-            </Link>
+
+            <Button
+              onClick={onSubmit}
+              variant="primary"
+              className="float-right"
+            >
+              Submit
+            </Button>
+
+            <div className="reg-link">
+              <Link className="link" to="/registration">
+                <li>Register Now</li>
+              </Link>
+            </div>
           </Form>
-          <div className="reg-link">
-            <Link className="link" to="/registration">
-              <li>Register Now</li>
-            </Link>
-          </div>
         </Card.Body>
       </Card>
+
+      <Modal show={error} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Error!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {"Error: " + errorMsg + ". Please input correct data "}{" "}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
