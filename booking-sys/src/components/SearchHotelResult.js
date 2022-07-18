@@ -14,7 +14,7 @@ function SearchHotelResult() {
   const searchData = location.state; // get data passed from SearchHotel page
 
   //CODE TO CLEAN UP THE DATE
-  // console.log(typeof(date));
+    // date = new Date(localstorage.endDate);
     // var day = date.getDate();
     // var month = date.getMonth()+1;
     // console.log(month);

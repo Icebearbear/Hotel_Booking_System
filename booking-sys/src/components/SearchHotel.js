@@ -111,10 +111,11 @@ function SearchHotel() {
       return
     }
 
-    console.log(passData['endDate'].getDate());
+    console.log(passData['endDate']);
 
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
+    console.log(new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).endDate)); //must pass into new Date object to get back Date format
     alert(JSON.parse(localStorage.getItem("SEARCH_DATA")).endDate);
     navigate("/searchhotelresult");
   }
