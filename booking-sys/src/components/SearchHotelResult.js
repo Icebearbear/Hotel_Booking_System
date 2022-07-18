@@ -13,6 +13,15 @@ function SearchHotelResult() {
   const location = useLocation();
   const searchData = location.state; // get data passed from SearchHotel page
 
+  //CODE TO CLEAN UP THE DATE
+  // console.log(typeof(date));
+    // var day = date.getDate();
+    // var month = date.getMonth()+1;
+    // console.log(month);
+    // var year = date.getFullYear();
+    // var string = year + '-' + month + '-' + day;
+    // console.log(string);
+
   const getHotelDeets = async () => {
     try {
       const hotelData = await axios.get(
