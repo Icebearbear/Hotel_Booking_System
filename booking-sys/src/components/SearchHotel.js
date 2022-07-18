@@ -54,7 +54,7 @@ function SearchHotel() {
     setSearchTerm([]);
     //setDestID(uid);
     setUid(uid);
-    alert(uid);
+    // alert(uid);
   }
   const selectDateStart = (date) => {
     if(date>selectedDate2 && selectedDate2!==null){
@@ -66,13 +66,14 @@ function SearchHotel() {
     
   }
   const selectDateStart2 = (date) => {
-    // console.log(typeof(date));
-    // var day = date.getDate();
-    // var month = date.getMonth()+1;
-    // console.log(month);
-    // var year = date.getFullYear();
-    // var string = year + '-' + month + '-' + day;
-    // console.log(string);
+    console.log(typeof(date));
+    var day = date.getDate();
+    var month = date.getMonth()+1;
+    console.log(month);
+    var year = date.getFullYear();
+    var string = year + '-' + month + '-' + day;
+    console.log(string);
+    console.log(date);
     setSelectedDate2(date);
     // passData['endDate'] = date;
     // alert(passData['endDate']);
@@ -80,19 +81,19 @@ function SearchHotel() {
 
   const selectRooms = (rooms) =>{
     setnrooms(rooms);
-    alert(passData['rooms']);
+    // alert(passData['rooms']);
   }
 
   const selectAdults = (adult) =>{
     // passData['adults'] = adult;
     setnadults(adult);
-    alert(passData['adults']);
+    // alert(passData['adults']);
   }
 
   const selectChild = (child) =>{
     // passData['childs'] = child;
     setnchildren(child);
-    alert(passData['childs']);
+    // alert(passData['childs']);
   }
 
   const navigate = useNavigate();
@@ -109,6 +110,8 @@ function SearchHotel() {
       alert("empty fields");
       return
     }
+
+    console.log(passData['endDate'].getDate());
 
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
