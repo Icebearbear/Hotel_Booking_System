@@ -1,7 +1,6 @@
 const express = require("express");
 const PORT = process.env.PORT || 3001;
 const app = express();
-//const firebase = require("../booking-sys/src/db/firebase");
 const cors = require("cors");
 const axios = require("axios");
 require("dotenv").config();
@@ -75,8 +74,25 @@ app.post("/create-checkout-session", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+// //get selected hotel info from search
+// app.get("/selectedhotel", (req, res) => {
+//   const hId = req.query.hotelId;
+//   try {
+//     axios
+//       .get("https://hotelapi.loyalty.dev/api/hotels/" + hId)
+//       .then((hotelres) => {
+//         res.status(200);
+//         res.send(hotelres.data);
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+//   } catch (err) {
+//     res.status(500).send(err);
+//   }
+// });
 
-//get selected hotel info
+//get selected hotel info from search
 app.get("/viewhotel", (req, res) => {
   try {
     axios
@@ -134,6 +150,21 @@ app.get("/hotels", (req, res) => {
   }
 });
 
+app.get("/getBook", async (req, res) => {
+  const userID = req.query.uid;
+  try {
+    const finalData = [];
+    const q = query(collection(db, "booking"), where("uid", "==", userID));
+    const docSnapshot = await getDocs(q);
+    const d = docSnapshot.docs.map((doc) => {
+      finalData.push(doc.data());
+    });
+    res.status(200).send(finalData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
 // book hotel
 app.post("/bookhotel", (req, res) => {
   console.log("bookhotel");
