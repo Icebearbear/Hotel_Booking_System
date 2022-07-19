@@ -5,6 +5,7 @@ import Card from "react-bootstrap/Card";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import CardHeader from "react-bootstrap/esm/CardHeader";
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
@@ -29,7 +30,7 @@ function SearchHotelResult() {
       await axios.get("http://localhost:3001/hotels", {params : {data: searchData.destination_id}})
       .then((res) => {
         setHotelDetails(res.data);
-        console.log(res.data)  // set State
+        // console.log(res.data)  // set State
         // setHotels(res.data[0]["id"])
 
       })
@@ -44,7 +45,7 @@ function SearchHotelResult() {
       await axios.get("http://localhost:3001/hotelprices", {params : {data: searchData}})
       .then((res) => {
         setHotelPrices(res.data.hotels);
-        console.log(res.data.hotels)  // set State
+        // console.log(res.data.hotels)  // set State
         // setHotels(res.data[0]["id"])
 
       })
@@ -73,18 +74,6 @@ function SearchHotelResult() {
   // });
 
   // console.log(hotelData);
-  function HotelMap(props){
-    props.details.map((value, index) =>{
-      var display_info = []; // maybe append with the price? 
-      var hotel = HotelDetails.filter(function(HotelDetails){ if(HotelDetails.id == value.id){return HotelDetails}})
-      // console.log(hotel[0])
-      return(
-        <div>
-        <Hoteldisplay details={hotel[0]}/>
-        </div>
-      )
-    })
-  }
 
   return (
     <><div className="d-flex justify-content-around">
@@ -98,20 +87,20 @@ function SearchHotelResult() {
               Select hotel
             </Button>
           </Link>
-
+          
         </Card.Body>
       </Card>
-    </div><HotelMap details={HotelPrices} /></>
+    </div><HotelMap prices={HotelPrices} details={HotelDetails}/></>
   );
 }
 
+
 function Hoteldisplay(props) {
+  const info = props.info;
   return (
-    <>
-      {props.details.map((value, index) => (
         <div className="d-flex p-2 justify-content-around">
-          <Card key={index} className="text-center" style={{ width: "75rem" }}>
-            <Card.Header as="h5">{value.name}</Card.Header>
+          <Card className="text-center" style={{ width: "75rem" }}>
+            <Card.Header as="h5">{info.lowest_price}</Card.Header>
             <div className="d-flex" style={{ flexDirection: "row" }}>
               <Card.Img
                 style={{ width: "18rem" }}
@@ -119,10 +108,13 @@ function Hoteldisplay(props) {
               ></Card.Img>
               <Card.Body>
                 <div className="overflow-auto">
-                  <Card.Text
-                    dangerouslySetInnerHTML={{ __html: value.description }}
-                  />
-                  <Link to="/viewhotel" state={{ hotelId: value.id }}>
+                  <Card.Text>
+                    {info.rating}
+                  </Card.Text>
+                  <Card.Text>
+                    {info.name}
+                  </Card.Text>
+                  <Link to="/viewhotel" state={{ hotelId: info.id }}>
                     <Button
                       variant="primary"
                       type="submit"
@@ -136,14 +128,34 @@ function Hoteldisplay(props) {
             </div>
           </Card>
         </div>
-      ))}
-      ;
-    </>
   );
 }
 
+function HotelMap(props){
+  const hotelPrices = props.prices;
+  const hotelDetails = props.details;
 
+  return(
+    <>
+      {hotelPrices.map(value =>{
+        // var display_info = []; // maybe append with the price? 
+      // console.log(props.id);
+        let match = hotelDetails.find(detail => detail.id === value.id);
+        // console.log(value);
 
+        const output = (value.id && match) || null;
+        // console.log(output);
+        // console.log(hotel[0])
+        if (output !== null){
+          let display_info = {...value, ...output}
+          // value.push(output)
+          // console.log(display_info)
+          return(
+            <Hoteldisplay info = {display_info}/>
+        )}
+      })}
+    </>
+)}
 
 // function Hoteldisplay(props){
 //   return(

@@ -97,7 +97,7 @@ app.get("/hotels", (req, res) => {
       .get("https://hotelapi.loyalty.dev/api/hotels", {params: {destination_id: destination_id}})
       .then((hotelres) => {
         res.status(200);
-        console.log(hotelres.data);
+        // console.log(hotelres.data);
         res.send(hotelres.data);
       })
       .catch((error) => {
