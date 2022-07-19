@@ -3,10 +3,10 @@ import { Container, Card, CardGroup, Col, Button } from 'react-bootstrap';
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 
-function ViewHotel(props) {
+function ViewHotel() {
   const location = useLocation();
-  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
-  const hotelId = "diH7";
+  const { hotelId } = location.state; // get data passed from SearchHotelResult page
+  //const hotelId = "diH7";
 
   const [hotelName, setHotelName] = useState("");
   const [address, setAddress] = useState("");
@@ -14,6 +14,8 @@ function ViewHotel(props) {
 
   const [descr, setDescr] = useState("");
   const [amenities, setAmenities] = useState({});
+
+  const [reviews, setReviews] = useState({});
 
   const [imageDetails, setImageDetails] = useState({});
   const [imageIndexes, setImageIndexes] = useState("");
@@ -33,6 +35,8 @@ function ViewHotel(props) {
 
         setDescr(hotelData.data["description"]);
         setAmenities(hotelData.data["amenities"]);
+
+        setReviews(hotelData.data.amenities_ratings);
 
         setImageDetails(hotelData.data["image_details"]);
         setImageIndexes(hotelData.data["hires_image_index"]);
@@ -56,13 +60,6 @@ function ViewHotel(props) {
     }
     return "No";
   }
-  // const getRoomsData = () => {
-  //   axios.get("http://localhost:3001/hotelprices", {params: {hotelId: hotelId}}) 
-  //   .then((hotelRoomData) => {
-  //     setRoomPrices(hotelRoomData.data["rooms"])
-  //   })
-  //   .catch((err) => console.log("roomdata "+err.message));
-  // }
 
   useEffect(() => {
     getHotelData();
@@ -89,10 +86,11 @@ function ViewHotel(props) {
     <>
       <Container maxWidth="lg" className='p-4'>
         {/* Intro Section */}
-        <div>
-          <Card style={{ flex: 1 }}>
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          <Card style={{ width: "70rem", flex: 1 }}>
             <Card.Body>
-              <h1 class="card-title">{hotelName}</h1>
+              <h1>{hotelName}</h1>
+              <h5>{"Hotel rating: " + rating + "/5 stars"}</h5>
               <address>{address}</address>
               <h6>{"Hotel id: " + hotelId}</h6>
               <div className="e-card">
@@ -105,29 +103,52 @@ function ViewHotel(props) {
         </div>
 
         {/* Hotel description */}
-        <div>
+        <div class="d-flex flex-column justify-content-center align-items-center">
           <CardGroup>
-            <Card style={{ flex: 2 }}>
-              <Card.Body>
-                <h2>Hotel Overview</h2>
-                <Card.Text dangerouslySetInnerHTML={{ __html: descr }} />
-              </Card.Body>
-            </Card>
-            <Card style={{ flex: 1 }}>
-              <Card.Body>
-                <h3>Amenities</h3>
-                <Card.Text class="text-justify">
-                  {Object.entries(amenities).map(([key, value]) => (
-                    <Card.Text>{key + ": " + checkAmenities(value)}</Card.Text>
-                  ))}
-                </Card.Text>
-              </Card.Body>
-            </Card>
+
+            <div class="d-flex flex-column justify-content-center align-items-center">
+              <Card style={{ width: "50rem", flex: 2.5 }}>
+                <Card.Body>
+                  <Card.Text>
+                    <h2>Hotel Overview</h2>
+                    <div dangerouslySetInnerHTML={{ __html: descr }} />
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </div>
+
+            <div class="d-flex flex-column justify-content-center align-items-center">
+              <Card style={{ width: "20rem", flex: 1 }}>
+                <Card.Body>
+                  <h3>Amenities</h3>
+                  <Card.Text class="text-justify">
+                    {Object.entries(amenities).map(([key, value]) => (
+                      <Card.Text>{key + ": " + checkAmenities(value)}</Card.Text>
+                    ))}
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </div>
+
           </CardGroup>
+        </div>
+        
+        {/* Hotel Reviews */}
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          <Card style={{ width: "70rem", flex: 1 }}>
+            <Card.Body>
+              <Card.Title>Hotel Reviews</Card.Title>
+              <Card.Text class="text-justify">
+                {Object.entries(reviews).map(([key, value]) => (
+                  <Card.Text>{reviews[key]["name"] + ": " + reviews[key]["score"]}</Card.Text>
+                ))}
+              </Card.Text>
+            </Card.Body>
+          </Card>
         </div>
 
         {/* will integrate to show images */}
-        {/* <div className='actions'>
+        <div className='actions'>
           <Card style={{ width: "90rem", height: "30rem" }}>
             <Card.Body>
               <Link className="link" to="/custinfo" state={{ hotelId: hotelId }}>
@@ -138,11 +159,11 @@ function ViewHotel(props) {
               <button className='btn' onClick={imageObjConstruction}>view pic</button>
             </Card.Body>
           </Card>
-        </div> */}
+        </div>
 
         {/* Map */}
-        <div>
-          <Card style={{ flex: 1 }}>
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          <Card style={{ width: "70rem", flex: 1 }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
               {/* <div id="map"></div>
@@ -156,7 +177,7 @@ function ViewHotel(props) {
           </Card>
         </div>
 
-      </Container>
+      </Container >
     </>
   );
 };
