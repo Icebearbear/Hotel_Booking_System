@@ -104,12 +104,12 @@ function Hoteldisplay(props) {
             <div className="d-flex" style={{ flexDirection: "row" }}>
               <Card.Img
                 style={{ width: "18rem" }}
-                src= {`${value.image_details.prefix}${value.default_image_index}${value.image_details.suffix}`}
+                src= {`${info.image_details.prefix}${info.default_image_index}${info.image_details.suffix}`}
               ></Card.Img>
               <Card.Body>
                 <h2>Price</h2>
-                <p>{value.price}</p>
-                <p>{value.rating}</p>
+                <p>{info.price}</p>
+                <p>{info.rating}</p>
                 <div className="overflow-auto">
                   <Card.Text>
                     {info.rating}
