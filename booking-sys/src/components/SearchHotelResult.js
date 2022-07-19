@@ -75,9 +75,15 @@ function SearchHotelResult() {
   // console.log(hotelData);
   function HotelMap(props){
     props.details.map((value, index) =>{
-      var display_info = []; // maybe append with the price? 
+      //var lowest_price = value.lowest_converted_price;
+      var price = value.price;
+      var searchRank = value.searchRank;
+      var display_info = [price, searchRank]; // maybe append with the price? 
       var hotel = HotelDetails.filter(function(HotelDetails){ if(HotelDetails.id == value.id){return HotelDetails}})
-      // console.log(hotel[0])
+      if (hotel[0]== undefined){return null};
+      // append price value into hotel[0] for Hoteldisplay details //
+      hotel[0]['price'] = price;
+      console.log(hotel[0]);
       return(
         <div>
         <Hoteldisplay details={hotel[0]}/>
@@ -115,9 +121,12 @@ function Hoteldisplay(props) {
             <div className="d-flex" style={{ flexDirection: "row" }}>
               <Card.Img
                 style={{ width: "18rem" }}
-                src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"
+                src= {`${value.image_details.prefix}${value.default_image_index}${value.image_details.suffix}`}
               ></Card.Img>
               <Card.Body>
+                <h2>Price</h2>
+                <p>{value.price}</p>
+                <p>{value.rating}</p>
                 <div className="overflow-auto">
                   <Card.Text
                     dangerouslySetInnerHTML={{ __html: value.description }}
