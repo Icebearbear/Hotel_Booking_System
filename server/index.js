@@ -4,7 +4,7 @@ const app = express();
 //const firebase = require("../booking-sys/src/db/firebase");
 const cors = require("cors");
 const axios = require("axios");
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 const path = require("path");
 
@@ -62,15 +62,21 @@ app.get("/viewhotel", (req, res) => {
 //match up the hotel and its prices
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
+  const searchData = req.query.searchData;
+  console.log(JSON.parse(searchData).destination_id);
+  // var destination_id = searchData.destination_id;
   try {
     axios
-      .get("https://ascendahotels.mocklab.io/api/hotels/diH7/prices/ean")
+      .get(
+        `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+      )
       .then((prices) => {
         res.status(200);
         res.send(prices.data); //returned data is in prices.data and send it to react frontend
       })
       .catch((error) => {
-        console.log(error);
+        const er = error;
+        // console.log(error);
       });
   } catch (err) {
     res.status(500).send(err);
