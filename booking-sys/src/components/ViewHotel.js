@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
-// import Card from "react-bootstrap/Card";
-// import CardGroup from 'react-bootstrap/CardGroup';
 import { Container, Card, CardGroup, Col, Button } from 'react-bootstrap';
 import { Link, useLocation } from "react-router-dom";
-// import Button from "react-bootstrap/Button";
 import axios from "axios";
 
 function ViewHotel(props) {
   const location = useLocation();
-  const { hotelId } = location.state; // get data passed from SearchHotelResult page
-  //const hotelId = "diH7";
+  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
+  const hotelId = "diH7";
 
   const [hotelName, setHotelName] = useState("");
   const [address, setAddress] = useState("");
@@ -163,27 +160,5 @@ function ViewHotel(props) {
     </>
   );
 };
-
-
-//<toDisplay details={imageData}/>
-// function toDisplay(props) {
-//   const hotelName = props.hotelName;
-//   const imageData = props.imageData;
-//   //const map = props.map;
-//   return (
-//     <>
-//       {props.details.map((value, index) => (
-//         <div className='relative flex items-center'>
-
-//         </div>
-//       ))};
-
-//         {imageData.props.map((item) => (
-//           <img src={item.img} />
-//         ))}
-
-//     </>
-//     );
-// }
 
 export default ViewHotel;
