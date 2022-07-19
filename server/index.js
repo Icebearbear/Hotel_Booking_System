@@ -75,23 +75,6 @@ app.post("/create-checkout-session", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
-// //get selected hotel info from search
-// app.get("/selectedhotel", (req, res) => {
-//   const hId = req.query.hotelId;
-//   try {
-//     axios
-//       .get("https://hotelapi.loyalty.dev/api/hotels/" + hId)
-//       .then((hotelres) => {
-//         res.status(200);
-//         res.send(hotelres.data);
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       });
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
 
 //get selected hotel info from search
 app.get("/viewhotel", (req, res) => {
@@ -152,12 +135,23 @@ app.get("/hotels", (req, res) => {
 });
 
 app.post("/deleteBook", async (req, res) => {
-  const docId = req.body.docId;
-  // const docId = "2eq7dD2A8rHhmjCsTxRC";
-  console.log(docId);
+  const { docId, userID } = req.body;
+  //check if id exist//////
+  //////
+  // const docId = "R3z3gkRt8b6GeuWgkv6s";
+  console.log(docId, userID);
   try {
     await deleteDoc(doc(db, "booking", docId));
-    res.status(200).send("deleted");
+    var finalData = [];
+    var ids = [];
+    const q = query(collection(db, "booking"), where("uid", "==", userID));
+    const docSnapshot = await getDocs(q);
+    const d = docSnapshot.docs.map((doc) => {
+      // const bookDt = doc.data();
+      // finalData.push(bookDt);
+      finalData.push([doc.id, doc.data()]);
+    });
+    res.status(200).json({ finalData: finalData });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -166,18 +160,17 @@ app.post("/deleteBook", async (req, res) => {
 
 app.get("/getBook", async (req, res) => {
   const userID = req.query.uid;
+  // const userID = "rRETHSuFXTVjzmyN6VjnAPDj7YB2";
   try {
-    const finalData = [];
-    const ids = [];
-    var count = 0;
+    var finalData = [];
+    var ids = [];
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
     const d = docSnapshot.docs.map((doc) => {
-      finalData.push(doc.data());
-      ids.push({ id: doc.id, index: count });
-      count++;
+      // finalData.push(doc.data());
+      finalData.push([doc.id, doc.data()]);
     });
-    res.status(200).json({ ids: ids, finalData: finalData });
+    res.status(200).json({ finalData: finalData });
   } catch (err) {
     console.log(err);
     res.status(500).send(err);

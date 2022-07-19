@@ -40,7 +40,7 @@ function UserProfile() {
       .catch((error) => {
         console.log(error);
       });
-  });
+  }, []);
   const logOut = () => {
     console.log("logout callback");
     axios
@@ -55,7 +55,7 @@ function UserProfile() {
   };
 
   return (
-    <div class="container mb-4 p-3 d-flex justify-content-center">
+    <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
       <div class="card p-4">
         <div class="image d-flex flex-column justify-content-center align-items-center">
           <button class="btn btn-secondary">
