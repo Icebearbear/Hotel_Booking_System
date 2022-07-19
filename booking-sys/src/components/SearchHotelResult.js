@@ -6,7 +6,6 @@ import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 
-
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
   const [HotelDetails, setHotelDetails]=useState([]);
@@ -72,25 +71,62 @@ function SearchHotelResult() {
   //       console.log(error);
   //     });
   // });
-  
+
   // console.log(hotelData);
 
+  // return (
+  //   <><div className="d-flex justify-content-around">
+  //     <Card style={{ width: "50rem", height: "30rem" }}>
+  //       <Card.Body>
+  //         <h1>Search Result Page</h1>
+
+  //         <h4>{"Available hotel id " + hotelId}</h4>
+  //         <Link to="/viewhotel" state={{ hotelId: hotelId }}>
+  //           <Button variant="primary" type="submit" className="float-right">
+  //             Select hotel
+  //           </Button>
+  //         </Link>
+
+  //       </Card.Body>
+  //     </Card>
+  //   </div><Hoteldisplay details={HotelDetails} /></>
+  // );
+}
+
+function Hoteldisplay(props) {
   return (
-    <><div className="d-flex justify-content-around">
-      <Card style={{ width: "50rem", height: "30rem" }}>
-        <Card.Body>
-          <h1>Search Result Page</h1>
-
-          <h4>{"Available hotel id " + hotelId}</h4>
-          <Link to="/viewhotel" state={{ hotelId: hotelId }}>
-            <Button variant="primary" type="submit" className="float-right">
-              Select hotel
-            </Button>
-          </Link>
-
-        </Card.Body>
-      </Card>
-    </div><Hoteldisplay details={HotelDetails} /></>
+    <>
+      {props.details.map((value, index) => (
+        <div className="d-flex p-2 justify-content-around">
+          <Card key={index} className="text-center" style={{ width: "75rem" }}>
+            <Card.Header as="h5">{value.name}</Card.Header>
+            <div className="d-flex" style={{ flexDirection: "row" }}>
+              <Card.Img
+                style={{ width: "18rem" }}
+                src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"
+              ></Card.Img>
+              <Card.Body>
+                <div className="overflow-auto">
+                  <Card.Text
+                    dangerouslySetInnerHTML={{ __html: value.description }}
+                  />
+                  <Link to="/viewhotel" state={{ hotelId: value.id }}>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      className="float-right"
+                    >
+                      Select hotel
+                    </Button>
+                  </Link>
+                </div>
+              </Card.Body>
+            </div>
+          </Card>
+        </div>
+      ))}
+      ;
+    </>
   );
 }
 

@@ -4,7 +4,7 @@ const app = express();
 //const firebase = require("../booking-sys/src/db/firebase");
 const cors = require("cors");
 const axios = require("axios");
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 const path = require("path");
 
@@ -80,7 +80,8 @@ app.get("/hotelprices", (req, res) => {
         res.send(prices.data); //returned data is in prices.data and send it to react frontend
       })
       .catch((error) => {
-        console.log(error);
+        const er = error;
+        // console.log(error);
       });
   } catch (err) {
     res.status(500).send(err);
