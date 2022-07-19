@@ -9,24 +9,55 @@ import Button from "react-bootstrap/Button";
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
-  const [HotelDetails, setHotelDetails]=useState([])
+  const [HotelDetails, setHotelDetails]=useState([]);
+  const [HotelPrices, setHotelPrices]=useState([]);
 
   const location = useLocation();
-  const searchData = location.state; // get data passed from SearchHotel page
+  // const searchData = location.state; // get data passed from SearchHotel page
 
-  const getHotelDeets = async () => {
+  const searchData = {
+    destination_id: "WD0M",
+    checkin: "2022-07-20",
+    checkout: "2022-07-21",
+    // lang: "en_US",
+    // currency: "SGD",
+    // country_code: "SG",
+    // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    // partner_id: "1",
+  };
+  const getHotelDeets = async (hotel_id) =>{
     try {
-      const hotelData = await axios.get("http://localhost:3001/hotelprices", searchData)
-      setHotelDetails(hotelData.data);  // set State
-      setHotels(hotelData.data[0]["id"])
-    
+      await axios.get("http://localhost:3001/hotels", {params : {data: searchData.destination_id}})
+      .then((res) => {
+        setHotelDetails(res.data);
+        console.log(res.data)  // set State
+        // setHotels(res.data[0]["id"])
+
+      })
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+
+
+  const getHotelPrices = async () => {
+    try {
+      await axios.get("http://localhost:3001/hotelprices", {params : {data: searchData}})
+      .then((res) => {
+        setHotelPrices(res.data.hotels);
+        console.log(res.data.hotels)  // set State
+        // setHotels(res.data[0]["id"])
+
+      })
+      
     } catch (err) {
       console.error(err.message);
     }
   };
   // const hotelData = null;
   useEffect(() => {
-    getHotelDeets()
+    getHotelPrices();
+    getHotelDeets();
   },[])
 
   // useEffect(() => {
@@ -63,6 +94,16 @@ function SearchHotelResult() {
   );
 }
 
+function HotelMap(props){
+  props.details.map((value, index) =>{
+    return(
+      <>
+      <p>hello</p>
+      </>
+    )
+  })
+}
+
 
 function Hoteldisplay(props){
   return(
@@ -70,7 +111,8 @@ function Hoteldisplay(props){
       {props.details.map((value, index)=> (
         <div className="d-flex p-2 justify-content-around">
         <Card key = {index} className="text-center" style={{ width: '75rem'}}>
-          <Card.Header as="h5">{value.name}</Card.Header>
+          <Card.Header as="h5">{value.id}
+          </Card.Header>
           <div className= "d-flex" style={{flexDirection:'row'}}>
             <Card.Img style={{ width: '18rem'}} src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"></Card.Img>
             <Card.Body >
