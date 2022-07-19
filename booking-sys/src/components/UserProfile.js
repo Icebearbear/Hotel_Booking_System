@@ -1,8 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
+import { useNavigate } from "react-router-dom";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -57,7 +55,7 @@ function UserProfile() {
   };
 
   return (
-    <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+    <div class="container mb-4 p-3 d-flex justify-content-center">
       <div class="card p-4">
         <div class="image d-flex flex-column justify-content-center align-items-center">
           <button class="btn btn-secondary">

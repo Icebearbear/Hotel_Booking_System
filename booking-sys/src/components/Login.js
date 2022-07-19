@@ -6,7 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { InputGroup } from "react-bootstrap";
-
+import "../css/login.min.css";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -68,74 +68,76 @@ function Login() {
   };
 
   return (
-    <div class="d-flex justify-content-center">
-      <Card style={{ width: "30rem", height: "30rem" }}>
-        <Card.Body>
-          <h1>Login page</h1>
-          <Form noValidate validated={validated}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
-              <InputGroup hasValidation>
+    <div className="wrapper">
+      <div className="container mb-4 p-3 d-flex justify-content-center">
+        <Card className="card-login">
+          <Card.Body>
+            <h1>Login page</h1>
+            <Form noValidate validated={validated}>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Email address</Form.Label>
+                <InputGroup hasValidation>
+                  <Form.Control
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="Enter email"
+                    required
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {emailFeedback}
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
                 <Form.Control
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  placeholder="Enter email"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  placeholder="Password"
                   required
                 />
                 <Form.Control.Feedback type="invalid">
-                  {emailFeedback}
+                  {pwdFeedback}
                 </Form.Control.Feedback>
-              </InputGroup>
-            </Form.Group>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicCheckbox">
+                <Form.Check type="checkbox" label="Keep me signed in" />
+              </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                placeholder="Password"
-                required
-              />
-              <Form.Control.Feedback type="invalid">
-                {pwdFeedback}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicCheckbox">
-              <Form.Check type="checkbox" label="Keep me signed in" />
-            </Form.Group>
+              <Button
+                onClick={onSubmit}
+                variant="primary"
+                className="float-right"
+              >
+                Submit
+              </Button>
 
-            <Button
-              onClick={onSubmit}
-              variant="primary"
-              className="float-right"
-            >
-              Submit
+              <div className="reg-link">
+                <Link className="link" to="/registration">
+                  <li>Register Now</li>
+                </Link>
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+
+        <Modal show={error} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Error!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {"Error: " + errorMsg + ". Please input correct data "}{" "}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
             </Button>
-
-            <div className="reg-link">
-              <Link className="link" to="/registration">
-                <li>Register Now</li>
-              </Link>
-            </div>
-          </Form>
-        </Card.Body>
-      </Card>
-
-      <Modal show={error} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Error!</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {"Error: " + errorMsg + ". Please input correct data "}{" "}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </div>
   );
 }

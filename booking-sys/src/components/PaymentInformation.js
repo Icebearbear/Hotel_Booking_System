@@ -6,6 +6,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import NavigationBar from "./NavigationBar";
 
 function PaymentInformation() {
   const [holderName, setHolderName] = useState("");
@@ -34,6 +35,7 @@ function PaymentInformation() {
   };
   return (
     <div className="d-flex justify-content-around">
+      <NavigationBar />
       <Card style={{ width: "30rem", height: "30rem" }}>
         <Card.Body>
           <h1>Payment Information Page</h1>
