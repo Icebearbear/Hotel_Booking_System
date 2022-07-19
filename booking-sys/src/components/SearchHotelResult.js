@@ -75,7 +75,7 @@ function SearchHotelResult() {
   // console.log(hotelData);
   function HotelMap(props){
     props.details.map((value, index) =>{
-      var display_info = [];
+      var display_info = []; // maybe append with the price? 
       var hotel = HotelDetails.filter(function(HotelDetails){ if(HotelDetails.id == value.id){return HotelDetails}})
       // console.log(hotel[0])
       return(
