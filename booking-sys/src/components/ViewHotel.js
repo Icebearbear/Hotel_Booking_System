@@ -9,6 +9,7 @@ function ViewHotel() {
   const hotelId = "diH7";
   //const searchData = location.state; // get data passed from SearchHotel page
   const searchData = {
+    hotel_id: hotelId + "/",
     destination_id: "WD0M",
     checkin: "2022-07-20",
     checkout: "2022-07-21",
@@ -35,8 +36,8 @@ function ViewHotel() {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
-  const [roomPricesAll, setRoomPricesAll] = useState({});
-  
+  const [roomsDetails, setRoomsDetails] = useState({});
+
 
   const getHotelData = () => {
     axios.get("http://localhost:3001/viewhotel", { params: { hotelId: hotelId } })
@@ -74,30 +75,33 @@ function ViewHotel() {
     return "No";
   }
 
-  const getHotelPrices = () => {
-    axios.get("http://localhost:3001/hotelprices", { params: { data: searchData } })
+  const getHotelIdPrices = () => {
+    axios.get("http://localhost:3001/hotelidprices", { params: { data: searchData } })
       .then((roomData) => {
-        setRoomPricesAll(roomData.data.hotels);
-        console.log("the data????"+ roomPricesAll);
-        console.log(roomPricesAll.length);
+        setRoomsDetails(roomData.data.rooms);
+        console.log("Room: " + roomsDetails[0]["lowest_price"]);
+        console.log("No. of rooms: " + roomsDetails.length);
+
+        sortByRoomPrices(roomsDetails);
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   }
 
-  const parseHotelIdPrices = () => {
-    for (let i = 0; i < roomPricesAll.length; i++) {
-      if (roomPricesAll[i]["id"] == hotelId) {
-        console.log(roomPricesAll[i]["id"])
+  const sortByRoomPrices = (rooms) => {
+    roomsDetails.sort(function (a, b) {
+      return a.lowest_price - b.lowest_price;
+    });
 
-      }
+    for (let i = 0; i < rooms.length; i++) {
+      console.log(rooms[i]["roomNormalizedDescription"] + " " + rooms[i]["lowest_price"])
     }
   }
 
   useEffect(() => {
     getHotelData();
     imageObjConstruction();
-    getHotelPrices();
-    parseHotelIdPrices();
+    getHotelIdPrices();
+    //parseRoomPrices();
   });
 
   // useEffect is the first thing to load when the page is opened
@@ -180,8 +184,8 @@ function ViewHotel() {
           </Card>
         </div>
 
-        {/* will integrate to show images */}
-        <div className='actions'>
+        {/* {/* will integrate to show images */}
+        {/* <div className='actions'>
           <Card style={{ width: "90rem", height: "30rem" }}>
             <Card.Body>
               <Link className="link" to="/custinfo" state={{ hotelId: hotelId }}>
@@ -192,7 +196,7 @@ function ViewHotel() {
               <button className='btn' onClick={imageObjConstruction}>view pic</button>
             </Card.Body>
           </Card>
-        </div>
+        </div> */}
 
         {/* Map */}
         <div class="d-flex flex-column justify-content-center align-items-center">
@@ -208,6 +212,26 @@ function ViewHotel() {
               </script> */}
             </Card.Body>
           </Card>
+        </div>
+
+        {/* Rooms */}
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          {Object.entries(roomsDetails).map(([key, value]) => (
+            <Card style={{ width: "70rem", flex: 1 }}>
+              <Card.Body>
+                <Card.Header>{roomsDetails[key]["roomNormalizedDescription"]}</Card.Header>
+                <div className="d-flex" style={{ flexDirection: "row" }}>
+                  {/* <Card.Img
+                    style={{ width: "18rem" }}
+                    src={`${roomsDetails[key]["images"][0]["url"]}}`}
+                  ></Card.Img> */}
+                  <Card.Text>
+                    {roomsDetails[key]["lowest_price"] +" "+ roomsDetails[key].images[0]}
+                  </Card.Text>
+                </div>
+              </Card.Body>
+            </Card>
+          ))}
         </div>
 
       </Container >

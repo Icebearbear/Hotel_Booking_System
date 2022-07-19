@@ -94,6 +94,33 @@ app.get("/viewhotel", (req, res) => {
   }
 });
 
+app.get("/hotelidprices", (req, res) => {
+  const searchData = JSON.parse(req.query.data);
+  console.log(searchData);
+  var hotel_id = searchData.hotel_id;
+  var destination_id = searchData.destination_id;
+  var checkin = searchData.checkin;
+  var checkout = searchData.checkout;
+  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  console.log("get from: " + url);
+
+  try {
+    axios
+      .get(url)
+      .then((roomprices) => {
+        console.log("got SPECIFIC HOTEL room prices " + roomprices.data)
+        res.status(200);
+        res.send(roomprices.data); //returned data is in roomprices.data and send it to react frontend
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+
 //get hotel prices. need to match with the hotelID from /hotels route
 //maybe request hotels and its prices at the same time using the same API route
 //match up the hotel and its prices
