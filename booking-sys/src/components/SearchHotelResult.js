@@ -74,23 +74,23 @@ function SearchHotelResult() {
 
   // console.log(hotelData);
 
-  // return (
-  //   <><div className="d-flex justify-content-around">
-  //     <Card style={{ width: "50rem", height: "30rem" }}>
-  //       <Card.Body>
-  //         <h1>Search Result Page</h1>
+  return (
+    <><div className="d-flex justify-content-around">
+      <Card style={{ width: "50rem", height: "30rem" }}>
+        <Card.Body>
+          <h1>Search Result Page</h1>
 
-  //         <h4>{"Available hotel id " + hotelId}</h4>
-  //         <Link to="/viewhotel" state={{ hotelId: hotelId }}>
-  //           <Button variant="primary" type="submit" className="float-right">
-  //             Select hotel
-  //           </Button>
-  //         </Link>
+          <h4>{"Available hotel id " + hotelId}</h4>
+          <Link to="/viewhotel" state={{ hotelId: hotelId }}>
+            <Button variant="primary" type="submit" className="float-right">
+              Select hotel
+            </Button>
+          </Link>
 
-  //       </Card.Body>
-  //     </Card>
-  //   </div><Hoteldisplay details={HotelDetails} /></>
-  // );
+        </Card.Body>
+      </Card>
+    </div><HotelMap details={HotelPrices} /></>
+  );
 }
 
 function Hoteldisplay(props) {
@@ -132,6 +132,9 @@ function Hoteldisplay(props) {
 
 function HotelMap(props){
   props.details.map((value, index) =>{
+    var display_info = [];
+    var hotel = HotelDetails.filter(function(HotelDetails){ if(HotelDetails.id == value.id){return HotelDetails}})
+    console.log(hotel.name)
     return(
       <>
       <p>hello</p>
@@ -141,33 +144,33 @@ function HotelMap(props){
 }
 
 
-function Hoteldisplay(props){
-  return(
-    <>
-      {props.details.map((value, index)=> (
-        <div className="d-flex p-2 justify-content-around">
-        <Card key = {index} className="text-center" style={{ width: '75rem'}}>
-          <Card.Header as="h5">{value.id}
-          </Card.Header>
-          <div className= "d-flex" style={{flexDirection:'row'}}>
-            <Card.Img style={{ width: '18rem'}} src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"></Card.Img>
-            <Card.Body >
-            <div className = "overflow-auto">
-              <Card.Text dangerouslySetInnerHTML={{__html: value.description}}/>
-              <Link to="/viewhotel" state={{hotelId: value.id}}>
-                <Button variant="primary" type="submit" className="float-right">
-                  Select hotel
-                </Button>
-              </Link>
-              </div>
-            </Card.Body>
-          </div>
-        </Card>
-        </div>
-      ))};
-    </>
-  )
-}
+// function Hoteldisplay(props){
+//   return(
+//     <>
+//       {props.details.map((value, index)=> (
+//         <div className="d-flex p-2 justify-content-around">
+//         <Card key = {index} className="text-center" style={{ width: '75rem'}}>
+//           <Card.Header as="h5">{value.id}
+//           </Card.Header>
+//           <div className= "d-flex" style={{flexDirection:'row'}}>
+//             <Card.Img style={{ width: '18rem'}} src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"></Card.Img>
+//             <Card.Body >
+//             <div className = "overflow-auto">
+//               <Card.Text dangerouslySetInnerHTML={{__html: value.description}}/>
+//               <Link to="/viewhotel" state={{hotelId: value.id}}>
+//                 <Button variant="primary" type="submit" className="float-right">
+//                   Select hotel
+//                 </Button>
+//               </Link>
+//               </div>
+//             </Card.Body>
+//           </div>
+//         </Card>
+//         </div>
+//       ))};
+//     </>
+//   )
+// }
 
 
 // function Hoteldisplay(props){
