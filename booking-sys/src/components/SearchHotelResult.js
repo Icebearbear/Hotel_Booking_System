@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Card from "react-bootstrap/Card";
 // import Col from "react-bootstrap/Col";
-
+import clsx from 'clsx';
+import useLazyLoad from "./useLazyLoad";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import CardHeader from "react-bootstrap/esm/CardHeader";
+
+const TOTAL_PAGES = 41;
+const NUM_PER_PAGE = 5;
 
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
+<<<<<<< Updated upstream
   const [HotelDetails, setHotelDetails]=useState([])
 
   const location = useLocation();
@@ -20,13 +26,61 @@ function SearchHotelResult() {
       setHotelDetails(hotelData.data);  // set State
       setHotels(hotelData.data[0]["id"])
     
+=======
+  const [HotelDetails, setHotelDetails]=useState([]);
+  const [HotelPrices, setHotelPrices]=useState([]);
+
+  const location = useLocation();
+  // const searchData = location.state; // get data passed from SearchHotel page
+
+  const searchData = {
+    destination_id: "WD0M",
+    checkin: "2022-07-20",
+    checkout: "2022-07-21",
+    // lang: "en_US",
+    // currency: "SGD",
+    // country_code: "SG",
+    // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    // partner_id: "1",
+  };
+  const getHotelDeets = async (hotel_id) =>{
+    try {
+      await axios.get("http://localhost:3001/hotels", {params : {data: searchData.destination_id}})
+      .then((res) => {
+        setHotelDetails(res.data);
+        // console.log(res.data)  // set State
+        // setHotels(res.data[0]["id"])
+
+      })
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+
+
+  const getHotelPrices = async () => {
+    try {
+      await axios.get("http://localhost:3001/hotelprices", {params : {data: searchData}})
+      .then((res) => {
+        setHotelPrices(res.data.hotels);
+        // console.log(res.data.hotels)  // set State
+        // setHotels(res.data[0]["id"])
+
+      })
+      
+>>>>>>> Stashed changes
     } catch (err) {
       console.error(err.message);
     }
   };
   // const hotelData = null;
   useEffect(() => {
+<<<<<<< Updated upstream
     getHotelDeets()
+=======
+    getHotelPrices();
+    getHotelDeets();
+>>>>>>> Stashed changes
   },[])
 
   // useEffect(() => {
@@ -56,14 +110,22 @@ function SearchHotelResult() {
               Select hotel
             </Button>
           </Link>
+<<<<<<< Updated upstream
 
         </Card.Body>
       </Card>
     </div><Hoteldisplay details={HotelDetails} /></>
+=======
+          
+        </Card.Body>
+      </Card>
+    </div><HotelMap prices={HotelPrices} details={HotelDetails}/></>
+>>>>>>> Stashed changes
   );
 }
 
 
+<<<<<<< Updated upstream
 function Hoteldisplay(props){
   return(
     <>
@@ -91,6 +153,123 @@ function Hoteldisplay(props){
   )
 }
 
+=======
+function Hoteldisplay(props) {
+  const info = props.info;
+  return (
+    <>
+        <div className="d-flex p-2 justify-content-around">
+          <Card className="text-center" style={{ width: "75rem" }}>
+            <Card.Header as="h5">{info.lowest_price}</Card.Header>
+            <div className="d-flex" style={{ flexDirection: "row" }}>
+              <Card.Img
+                style={{ width: "18rem" }}
+                src= {`${info.image_details.prefix}${info.default_image_index}${info.image_details.suffix}`}
+              ></Card.Img>
+              <Card.Body>
+                <h2>Price</h2>
+                <p>{info.price}</p>
+                <p>{info.rating}</p>
+                <div className="overflow-auto">
+                  <Card.Text>
+                    {info.rating + "   stars"}
+                  </Card.Text>
+                  <Card.Text>
+                    {info.name}
+                  </Card.Text>
+                  <Link to="/viewhotel" state={{ hotelId: info.id }}>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      className="float-right"
+                    >
+                      Select hotel
+                    </Button>
+                  </Link>
+                </div>
+              </Card.Body>
+            </div>
+          </Card>
+        </div>
+        
+      </>
+  );
+}
+
+function HotelMap(props){
+  const hotelPrices = props.prices;
+  console.log(hotelPrices);
+  const hotelDetails = props.details;
+  const triggerRef = useRef(null);
+  const onGrabData = (currentPage) => {
+    return new Promise((resolve) => {
+    setTimeout(() => {
+        const data = hotelPrices.slice(
+        ((currentPage - 1)%TOTAL_PAGES) * NUM_PER_PAGE,
+        NUM_PER_PAGE * (currentPage%TOTAL_PAGES)
+        );
+        console.log(data);
+        resolve(data);
+    }, 3000);
+    });
+  };
+  const { data, loading } = useLazyLoad({ triggerRef, onGrabData });
+  //console.log(data);
+
+  return(
+    <>
+      {data.map(value =>{
+        // var display_info = []; // maybe append with the price? 
+      // console.log(props.id);
+        let match = hotelDetails.find(detail => detail.id === value.id);
+        // console.log(value);
+
+        const output = (value.id && match) || null;
+        // console.log(output);
+        // console.log(hotel[0])
+        if (output !== null){
+          let display_info = {...value, ...output}
+          // value.push(output)
+          // console.log(display_info)
+          return(
+            <>
+            <Hoteldisplay info = {display_info}/>
+            <div ref={triggerRef} className={clsx('trigger', {visible: loading})}>Loading</div>
+            </>
+        )}
+      })}
+    </>
+)}
+
+// function Hoteldisplay(props){
+//   return(
+//     <>
+//       {props.details.map((value, index)=> (
+//         <div className="d-flex p-2 justify-content-around">
+//         <Card key = {index} className="text-center" style={{ width: '75rem'}}>
+//           <Card.Header as="h5">{value.id}
+//           </Card.Header>
+//           <div className= "d-flex" style={{flexDirection:'row'}}>
+//             <Card.Img style={{ width: '18rem'}} src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"></Card.Img>
+//             <Card.Body >
+//             <div className = "overflow-auto">
+//               <Card.Text dangerouslySetInnerHTML={{__html: value.description}}/>
+//               <Link to="/viewhotel" state={{hotelId: value.id}}>
+//                 <Button variant="primary" type="submit" className="float-right">
+//                   Select hotel
+//                 </Button>
+//               </Link>
+//               </div>
+//             </Card.Body>
+//           </div>
+//         </Card>
+//         </div>
+//       ))};
+//     </>
+//   )
+// }
+
+>>>>>>> Stashed changes
 
 // function Hoteldisplay(props){
 //   return(
