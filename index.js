@@ -62,13 +62,15 @@ app.get("/viewhotel", (req, res) => {
 //match up the hotel and its prices
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
-const {destination_id, checkin,checkout} = req.query.searchData;
-  console.log(req.query);
+  const searchData = req.query.searchData;
+  const sd = JSON.parse(searchData);
+  console.log(sd.destination_id);
   // var destination_id = searchData.destination_id;
   try {
     axios
-      .get(`https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`)
-      .then((prices) => {
+      .get(
+        `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${sd.destination_id}&checkin=${sd.checkin}&checkout=${sd.checkout}&lang=${sd.lang}&currency=${sd.currency}&country_code=${sd.country_code}&guests=${sd.guests}&partner_id=1`
+      ).then((prices) => {
         res.status(200);
         res.send(prices.data); //returned data is in prices.data and send it to react frontend
       })
