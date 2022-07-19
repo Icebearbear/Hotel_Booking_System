@@ -14,19 +14,6 @@ const NUM_PER_PAGE = 5;
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
-<<<<<<< Updated upstream
-  const [HotelDetails, setHotelDetails]=useState([])
-
-  const location = useLocation();
-  const searchData = location.state; // get data passed from SearchHotel page
-
-  const getHotelDeets = async () => {
-    try {
-      const hotelData = await axios.get("http://localhost:3001/hotelprices", searchData)
-      setHotelDetails(hotelData.data);  // set State
-      setHotels(hotelData.data[0]["id"])
-    
-=======
   const [HotelDetails, setHotelDetails]=useState([]);
   const [HotelPrices, setHotelPrices]=useState([]);
 
@@ -68,19 +55,14 @@ function SearchHotelResult() {
 
       })
       
->>>>>>> Stashed changes
     } catch (err) {
       console.error(err.message);
     }
   };
   // const hotelData = null;
   useEffect(() => {
-<<<<<<< Updated upstream
-    getHotelDeets()
-=======
     getHotelPrices();
     getHotelDeets();
->>>>>>> Stashed changes
   },[])
 
   // useEffect(() => {
@@ -110,50 +92,14 @@ function SearchHotelResult() {
               Select hotel
             </Button>
           </Link>
-<<<<<<< Updated upstream
-
-        </Card.Body>
-      </Card>
-    </div><Hoteldisplay details={HotelDetails} /></>
-=======
           
         </Card.Body>
       </Card>
     </div><HotelMap prices={HotelPrices} details={HotelDetails}/></>
->>>>>>> Stashed changes
   );
 }
 
 
-<<<<<<< Updated upstream
-function Hoteldisplay(props){
-  return(
-    <>
-      {props.details.map((value, index)=> (
-        <div className="d-flex p-2 justify-content-around">
-        <Card key = {index} className="text-center" style={{ width: '75rem'}}>
-          <Card.Header as="h5">{value.name}</Card.Header>
-          <div className= "d-flex" style={{flexDirection:'row'}}>
-            <Card.Img style={{ width: '18rem'}} src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"></Card.Img>
-            <Card.Body >
-            <div className = "overflow-auto">
-              <Card.Text dangerouslySetInnerHTML={{__html: value.description}}/>
-              <Link to="/viewhotel" state={{hotelId: value.id}}>
-                <Button variant="primary" type="submit" className="float-right">
-                  Select hotel
-                </Button>
-              </Link>
-              </div>
-            </Card.Body>
-          </div>
-        </Card>
-        </div>
-      ))};
-    </>
-  )
-}
-
-=======
 function Hoteldisplay(props) {
   const info = props.info;
   return (
@@ -269,7 +215,6 @@ function HotelMap(props){
 //   )
 // }
 
->>>>>>> Stashed changes
 
 // function Hoteldisplay(props){
 //   return(
