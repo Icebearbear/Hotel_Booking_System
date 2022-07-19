@@ -104,9 +104,12 @@ function Hoteldisplay(props) {
             <div className="d-flex" style={{ flexDirection: "row" }}>
               <Card.Img
                 style={{ width: "18rem" }}
-                src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"
+                src= {`${value.image_details.prefix}${value.default_image_index}${value.image_details.suffix}`}
               ></Card.Img>
               <Card.Body>
+                <h2>Price</h2>
+                <p>{value.price}</p>
+                <p>{value.rating}</p>
                 <div className="overflow-auto">
                   <Card.Text>
                     {info.rating}
