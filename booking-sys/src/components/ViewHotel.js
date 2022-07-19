@@ -5,8 +5,19 @@ import axios from "axios";
 
 function ViewHotel() {
   const location = useLocation();
-  const { hotelId } = location.state; // get data passed from SearchHotelResult page
-  //const hotelId = "diH7";
+  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
+  const hotelId = "diH7";
+  //const searchData = location.state; // get data passed from SearchHotel page
+  const searchData = {
+    destination_id: "WD0M",
+    checkin: "2022-07-20",
+    checkout: "2022-07-21",
+    // lang: "en_US",
+    // currency: "SGD",
+    // country_code: "SG",
+    // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    // partner_id: "1",
+  };
 
   const [hotelName, setHotelName] = useState("");
   const [address, setAddress] = useState("");
@@ -24,7 +35,8 @@ function ViewHotel() {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
-  const [roomPrices, setRoomPrices] = useState([]);
+  const [roomPricesAll, setRoomPricesAll] = useState({});
+  
 
   const getHotelData = () => {
     axios.get("http://localhost:3001/viewhotel", { params: { hotelId: hotelId } })
@@ -43,6 +55,7 @@ function ViewHotel() {
 
         setLatitude(hotelData.data["latitude"]);
         setLongitude(hotelData.data["longitude"]);
+
       })
       .catch((err) => console.log("hoteldata " + err.message));
   }
@@ -51,7 +64,7 @@ function ViewHotel() {
     var imageIndexList = imageIndexes.split(",");
     imageIndexList.forEach(imageI =>
       imageData[`${imageI}`] = imageDetails["prefix"] + imageI + imageDetails["suffix"]);
-    console.log(imageData);
+    //console.log(imageData);
   }
 
   const checkAmenities = (bool) => {
@@ -61,10 +74,30 @@ function ViewHotel() {
     return "No";
   }
 
+  const getHotelPrices = () => {
+    axios.get("http://localhost:3001/hotelprices", { params: { data: searchData } })
+      .then((roomData) => {
+        setRoomPricesAll(roomData.data.hotels);
+        console.log("the data????"+ roomPricesAll);
+        console.log(roomPricesAll.length);
+      })
+      .catch((err) => console.log("hotelroomdata " + err.message));
+  }
+
+  const parseHotelIdPrices = () => {
+    for (let i = 0; i < roomPricesAll.length; i++) {
+      if (roomPricesAll[i]["id"] == hotelId) {
+        console.log(roomPricesAll[i]["id"])
+
+      }
+    }
+  }
+
   useEffect(() => {
     getHotelData();
     imageObjConstruction();
-    //getRoomsData();
+    getHotelPrices();
+    parseHotelIdPrices();
   });
 
   // useEffect is the first thing to load when the page is opened
@@ -132,7 +165,7 @@ function ViewHotel() {
 
           </CardGroup>
         </div>
-        
+
         {/* Hotel Reviews */}
         <div class="d-flex flex-column justify-content-center align-items-center">
           <Card style={{ width: "70rem", flex: 1 }}>

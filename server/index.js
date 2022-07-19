@@ -87,10 +87,10 @@ app.get("/viewhotel", (req, res) => {
         res.send(hotelres.data);
       })
       .catch((error) => {
-        console.log(error.message);
+        console.log("HUHHHHHHHHH "+error.message);
       });
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send("WHATTTTTTTTTT "+err.message);
   }
 });
 
@@ -99,10 +99,19 @@ app.get("/viewhotel", (req, res) => {
 //match up the hotel and its prices
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
-  hotelId = req.query.hotelId;
+  const searchData = JSON.parse(req.query.data);
+  console.log(searchData);
+  var destination_id = searchData.destination_id;
+  var checkin = searchData.checkin;
+  var checkout = searchData.checkout;
+  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  console.log(url);
+ 
+  // const {destination_id, checkin,checkout} = req.query.searchData;
+
   try {
     axios
-      .get("https://ascendahotels.mocklab.io/api/hotels/diH7/prices/ean")
+      .get(url)
       .then((prices) => {
         console.log("got room prices " + prices.data)
         res.status(200);
@@ -118,9 +127,11 @@ app.get("/hotelprices", (req, res) => {
 
 //get hotels
 app.get("/hotels", (req, res) => {
+  const destination_id = req.query.data;
+
   try {
     axios
-      .get("https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU")
+      .get("https://hotelapi.loyalty.dev/api/hotels", {params: {destination_id: destination_id}})
       .then((hotelres) => {
         res.status(200);
         //console.log(hotelres.data);
