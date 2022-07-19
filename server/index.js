@@ -28,6 +28,7 @@ const {
   addDoc,
   updateDoc,
   doc,
+  deleteDoc,
 } = require("firebase/firestore");
 
 const fc = require("./firebase_config");
@@ -134,6 +135,38 @@ app.get("/hotels", (req, res) => {
   }
 });
 
+app.post("/deleteBook", async (req, res) => {
+  const docId = req.body.docId;
+  // const docId = "2eq7dD2A8rHhmjCsTxRC";
+  console.log(docId);
+  try {
+    await deleteDoc(doc(db, "booking", docId));
+    res.status(200).send("deleted");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
+app.get("/getBook", async (req, res) => {
+  const userID = req.query.uid;
+  try {
+    const finalData = [];
+    const ids = [];
+    var count = 0;
+    const q = query(collection(db, "booking"), where("uid", "==", userID));
+    const docSnapshot = await getDocs(q);
+    const d = docSnapshot.docs.map((doc) => {
+      finalData.push(doc.data());
+      ids.push({ id: doc.id, index: count });
+      count++;
+    });
+    res.status(200).json({ ids: ids, finalData: finalData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
 // book hotel
 app.post("/bookhotel", (req, res) => {
   console.log("bookhotel");
