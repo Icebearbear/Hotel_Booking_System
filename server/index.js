@@ -120,7 +120,7 @@ app.get("/hotelidprices", (req, res) => {
     axios
       .get(url)
       .then((roomres) => {
-        console.log("got SPECIFIC HOTEL room prices " + roomres.data)
+        console.log("got SPECIFIC HOTEL room prices ")
         res.status(200);
         res.send(roomres.data); //returned data is in roomprices.data and send it to react frontend
       })

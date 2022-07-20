@@ -5,7 +5,7 @@ import axios from "axios";
 import "react-slideshow-image/dist/styles.css";
 import ImageSlider from "./ImageSlider";
 
-import Map from "./Map";
+import Map from "../MapApp.js";
 
 function ViewHotel(props) {
   const location = useLocation();
@@ -15,8 +15,8 @@ function ViewHotel(props) {
   const searchData = {
     hotel_id: hotelId + "/",
     destination_id: "WD0M",
-    checkin: "2022-07-20",
-    checkout: "2022-07-21",
+    checkin: "2022-08-01",
+    checkout: "2022-08-05",
     // lang: "en_US",
     // currency: "SGD",
     // country_code: "SG",
@@ -95,17 +95,13 @@ function ViewHotel(props) {
     axios.get("http://localhost:3001/hotelidprices", { params: { data: searchData } })
       .then((roomData) => {
         setRoomsDetails(roomData.data.rooms);
-        //sortByRoomPrices(roomsDetails);
-        // var pairs = {};
-
-        // roomsDetails[0].images.forEach(imageno => {
-        //   imageno.url.forEach(url => {
-        //     pairs[imageno] = url;
-        //   });
-        // });
-
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
+  }
+
+  const roomImg = (roomNo) => {
+    var roomImgUrl = roomsDetails[roomNo].images.map(imgurl => imgurl.url)  // array containing room images
+    return roomImgUrl;
   }
 
   // const sortByRoomPrices = (rooms) => {
@@ -200,10 +196,12 @@ function ViewHotel(props) {
 
         {/* Map */}
         <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card style={{ width: "70rem", flex: 1 }}>
+          <Card style={{ width: "70rem", height: "30rem" }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
-              {/* <Map /> */}
+              <div style={{ width: "60rem", height: "20rem" }}>
+                <Map/>
+              </div>
             </Card.Body>
           </Card>
         </div>
@@ -215,12 +213,12 @@ function ViewHotel(props) {
               <Card.Body>
                 <Card.Header>{roomsDetails[key]["roomNormalizedDescription"]}</Card.Header>
                 <div className="d-flex" style={{ flexDirection: "row" }}>
-                  {/* <Card.Img
+                  <Card.Img
                     style={{ width: "18rem" }}
-                    src={`${roomsDetails[key]["images"][0]}}`}
-                  ></Card.Img> */}
+                    src={`${roomImg(key)[0]}`}
+                  ></Card.Img>
                   <Card.Text>
-                    {"Best price is $" + roomsDetails[key]["lowest_price"]}
+                    {" Best price is $" + roomsDetails[key]["lowest_price"]}
                   </Card.Text>
                   <Link className="link" to="/custinfo" state={{ hotelId: hotelId }}>
                     <Button variant="primary" type="submit" className="float-right">
