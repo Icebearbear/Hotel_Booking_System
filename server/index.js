@@ -4,7 +4,7 @@ const app = express();
 //const firebase = require("../booking-sys/src/db/firebase");
 const cors = require("cors");
 const axios = require("axios");
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 const path = require("path");
 
@@ -62,17 +62,15 @@ app.get("/viewhotel", (req, res) => {
 //match up the hotel and its prices
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
-<<<<<<< Updated upstream
-  try {
-    axios
-      .get("https://ascendahotels.mocklab.io/api/hotels/diH7/prices/ean")
-=======
+  // try {
+  //   axios
+  //     .get("https://ascendahotels.mocklab.io/api/hotels/diH7/prices/ean")
   const searchData = JSON.parse(req.query.data);
   console.log(searchData);
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log(url);
 
   // const {destination_id, checkin,checkout} = req.query.searchData;
@@ -80,7 +78,6 @@ app.get("/hotelprices", (req, res) => {
   try {
     axios
       .get(url)
->>>>>>> Stashed changes
       .then((prices) => {
         res.status(200);
         res.send(prices.data); //returned data is in prices.data and send it to react frontend
@@ -99,7 +96,9 @@ app.get("/hotels", (req, res) => {
 
   try {
     axios
-      .get("https://hotelapi.loyalty.dev/api/hotels", {params: {destination_id: destination_id}})
+      .get("https://hotelapi.loyalty.dev/api/hotels", {
+        params: { destination_id: destination_id },
+      })
       .then((hotelres) => {
         res.status(200);
         // console.log(hotelres.data);
@@ -111,6 +110,55 @@ app.get("/hotels", (req, res) => {
   } catch (err) {
     res.status(500).send(err);
   }
+});
+
+app.get("/hotelnprices", (req, res) => {
+  const searchData = JSON.parse(req.query.data);
+  console.log(searchData);
+  var destination_id = searchData.destination_id;
+  var checkin = searchData.checkin;
+  var checkout = searchData.checkout;
+  var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
+  const requestPrice = axios.get(urlPrice);
+  const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
+    params: { destination_id: destination_id },
+  });
+  var fhotels = [];
+  var len = 0;
+  axios
+    .all([requestPrice, requestHotel])
+    .then(
+      axios.spread((...responses) => {
+        const hotelPrices = responses[0].data.hotels;
+        const hotelDetails = responses[1].data;
+        // console.log(hotelPrices);
+        // console.log(hotelDetails);
+        // console.log(hotelPrices);
+        // hotelPrices.map((val) => console.log(val.id));
+        hotelPrices.map((value) => {
+          let match = hotelDetails.find((detail) => detail.id === value.id);
+
+          const output = (value.id && match) || null;
+          if (output !== null) {
+            fhotels.push({ ...value, ...output });
+            len = len + 1;
+          }
+        });
+        // console.log("ONEEEE ", fhotels);
+        // // console.log("TWOOOOOO ", responsetWO.data);
+
+        res.status(200).json({
+          finalData: JSON.stringify(fhotels),
+          dataLen: len,
+        });
+        // use/access the results
+      })
+    )
+    .catch((errors) => {
+      console.log("ERRORR", errors.message);
+      res.status(500).send(errors.message);
+      // react on errors.
+    });
 });
 
 // book hotel
