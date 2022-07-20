@@ -8,36 +8,56 @@ import Button from "react-bootstrap/Button";
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
-  const [HotelDetails, setHotelDetails] = useState([]);
+  const [HotelDetails, setHotelDetails]=useState([]);
+  const [HotelPrices, setHotelPrices]=useState([]);
 
   const location = useLocation();
-  const searchData = location.state; // get data passed from SearchHotel page
+  //const searchData = location.state; // get data passed from SearchHotel page
 
-  //CODE TO CLEAN UP THE DATE
-    // date = new Date(localstorage.endDate);
-    // var day = date.getDate();
-    // var month = date.getMonth()+1;
-    // console.log(month);
-    // var year = date.getFullYear();
-    // var string = year + '-' + month + '-' + day;
-    // console.log(string);
-
-  const getHotelDeets = async () => {
+  const searchData = {
+    destination_id: "WD0M",
+    checkin: "2022-07-20",
+    checkout: "2022-07-21",
+    // lang: "en_US",
+    // currency: "SGD",
+    // country_code: "SG",
+    // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    // partner_id: "1",
+  };
+  const getHotelDeets = async (hotel_id) =>{
     try {
-      const hotelData = await axios.get(
-        "http://localhost:3001/hotels",
-        searchData
-      );
-      setHotelDetails(hotelData.data); // set State
-      setHotels(hotelData.data[0]["id"]);
+      await axios.get("http://localhost:3001/hotels", {params : {data: searchData.destination_id}})
+      .then((res) => {
+        setHotelDetails(res.data);
+        console.log(res.data)  // set State
+        //setHotels(res.data[0]["id"])
+
+      })
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+
+
+  const getHotelPrices = async () => {
+    try {
+      await axios.get("http://localhost:3001/hotelprices", {params : {data: searchData}})
+      .then((res) => {
+        setHotelPrices(res.data.hotels);
+        console.log(res.data.hotels)  // set State
+        // setHotels(res.data[0]["id"])
+
+      })
+      
     } catch (err) {
       console.error(err.message);
     }
   };
   // const hotelData = null;
   useEffect(() => {
+    getHotelPrices();
     getHotelDeets();
-  }, []);
+  },[])
 
   // useEffect(() => {
   //   axios
@@ -53,6 +73,24 @@ function SearchHotelResult() {
   // });
 
   // console.log(hotelData);
+  function HotelMap(props){
+    props.details.map((value, index) =>{
+      //var lowest_price = value.lowest_converted_price;
+      var price = value.price;
+      var searchRank = value.searchRank;
+      var display_info = [price, searchRank]; // maybe append with the price? 
+      var hotel = HotelDetails.filter(function(HotelDetails){ if(HotelDetails.id == value.id){return HotelDetails}})
+      if (hotel[0]== undefined){return null};
+      // append price value into hotel[0] for Hoteldisplay details //
+      hotel[0]['price'] = price;
+      console.log(hotel[0]);
+      return(
+        <div>
+        <Hoteldisplay details={hotel[0]}/>
+        </div>
+      )
+    })
+  }
 
   return (
     <>
@@ -85,9 +123,12 @@ function Hoteldisplay(props) {
             <div className="d-flex" style={{ flexDirection: "row" }}>
               <Card.Img
                 style={{ width: "18rem" }}
-                src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"
+                src= {`${value.image_details.prefix}${value.default_image_index}${value.image_details.suffix}`}
               ></Card.Img>
               <Card.Body>
+                <h2>Price</h2>
+                <p>{value.price}</p>
+                <p>{value.rating}</p>
                 <div className="overflow-auto">
                   <Card.Text
                     dangerouslySetInnerHTML={{ __html: value.description }}
@@ -111,6 +152,38 @@ function Hoteldisplay(props) {
     </>
   );
 }
+
+
+
+
+// function Hoteldisplay(props){
+//   return(
+//     <>
+//       {props.details.map((value, index)=> (
+//         <div className="d-flex p-2 justify-content-around">
+//         <Card key = {index} className="text-center" style={{ width: '75rem'}}>
+//           <Card.Header as="h5">{value.id}
+//           </Card.Header>
+//           <div className= "d-flex" style={{flexDirection:'row'}}>
+//             <Card.Img style={{ width: '18rem'}} src="https://www.ecowatch.com/wp-content/uploads/2022/04/tree-frog.jpg"></Card.Img>
+//             <Card.Body >
+//             <div className = "overflow-auto">
+//               <Card.Text dangerouslySetInnerHTML={{__html: value.description}}/>
+//               <Link to="/viewhotel" state={{hotelId: value.id}}>
+//                 <Button variant="primary" type="submit" className="float-right">
+//                   Select hotel
+//                 </Button>
+//               </Link>
+//               </div>
+//             </Card.Body>
+//           </div>
+//         </Card>
+//         </div>
+//       ))};
+//     </>
+//   )
+// }
+
 
 // function Hoteldisplay(props){
 //   return(
