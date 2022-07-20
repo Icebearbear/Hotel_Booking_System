@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, CardGroup, Col, Button } from 'react-bootstrap';
+import { Container, Card, CardGroup, Col, Row, Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
+import "react-slideshow-image/dist/styles.css";
+import ImageSlider from "./ImageSlider";
 
-function ViewHotel() {
+import Map from "./Map";
+
+function ViewHotel(props) {
   const location = useLocation();
   //const { hotelId } = location.state; // get data passed from SearchHotelResult page
   const hotelId = "diH7";
@@ -29,9 +33,7 @@ function ViewHotel() {
 
   const [reviews, setReviews] = useState({});
 
-  const [imageDetails, setImageDetails] = useState({});
-  const [imageIndexes, setImageIndexes] = useState("");
-  const imageData = {};
+  const [imageData, setImageData] = useState([]);
 
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -40,33 +42,47 @@ function ViewHotel() {
 
 
   const getHotelData = () => {
-    axios.get("http://localhost:3001/viewhotel", { params: { hotelId: hotelId } })
-      .then((hotelData) => {
-        setHotelName(hotelData.data["name"]);
-        setAddress(hotelData.data["address"]);
-        setRating(hotelData.data["rating"]);
+    try {
+      axios
+        .get("http://localhost:3001/viewhotel", {
+          params: { hotelId: hotelId },
+        })
+        .then((hoteldt) => {
+          const hotelData = JSON.parse(hoteldt.data.data);
+          const imgUrl = JSON.parse(hoteldt.data.iurl);
+          // console.log(imgUrl);
+          setHotelName(hotelData["name"]);
+          setAddress(hotelData["address"]);
+          setRating(hotelData["rating"]);
 
-        setDescr(hotelData.data["description"]);
-        setAmenities(hotelData.data["amenities"]);
+          setDescr(hotelData["description"]);
+          setAmenities(hotelData["amenities"]);
 
-        setReviews(hotelData.data.amenities_ratings);
+          setReviews(hotelData["amenities_ratings"]);
 
-        setImageDetails(hotelData.data["image_details"]);
-        setImageIndexes(hotelData.data["hires_image_index"]);
+          setLatitude(hotelData["latitude"]);
+          setLongitude(hotelData["longitude"]);
+          setImageData(imgUrl);
+        })
+        .catch((err) => console.log("hoteldata " + err.message));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-        setLatitude(hotelData.data["latitude"]);
-        setLongitude(hotelData.data["longitude"]);
+  // const imageObjConstruction = () => {
+  //   var imageIndexList = imageIndexes.split(",");
+  //   const imageD = [];
 
-      })
-      .catch((err) => console.log("hoteldata " + err.message));
-  }
+  //   imageIndexList.forEach(
+  //     (imageI) =>
+  //       (imageD[`${imageI}`] =
+  //         imageDetails["prefix"] + imageI + imageDetails["suffix"])
+  //   );
 
-  const imageObjConstruction = () => {
-    var imageIndexList = imageIndexes.split(",");
-    imageIndexList.forEach(imageI =>
-      imageData[`${imageI}`] = imageDetails["prefix"] + imageI + imageDetails["suffix"]);
-    //console.log(imageData);
-  }
+  //   console.log(imageD);
+  //   setImageData(imageD);
+  // };
 
   const checkAmenities = (bool) => {
     if (bool === true) {
@@ -79,65 +95,63 @@ function ViewHotel() {
     axios.get("http://localhost:3001/hotelidprices", { params: { data: searchData } })
       .then((roomData) => {
         setRoomsDetails(roomData.data.rooms);
-        console.log("Room: " + roomsDetails[0]["lowest_price"]);
-        console.log("No. of rooms: " + roomsDetails.length);
+        //sortByRoomPrices(roomsDetails);
+        // var pairs = {};
 
-        sortByRoomPrices(roomsDetails);
+        // roomsDetails[0].images.forEach(imageno => {
+        //   imageno.url.forEach(url => {
+        //     pairs[imageno] = url;
+        //   });
+        // });
+
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   }
 
-  const sortByRoomPrices = (rooms) => {
-    roomsDetails.sort(function (a, b) {
-      return a.lowest_price - b.lowest_price;
-    });
+  // const sortByRoomPrices = (rooms) => {
+  //   roomsDetails.sort(function (a, b) {
+  //     return a.lowest_price - b.lowest_price;
+  //   });
 
-    for (let i = 0; i < rooms.length; i++) {
-      console.log(rooms[i]["roomNormalizedDescription"] + " " + rooms[i]["lowest_price"])
-    }
-  }
+  //   for (let i = 0; i < rooms.length; i++) {
+  //     console.log(rooms[i]["roomNormalizedDescription"] + " " + rooms[i]["lowest_price"])
+  //   }
+  // }
 
   useEffect(() => {
     getHotelData();
-    imageObjConstruction();
     getHotelIdPrices();
-    //parseRoomPrices();
-  });
+    // imageObjConstruction();
+  }, [setLongitude, setImageData]);
 
-  // useEffect is the first thing to load when the page is opened
-  // useEffect(() => {
-  //   const hotelObject = {
-  //     id: hotelId
-  //   };
-  //   axios
-  //     .get("http://localhost:3001/viewhotel", hotelObject)
-  //     .then((hotelres) => {
-  //       var hotelId2 = hotelres.data[0]["id"];
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // });
+  const containerStyle = {
+    width: "500px",
+    height: "280px",
+    margin: "0 auto",
+  };
 
   return (
     <>
-      <Container maxWidth="lg" className='p-4'>
-        {/* Intro Section */}
-        <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card style={{ width: "70rem", flex: 1 }}>
-            <Card.Body>
-              <h1>{hotelName}</h1>
+      {/* <div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> */}
+      <div class="image d-flex flex-column justify-content-center align-items-center">
+        <Card style={{ width: "70rem", flex: 1 }}>
+          <Row>
+            <Col>
+              <div style={containerStyle}>
+                <ImageSlider slides={imageData} />
+              </div>
+            </Col>
+            <Col>
+              <h1 class="card-title">{hotelName}</h1>
               <h5>{"Hotel rating: " + rating + "/5 stars"}</h5>
               <address>{address}</address>
               <h6>{"Hotel id: " + hotelId}</h6>
-              <div className="e-card">
-                <div className="e-card-image">
-                  <Card.Img maxWidth="md" src={"https://d2ey9sqrvkqdfs.cloudfront.net/050G/1.jpg"} />
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
+            </Col>
+          </Row>
+        </Card>
+      </div>
+      <Container maxWidth="lg" className="p-4">
+        {/* Intro Section */}
 
         {/* Hotel description */}
         <div class="d-flex flex-column justify-content-center align-items-center">
@@ -184,32 +198,12 @@ function ViewHotel() {
           </Card>
         </div>
 
-        {/* {/* will integrate to show images */}
-        {/* <div className='actions'>
-          <Card style={{ width: "90rem", height: "30rem" }}>
-            <Card.Body>
-              <Link className="link" to="/custinfo" state={{ hotelId: hotelId }}>
-                <Button variant="primary" type="submit" className="float-right">
-                  Book hotel
-                </Button>
-              </Link>
-              <button className='btn' onClick={imageObjConstruction}>view pic</button>
-            </Card.Body>
-          </Card>
-        </div> */}
-
         {/* Map */}
         <div class="d-flex flex-column justify-content-center align-items-center">
           <Card style={{ width: "70rem", flex: 1 }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
-              {/* <div id="map"></div>
-              <script>
-                var map = L.map('map').setView([0,0], 1);
-                L.tileLayer("https://api.maptiler.com/maps/streets/{0}/{0}/{0}.png?key=xyHVTwBUStmjGg3owyuv", {{attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',}
-                }).addTo(map);
-                var marker = L.marker([0, 0]).addTo(map);
-              </script> */}
+              {/* <Map /> */}
             </Card.Body>
           </Card>
         </div>
@@ -223,20 +217,29 @@ function ViewHotel() {
                 <div className="d-flex" style={{ flexDirection: "row" }}>
                   {/* <Card.Img
                     style={{ width: "18rem" }}
-                    src={`${roomsDetails[key]["images"][0]["url"]}}`}
+                    src={`${roomsDetails[key]["images"][0]}}`}
                   ></Card.Img> */}
                   <Card.Text>
-                    {roomsDetails[key]["lowest_price"] +" "+ roomsDetails[key].images[0]}
+                    {"Best price is $" + roomsDetails[key]["lowest_price"]}
                   </Card.Text>
+                  <Link className="link" to="/custinfo" state={{ hotelId: hotelId }}>
+                    <Button variant="primary" type="submit" className="float-right">
+                      Book hotel
+                    </Button>
+                  </Link>
                 </div>
               </Card.Body>
             </Card>
           ))}
         </div>
 
-      </Container >
+      </Container>
+
+      <Container>
+        {/* <Map /> */}
+      </Container>
     </>
-  );
-};
+  )
+}
 
 export default ViewHotel;
