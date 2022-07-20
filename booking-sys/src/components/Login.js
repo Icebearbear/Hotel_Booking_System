@@ -69,7 +69,7 @@ function Login() {
 
   return (
     <div className="wrapper">
-      <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
+      <div className="container mb-4 p-3 d-flex justify-content-center">
         <Card className="card-login">
           <Card.Body>
             <h1>Login page</h1>
