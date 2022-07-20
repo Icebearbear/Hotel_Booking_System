@@ -11,6 +11,7 @@ function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
   const [HotelDetails, setHotelDetails]=useState([]);
   const [HotelPrices, setHotelPrices]=useState([]);
+  const hoteldeet = null;
 
   const location = useLocation();
   // const searchData = location.state; // get data passed from SearchHotel page
@@ -25,13 +26,12 @@ function SearchHotelResult() {
     // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
     // partner_id: "1",
   };
-  const getHotelDeets = async (hotel_id) =>{
+  const getHotelDeets = async () =>{
     try {
       await axios.get("http://localhost:3001/hotels", {params : {data: searchData.destination_id}})
       .then((res) => {
         setHotelDetails(res.data);
-        // console.log(res.data)  // set State
-        // setHotels(res.data[0]["id"])
+        console.log("deets gotten")
 
       })
     } catch (err) {
@@ -39,15 +39,12 @@ function SearchHotelResult() {
     }
   }
 
-
   const getHotelPrices = async () => {
     try {
       await axios.get("http://localhost:3001/hotelprices", {params : {data: searchData}})
       .then((res) => {
         setHotelPrices(res.data.hotels);
-        // console.log(res.data.hotels)  // set State
-        // setHotels(res.data[0]["id"])
-
+        console.log("prices gotten")
       })
       
     } catch (err) {
@@ -56,9 +53,13 @@ function SearchHotelResult() {
   };
   // const hotelData = null;
   useEffect(() => {
+    console.log("prices called")
     getHotelPrices();
+    console.log("deets called")
     getHotelDeets();
   },[])
+
+  
 
   // useEffect(() => {
   //   axios
@@ -96,7 +97,13 @@ function SearchHotelResult() {
 
 
 function Hoteldisplay(props) {
+  console.log("display called");
   const info = props.info;
+  console.log(info);
+
+  function imgerror(info){
+    console.log(info.id)
+  }
   return (
         <div className="d-flex p-2 justify-content-around">
           <Card className="text-center" style={{ width: "75rem" }}>
@@ -105,6 +112,7 @@ function Hoteldisplay(props) {
               <Card.Img
                 style={{ width: "18rem" }}
                 src= {`${info.image_details.prefix}${info.default_image_index}${info.image_details.suffix}`}
+                onerror = "imgerror()"
               ></Card.Img>
               <Card.Body>
                 <h2>Price</h2>
@@ -135,8 +143,18 @@ function Hoteldisplay(props) {
 }
 
 function HotelMap(props){
+  console.log("map called");
   const hotelPrices = props.prices;
   const hotelDetails = props.details;
+  const [hoteldeet, sethoteldeet]=useState([]);
+
+  const getHotel = async (hotel_id) => {
+    try {
+      await axios.get("http://localhost:3001/viewhotel", {params : {hotel_id: hotel_id}}).then(res=>res.data)
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   return(
     <>
@@ -146,16 +164,23 @@ function HotelMap(props){
         let match = hotelDetails.find(detail => detail.id === value.id);
         // console.log(value);
 
-        const output = (value.id && match) || null;
+        var output = (value.id && match) || null;
         // console.log(output);
         // console.log(hotel[0])
-        if (output !== null){
-          let display_info = {...value, ...output}
-          // value.push(output)
-          // console.log(display_info)
+        if (output == null){
+          console.log(output);
+          getHotel(value.id).then((res) => {output=res})
+          // output = hoteldeet;
+          // console.log(output);
+        }
+
+        if(output !==null){
+          console.log(output);
+          var display_info = {...value, ...output}
           return(
             <Hoteldisplay info = {display_info}/>
-        )}
+          )
+        }
       })}
     </>
 )}

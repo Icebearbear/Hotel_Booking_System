@@ -39,10 +39,11 @@ app.get("/api", (req, res) => {
 
 //get selected hotel info
 app.get("/viewhotel", (req, res) => {
+  var hotel_id = req.query.hotel_id
   try {
     axios
       .get(
-        "https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU",
+        `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}`,
         req.body
       )
       .then((hotelres) => {
@@ -63,7 +64,7 @@ app.get("/viewhotel", (req, res) => {
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
   const searchData = JSON.parse(req.query.data);
-  console.log(searchData);
+  // console.log(searchData);
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
