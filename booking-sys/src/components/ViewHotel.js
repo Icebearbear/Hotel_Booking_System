@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, CardGroup, Col, Button } from 'react-bootstrap';
+import { Container, Card, CardGroup, Col, Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-
+import { Fade } from "react-slideshow-image";
+import "react-slideshow-image/dist/styles.css";
+import ImageSlider from "./ImageSlider";
+import Row from "react-bootstrap/Row";
+import Map from "./Map";
 function ViewHotel(props) {
   const location = useLocation();
   //const { hotelId } = location.state; // get data passed from SearchHotelResult page
@@ -15,9 +19,7 @@ function ViewHotel(props) {
   const [descr, setDescr] = useState("");
   const [amenities, setAmenities] = useState({});
 
-  const [imageDetails, setImageDetails] = useState({});
-  const [imageIndexes, setImageIndexes] = useState("");
-  const imageData = {};
+  const [imageData, setImageData] = useState([]);
 
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -25,39 +27,54 @@ function ViewHotel(props) {
   const [roomPrices, setRoomPrices] = useState([]);
 
   const getHotelData = () => {
-    axios.get("http://localhost:3001/viewhotel", { params: { hotelId: hotelId } })
-      .then((hotelData) => {
-        setHotelName(hotelData.data["name"]);
-        setAddress(hotelData.data["address"]);
-        setRating(hotelData.data["rating"]);
+    try {
+      axios
+        .get("http://localhost:3001/viewhotel", {
+          params: { hotelId: hotelId },
+        })
+        .then((hoteldt) => {
+          const hotelData = JSON.parse(hoteldt.data.data);
+          const imgUrl = JSON.parse(hoteldt.data.iurl);
+          // console.log(imgUrl);
+          setHotelName(hotelData["name"]);
+          setAddress(hotelData["address"]);
+          setRating(hotelData["rating"]);
 
-        setDescr(hotelData.data["description"]);
-        setAmenities(hotelData.data["amenities"]);
+          setDescr(hotelData["description"]);
+          setAmenities(hotelData["amenities"]);
 
-        setImageDetails(hotelData.data["image_details"]);
-        setImageIndexes(hotelData.data["hires_image_index"]);
+          setLatitude(hotelData["latitude"]);
+          setLongitude(hotelData["longitude"]);
+          setImageData(imgUrl);
+        })
+        .catch((err) => console.log("hoteldata " + err.message));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-        setLatitude(hotelData.data["latitude"]);
-        setLongitude(hotelData.data["longitude"]);
-      })
-      .catch((err) => console.log("hoteldata " + err.message));
-  }
+  // const imageObjConstruction = () => {
+  //   var imageIndexList = imageIndexes.split(",");
+  //   const imageD = [];
 
-  const imageObjConstruction = () => {
-    var imageIndexList = imageIndexes.split(",");
-    imageIndexList.forEach(imageI =>
-      imageData[`${imageI}`] = imageDetails["prefix"] + imageI + imageDetails["suffix"]);
-    console.log(imageData);
-  }
+  //   imageIndexList.forEach(
+  //     (imageI) =>
+  //       (imageD[`${imageI}`] =
+  //         imageDetails["prefix"] + imageI + imageDetails["suffix"])
+  //   );
+
+  //   console.log(imageD);
+  //   setImageData(imageD);
+  // };
 
   const checkAmenities = (bool) => {
     if (bool === true) {
       return "Yes";
     }
     return "No";
-  }
+  };
   // const getRoomsData = () => {
-  //   axios.get("http://localhost:3001/hotelprices", {params: {hotelId: hotelId}}) 
+  //   axios.get("http://localhost:3001/hotelprices", {params: {hotelId: hotelId}})
   //   .then((hotelRoomData) => {
   //     setRoomPrices(hotelRoomData.data["rooms"])
   //   })
@@ -66,43 +83,37 @@ function ViewHotel(props) {
 
   useEffect(() => {
     getHotelData();
-    imageObjConstruction();
-    //getRoomsData();
-  });
+    // imageObjConstruction();
+  }, [setLongitude, setImageData]);
 
-  // useEffect is the first thing to load when the page is opened
-  // useEffect(() => {
-  //   const hotelObject = {
-  //     id: hotelId
-  //   };
-  //   axios
-  //     .get("http://localhost:3001/viewhotel", hotelObject)
-  //     .then((hotelres) => {
-  //       var hotelId2 = hotelres.data[0]["id"];
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // });
+  const containerStyle = {
+    width: "500px",
+    height: "280px",
+    margin: "0 auto",
+  };
 
   return (
     <>
-      <Container maxWidth="lg" className='p-4'>
-        {/* Intro Section */}
-        <div>
-          <Card style={{ flex: 1 }}>
-            <Card.Body>
-              <h1 class="card-title">{hotelName}</h1>
-              <address>{address}</address>
-              <h6>{"Hotel id: " + hotelId}</h6>
-              <div className="e-card">
-                <div className="e-card-image">
-                  <Card.Img maxWidth="md" src={"https://d2ey9sqrvkqdfs.cloudfront.net/050G/1.jpg"} />
+      <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+        <div class="card p-4">
+          <div class="image d-flex flex-column justify-content-center">
+            <Row>
+              <Col>
+                <div style={containerStyle}>
+                  <ImageSlider slides={imageData} />
                 </div>
-              </div>
-            </Card.Body>
-          </Card>
+              </Col>
+              <Col>
+                <h1 class="card-title">{hotelName}</h1>
+                <address>{address}</address>
+                <h6>{"Hotel id: " + hotelId}</h6>
+              </Col>
+            </Row>
+          </div>
         </div>
+      </div>
+      <Container maxWidth="lg" className="p-4">
+        {/* Intro Section */}
 
         {/* Hotel description */}
         <div>
@@ -156,9 +167,10 @@ function ViewHotel(props) {
           </Card>
         </div>
 
+        {/* <Map /> */}
       </Container>
     </>
   );
-};
+}
 
 export default ViewHotel;
