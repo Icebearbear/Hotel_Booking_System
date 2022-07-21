@@ -13,7 +13,6 @@ function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
   const [finalHotels, setFinalHotels] = useState([]);
   const [hotelQ, setHotelQ] = useState(0);
-  const navigate = useNavigate();
   
   
 
@@ -111,6 +110,7 @@ const LoadingPosts = () => {
 /// display cards
 function HotelDisplay(props) {
   const info = props.info;
+  const navigate = useNavigate();
   return (
     <>
       <div className="d-flex p-2 justify-content-around">
