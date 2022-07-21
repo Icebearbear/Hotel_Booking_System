@@ -71,7 +71,7 @@ at /HOTEL_BOOKING_SYSTEM dir
 npm i --save-dev jest supertest
 ```
 
-## Things to add (at /HOTEL_BOOKING_SYSTEM dir)
+## Add dependencies (already added in this branch)
 
 1.  add "test" line under "scripts" like this in package.json
 
@@ -101,8 +101,23 @@ if (process.env.NODE_ENV !== "test") {
 }
 ```
 
-4.  Add "**tests**" folder at the same dir
-5.  Add testing file inside that folder. Name the file name as FILE_NAME.test.js
+## Things to add
+
+1.  Create a .env file that contains SKIP_PREFLIGHT_CHECK=true in /booking-sys
+2.  Go back to /HOTEL_BOOKING_SYSTEM dir
+3.  There is a "**tests**" folder that jest will read from
+4.  Add test file inside that folder. Name the file name as FILE_NAME.test.js
+
+## Run Tests with Jest
+
+at /HOTEL_BOOKING_SYSTEM dir
+
+1. Run npm start first to run the server and let it run during testing
+2. Open another terminal in /HOTEL_BOOKING_SYSTEM dir, run
+
+```
+npm test
+```
 
 ## Important notes about Jest
 
