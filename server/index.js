@@ -38,7 +38,7 @@ const db = getFirestore(apps);
 
 // server start message
 app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server" });
+  res.status(200).json({ message: "Hello from server" });
 });
 
 const stripe = require("stripe")(`${process.env.PRIVATE_KEY}`);
@@ -99,10 +99,10 @@ app.get("/viewhotel", (req, res) => {
         });
       })
       .catch((error) => {
-        console.log("HUHHHHHHHHH "+error.message);
+        console.log("HUHHHHHHHHH " + error.message);
       });
   } catch (err) {
-    res.status(500).send("WHATTTTTTTTTT "+err.message);
+    res.status(500).send("WHATTTTTTTTTT " + err.message);
   }
 });
 
@@ -113,14 +113,14 @@ app.get("/hotelidprices", (req, res) => {
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log("get from: " + url);
 
   try {
     axios
       .get(url)
       .then((roomres) => {
-        console.log("got SPECIFIC HOTEL room prices " + roomres.data)
+        console.log("got SPECIFIC HOTEL room prices " + roomres.data);
         res.status(200);
         res.send(roomres.data); //returned data is in roomprices.data and send it to react frontend
       })
@@ -132,7 +132,6 @@ app.get("/hotelidprices", (req, res) => {
   }
 });
 
-
 //get hotel prices. need to match with the hotelID from /hotels route
 //maybe request hotels and its prices at the same time using the same API route
 //match up the hotel and its prices
@@ -143,9 +142,9 @@ app.get("/hotelprices", (req, res) => {
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log(url);
- 
+
   // const {destination_id, checkin,checkout} = req.query.searchData;
 
   try {
@@ -170,7 +169,9 @@ app.get("/hotels", (req, res) => {
 
   try {
     axios
-      .get("https://hotelapi.loyalty.dev/api/hotels", {params: {destination_id: destination_id}})
+      .get("https://hotelapi.loyalty.dev/api/hotels", {
+        params: { destination_id: destination_id },
+      })
       .then((hotelres) => {
         res.status(200);
         //console.log(hotelres.data);
@@ -324,6 +325,8 @@ app.get("/favicon.ico", (req, res) => {
 });
 
 // serve at port
-app.listen(PORT, () => {
-  console.log(`Server is listening on ${PORT}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server is listening on ${PORT}`);
+  });
+}
