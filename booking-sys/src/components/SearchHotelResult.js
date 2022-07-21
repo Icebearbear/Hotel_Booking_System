@@ -33,11 +33,10 @@ function SearchHotelResult() {
      guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
     // partner_id: "1",
   };
-  // Error on inputed['vars'] being null type, the if condition doesnt run so searchData is hardcoded above
-  if (location.state != null){
-    var inputed = location.state; // get data passed from SearchHotel page
+  //if (location.state != null){
+    var inputed = JSON.parse(localStorage.getItem("SEARCH_DATA")); // get data passed from SearchHotel page
     // adjust guest param
-    var no_of_guest = inputed['adults'] + inputed['childs'];
+    var no_of_guest = +(inputed['adults']) + (+inputed['childs']);
     var guest_per_room = Math.floor(no_of_guest/inputed['rooms']);
     var param_guests = "" + guest_per_room;
     for (var i = 0; i< inputed['rooms'] -1; i++){
@@ -47,10 +46,10 @@ function SearchHotelResult() {
     // adjust destination id
     searchData['destination_id'] = inputed['UID'];
     // adjust check in check out
-    searchData['checkin'] = inputed['startDate'].slice(0,11);
-    searchData['checkout'] = inputed['endDate'].slice(0,11);
+    searchData['checkin'] = inputed['startDate'].slice(0,10);
+    searchData['checkout'] = inputed['endDate'].slice(0,10);
     
-  }
+  //}
   const getHotelAndPrices = async () => {
     try {
       await axios
