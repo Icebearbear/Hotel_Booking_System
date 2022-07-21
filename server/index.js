@@ -150,6 +150,7 @@ app.get("/hotelnprices", (req, res) => {
         });
         // console.log("ONEEEE ", fhotels);
         // // console.log("TWOOOOOO ", responsetWO.data);
+        res.sendStatus(200);
 
         res.status(200).json({
           finalData: JSON.stringify(fhotels),
