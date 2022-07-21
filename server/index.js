@@ -121,6 +121,10 @@ app.get("/hotelnprices", (req, res) => {
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
+  // var today = new Date();
+  // var date = +(today.getFullYear()+''+(today.getMonth()+1)+''+today.getDate());
+  // var start = +(checkin.replace(/-/g,""));
+  // var end = +(checkout.replace(/-/g,""));
   var guests = searchData.guests;
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
   const requestPrice = axios.get(urlPrice);
@@ -148,6 +152,7 @@ app.get("/hotelnprices", (req, res) => {
             len = len + 1;
           }
         });
+        console.log(len);
         // console.log("ONEEEE ", fhotels);
         // // console.log("TWOOOOOO ", responsetWO.data);
 
@@ -159,10 +164,11 @@ app.get("/hotelnprices", (req, res) => {
       })
     )
     .catch((errors) => {
+      //console.log(errors.response.status);
       console.log("ERRORR", errors.message);
-      res.status(500).send(errors.message);
+      res.status(errors.response.status).send(errors.message);
       // react on errors.
-    });
+    }); 
 });
 
 app.get("/hotelidprices", (req, res) => {
