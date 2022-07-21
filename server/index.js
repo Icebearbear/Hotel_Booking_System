@@ -1,7 +1,6 @@
 const express = require("express");
 const PORT = process.env.PORT || 3001;
 const app = express();
-//const firebase = require("../booking-sys/src/db/firebase");
 const cors = require("cors");
 const axios = require("axios");
 require("dotenv").config();
@@ -28,6 +27,7 @@ const {
   addDoc,
   updateDoc,
   doc,
+  deleteDoc,
 } = require("firebase/firestore");
 
 const fc = require("./firebase_config");
@@ -75,41 +75,106 @@ app.post("/create-checkout-session", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+// //get selected hotel info from search
+// app.get("/selectedhotel", (req, res) => {
+//   const hId = req.query.hotelId;
+//   try {
+//     axios
+//       .get("https://hotelapi.loyalty.dev/api/hotels/" + hId)
+//       .then((hotelres) => {
+//         res.status(200);
+//         res.send(hotelres.data);
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+//   } catch (err) {
+//     res.status(500).send(err);
+//   }
+// });
 
-//get selected hotel info
+//get selected hotel info from search
 app.get("/viewhotel", (req, res) => {
+  hotelId = req.query.hotelId;
   try {
     axios
-      .get(
-        "https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU",
-        req.body
-      )
+      .get(`https://hotelapi.loyalty.dev/api/hotels/${hotelId}`)
       .then((hotelres) => {
-        res.status(200);
-        res.send(hotelres.data);
+        console.log("From API: " + hotelId);
+        const ids = hotelres.data.hires_image_index;
+        const imgId = ids.split(",");
+        const imgDet = hotelres.data.image_details;
+        const imgUrl = [];
+        imgId.forEach(
+          (imageI) =>
+            (imgUrl[`${imageI}`] = imgDet["prefix"] + imageI + imgDet["suffix"])
+        );
+
+        res.status(200).json({
+          data: JSON.stringify(hotelres.data),
+          iurl: JSON.stringify(imgUrl),
+        });
       })
       .catch((error) => {
-        console.log(error);
+        console.log("HUHHHHHHHHH "+error.message);
+      });
+  } catch (err) {
+    res.status(500).send("WHATTTTTTTTTT "+err.message);
+  }
+});
+
+app.get("/hotelidprices", (req, res) => {
+  const searchData = JSON.parse(req.query.data);
+  console.log(searchData);
+  var hotel_id = searchData.hotel_id;
+  var destination_id = searchData.destination_id;
+  var checkin = searchData.checkin;
+  var checkout = searchData.checkout;
+  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  console.log("get from: " + url);
+
+  try {
+    axios
+      .get(url)
+      .then((roomres) => {
+        console.log("got SPECIFIC HOTEL room prices " + roomres.data)
+        res.status(200);
+        res.send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+      })
+      .catch((error) => {
+        console.log(error.message);
       });
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
+
 //get hotel prices. need to match with the hotelID from /hotels route
 //maybe request hotels and its prices at the same time using the same API route
 //match up the hotel and its prices
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
+  const searchData = JSON.parse(req.query.data);
+  console.log(searchData);
+  var destination_id = searchData.destination_id;
+  var checkin = searchData.checkin;
+  var checkout = searchData.checkout;
+  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  console.log(url);
+ 
+  // const {destination_id, checkin,checkout} = req.query.searchData;
+
   try {
     axios
-      .get("https://ascendahotels.mocklab.io/api/hotels/diH7/prices/ean")
+      .get(url)
       .then((prices) => {
+        console.log("got room prices " + prices.data);
         res.status(200);
         res.send(prices.data); //returned data is in prices.data and send it to react frontend
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.message);
       });
   } catch (err) {
     res.status(500).send(err);
@@ -118,9 +183,11 @@ app.get("/hotelprices", (req, res) => {
 
 //get hotels
 app.get("/hotels", (req, res) => {
+  const destination_id = req.query.data;
+
   try {
     axios
-      .get("https://hotelapi.loyalty.dev/api/hotels?destination_id=RsBU")
+      .get("https://hotelapi.loyalty.dev/api/hotels", {params: {destination_id: destination_id}})
       .then((hotelres) => {
         res.status(200);
         //console.log(hotelres.data);
@@ -134,6 +201,38 @@ app.get("/hotels", (req, res) => {
   }
 });
 
+app.post("/deleteBook", async (req, res) => {
+  const docId = req.body.docId;
+  // const docId = "2eq7dD2A8rHhmjCsTxRC";
+  console.log(docId);
+  try {
+    await deleteDoc(doc(db, "booking", docId));
+    res.status(200).send("deleted");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
+app.get("/getBook", async (req, res) => {
+  const userID = req.query.uid;
+  try {
+    const finalData = [];
+    const ids = [];
+    var count = 0;
+    const q = query(collection(db, "booking"), where("uid", "==", userID));
+    const docSnapshot = await getDocs(q);
+    const d = docSnapshot.docs.map((doc) => {
+      finalData.push(doc.data());
+      ids.push({ id: doc.id, index: count });
+      count++;
+    });
+    res.status(200).json({ ids: ids, finalData: finalData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
 // book hotel
 app.post("/bookhotel", (req, res) => {
   console.log("bookhotel");

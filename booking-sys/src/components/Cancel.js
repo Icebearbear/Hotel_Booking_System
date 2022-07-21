@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import { Alert } from "react-bootstrap";
 function Cancel() {
   return (
-    <div className="d-flex justify-content-around">
+    <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
       <Card style={{ width: "50rem", height: "30rem" }}>
         <Card.Body>
           <Alert variant="danger" dismissible>

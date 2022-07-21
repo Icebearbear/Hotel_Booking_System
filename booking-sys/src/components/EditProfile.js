@@ -1,7 +1,6 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Card from "react-bootstrap/Card";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -22,6 +21,8 @@ function EditProfile() {
   const [errorMsg, setErrorMsg] = useState("");
   const [validated, setValidated] = useState(false);
   const [emailFeedback, setEmailFb] = useState("Please input a valid email");
+  const [noInput, setNoInput] = useState(true);
+
   const handleClose = () => setError(false);
 
   const onSubmit = (event) => {
@@ -30,37 +31,42 @@ function EditProfile() {
       event.preventDefault();
       event.stopPropagation();
       console.log("stuck");
+      setNoInput(true);
+    } else {
+      setNoInput(false);
     }
     setValidated(true);
 
-    const updatedUserInfo = {
-      /// new object of updated values and pass to backend to update user db account
-      first_name: fname,
-      last_name: lname,
-      email: email,
-      uid: userDbInfo.uid,
-      dbDocId: userDbInfo.dbdocId,
-    };
-    axios
-      .post("http://localhost:3001/edituser", updatedUserInfo)
-      .then((res) => {
-        if (res.status === 200) {
-          navigate("/userprofile"); /// return to profile page once update is done
-          console.log(res);
-        }
-        if (res.status === 500) {
+    if (noInput === false) {
+      const updatedUserInfo = {
+        /// new object of updated values and pass to backend to update user db account
+        first_name: fname,
+        last_name: lname,
+        email: email,
+        uid: userDbInfo.uid,
+        dbDocId: userDbInfo.dbdocId,
+      };
+      axios
+        .post("http://localhost:3001/edituser", updatedUserInfo)
+        .then((res) => {
+          if (res.status === 200) {
+            navigate("/userprofile"); /// return to profile page once update is done
+            console.log(res);
+          }
+          if (res.status === 500) {
+            setError(true);
+            setErrorMsg(res);
+          }
+        })
+        .catch((error) => {
+          const errMsg = error.response.data.code.split("/")[1].split("-");
+          handleError(errMsg);
           setError(true);
-          setErrorMsg(res);
-        }
-      })
-      .catch((error) => {
-        const errMsg = error.response.data.code.split("/")[1].split("-");
-        handleError(errMsg);
-        setError(true);
-        setErrorMsg(errMsg[0] + " " + errMsg[1]);
+          setErrorMsg(errMsg[0] + " " + errMsg[1]);
 
-        console.log(error);
-      });
+          console.log(error);
+        });
+    }
   };
   const handleError = (errMsg) => {
     if (errMsg[1] === "email") {

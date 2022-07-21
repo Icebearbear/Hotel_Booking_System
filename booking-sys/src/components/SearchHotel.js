@@ -2,6 +2,7 @@ import React from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
+import Dropdown from "react-bootstrap/Dropdown";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import JSONDATA from "../data/destinations.json";
@@ -145,13 +146,12 @@ function SearchHotel() {
           </div> */}
           {searchTerm.length != 0 && (
           <div className="dataResults">
+            <Dropdown.Menu show>
             {searchTerm.slice(0,10).map((value, key)=>{
-              return(
-                <ListGroup>
-                <ListGroup.Item action onClick={event => selectDest(event, value.term, value.uid)}><p>{value.term}</p> </ListGroup.Item>
-                </ListGroup>
+              return( 
+                <Dropdown.Item action onClick={event => selectDest(event, value.term, value.uid)}>{value.term} </Dropdown.Item>
               );
-            })}
+            })}</Dropdown.Menu>
           </div>
           )}
 

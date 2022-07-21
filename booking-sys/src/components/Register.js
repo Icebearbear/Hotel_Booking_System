@@ -72,7 +72,7 @@ function Register() {
   };
 
   return (
-    <div className="d-flex justify-content-around">
+    <div className="container mb-4 p-3 d-flex justify-content-center">
       <Card style={{ width: "30rem", height: "35rem" }}>
         <Card.Body>
           <h1>Register page</h1>
