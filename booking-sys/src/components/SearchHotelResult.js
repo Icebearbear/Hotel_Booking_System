@@ -23,24 +23,33 @@ function SearchHotelResult() {
   const triggerRef = useRef(null);
   /////////////////////////////
 
-  var searchData = {
+  const searchData = {
     destination_id: "WD0M",
     checkin: "2022-07-24",
     checkout: "2022-07-25",
     // lang: "en_US",
     // currency: "SGD",
     // country_code: "SG",
-    // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+     guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
     // partner_id: "1",
   };
+  // Error on inputed['vars'] being null type, the if condition doesnt run so searchData is hardcoded above
   if (location.state != null){
-    searchData = location.state; // get data passed from SearchHotel page
-    var guest_per_room = Math.floor(searchData['guests']/searchData['rooms']);
+    var inputed = location.state; // get data passed from SearchHotel page
+    // adjust guest param
+    var no_of_guest = inputed['adults'] + inputed['childs'];
+    var guest_per_room = Math.floor(no_of_guest/inputed['rooms']);
     var param_guests = "" + guest_per_room;
-    for (var i = 0; i< searchData['rooms'] -1; i++){
+    for (var i = 0; i< inputed['rooms'] -1; i++){
       param_guests =param_guests +"|" + guest_per_room;
     }
     searchData['guests'] = param_guests;
+    // adjust destination id
+    searchData['destination_id'] = inputed['UID'];
+    // adjust check in check out
+    searchData['checkin'] = inputed['startDate'].slice(0,11);
+    searchData['checkout'] = inputed['endDate'].slice(0,11);
+    
   }
   const getHotelAndPrices = async () => {
     try {
