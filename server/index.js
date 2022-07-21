@@ -17,6 +17,7 @@ const {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  onAuthStateChanged,
 } = require("firebase/auth");
 const {
   getFirestore,
@@ -251,7 +252,12 @@ app.post("/deleteBook", async (req, res) => {
       // finalData.push(bookDt);
       finalData.push([doc.id, doc.data()]);
     });
-    res.status(200).json({ finalData: finalData });
+
+    if (finalData.length == 0) {
+      res.status(404).send("No such booking found");
+    } else {
+      res.status(200).json({ finalData: finalData });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -266,24 +272,36 @@ app.get("/getBook", async (req, res) => {
     var ids = [];
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
-    const d = docSnapshot.docs.map((doc) => {
-      // finalData.push(doc.data());
-      finalData.push([doc.id, doc.data()]);
-    });
-    res.status(200).json({ finalData: finalData });
+    if (docSnapshot.docs.length == 0) {
+      res.send(404);
+    } else {
+      const d = docSnapshot.docs.map((doc) => {
+        finalData.push([doc.id, doc.data()]);
+      });
+      // console.log("lalalal", finalData);
+      res.status(200).json({ finalData: finalData });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
 });
 // book hotel
-app.post("/bookhotel", (req, res) => {
+app.post("/bookhotel", async (req, res) => {
   console.log("bookhotel");
   try {
     const hotelBookRef = collection(db, "booking");
-    addDoc(hotelBookRef, req.body);
+    const docRef = await addDoc(hotelBookRef, req.body);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        res.status(200).json({ status: "booked", docId: docRef.id });
+      } else {
+        res.status(500).send("Login required");
+      }
+    });
+    console.log("lala");
+
     console.log("booked");
-    res.status(200).send("booked");
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -296,9 +314,15 @@ app.get("/user", async (req, res) => {
   try {
     const q = query(collection(db, "users"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
-    const d = docSnapshot.docs.map((doc) => {
+    if (docSnapshot.docs.length == 0) {
+      res.send(404);
+    }
+    docSnapshot.docs.map((doc) => {
+      console.log(doc.id, doc.data());
       res.status(200).json({ id: doc.id, data: doc.data() });
     });
+
+    // reach this point means docSnapshot is empty
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -309,13 +333,41 @@ app.post("/edituser", async (req, res) => {
   const { first_name, last_name, email, uid, dbDocId } = req.body;
   // console.log(dbDocId, first_name, last_name, email, uid);
   try {
-    const userRef = doc(db, "users", dbDocId);
-    updateDoc(userRef, {
-      email: email,
-      first_name: first_name,
-      last_name: last_name,
-    });
-    res.status(200).send("updated");
+    // onAuthStateChanged(auth, (user) => {
+    //   if (!user) {
+    //     res.status(500).send("Login required");
+    //   }
+    // });
+    var update = true;
+    const q = query(collection(db, "users"), where("uid", "==", uid));
+    const docSnapshot = await getDocs(q);
+    console.log(docSnapshot.docs.length);
+    if (docSnapshot.docs.length == 0) {
+      res.status(404).send("not-found");
+    } else {
+      docSnapshot.docs.map((doc) => {
+        if (
+          doc.data().first_name == first_name ||
+          doc.data().last_name == last_name ||
+          doc.data().email == email
+        ) {
+          update = false;
+        }
+      });
+      console.log(update);
+
+      if (update == false) {
+        res.status(500).send({ code: "not-new-data-given" });
+      } else {
+        const userRef = doc(db, "users", dbDocId);
+        await updateDoc(userRef, {
+          email: email,
+          first_name: first_name,
+          last_name: last_name,
+        });
+        res.status(200).send("updated");
+      }
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -336,6 +388,7 @@ app.post("/login", async (req, res) => {
     const r = await signInWithEmailAndPassword(auth, email, password).then(
       (userCredentials) => {
         var data = userCredentials.user.reloadUserInfo;
+        console.log(data.localId, data.email);
         res.status(200).json({ userId: data.localId, email: data.email });
       }
     );
@@ -361,10 +414,12 @@ app.post("/register", async (req, res) => {
       email,
     });
     console.log("registered user");
-    res.status(200).send("user added");
+    res
+      .status(200)
+      .json({ data: JSON.stringify("user added with email: " + email) });
   } catch (error) {
     console.log("ERROR ", error);
-    res.status(500).send(error);
+    res.status(500).json(error);
   }
 });
 

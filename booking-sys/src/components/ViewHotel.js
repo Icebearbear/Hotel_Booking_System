@@ -15,8 +15,8 @@ function ViewHotel(props) {
   const searchData = {
     hotel_id: hotelId + "/",
     destination_id: "WD0M",
-    checkin: "2022-07-20",
-    checkout: "2022-07-21",
+    checkin: "2022-08-20",
+    checkout: "2022-08-21",
     // lang: "en_US",
     // currency: "SGD",
     // country_code: "SG",
