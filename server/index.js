@@ -38,7 +38,7 @@ const db = getFirestore(apps);
 
 // server start message
 app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server" });
+  res.status(200).json({ message: "Hello from server" });
 });
 
 const stripe = require("stripe")(`${process.env.PRIVATE_KEY}`);
@@ -75,23 +75,6 @@ app.post("/create-checkout-session", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
-// //get selected hotel info from search
-// app.get("/selectedhotel", (req, res) => {
-//   const hId = req.query.hotelId;
-//   try {
-//     axios
-//       .get("https://hotelapi.loyalty.dev/api/hotels/" + hId)
-//       .then((hotelres) => {
-//         res.status(200);
-//         res.send(hotelres.data);
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       });
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
 
 //get selected hotel info from search
 app.get("/viewhotel", (req, res) => {
@@ -116,11 +99,60 @@ app.get("/viewhotel", (req, res) => {
         });
       })
       .catch((error) => {
-        console.log("HUHHHHHHHHH "+error.message);
+        console.log("HUHHHHHHHHH " + error.message);
       });
   } catch (err) {
-    res.status(500).send("WHATTTTTTTTTT "+err.message);
+    res.status(500).send("WHATTTTTTTTTT " + err.message);
   }
+});
+
+app.get("/hotelnprices", (req, res) => {
+  const searchData = JSON.parse(req.query.data);
+  console.log(searchData);
+  var destination_id = searchData.destination_id;
+  var checkin = searchData.checkin;
+  var checkout = searchData.checkout;
+  var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
+  const requestPrice = axios.get(urlPrice);
+  const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
+    params: { destination_id: destination_id },
+  });
+  var fhotels = [];
+  var len = 0;
+  axios
+    .all([requestPrice, requestHotel])
+    .then(
+      axios.spread((...responses) => {
+        const hotelPrices = responses[0].data.hotels;
+        const hotelDetails = responses[1].data;
+        // console.log(hotelPrices);
+        // console.log(hotelDetails);
+        // console.log(hotelPrices);
+        // hotelPrices.map((val) => console.log(val.id));
+        hotelPrices.map((value) => {
+          let match = hotelDetails.find((detail) => detail.id === value.id);
+
+          const output = (value.id && match) || null;
+          if (output !== null) {
+            fhotels.push({ ...value, ...output });
+            len = len + 1;
+          }
+        });
+        // console.log("ONEEEE ", fhotels);
+        // // console.log("TWOOOOOO ", responsetWO.data);
+
+        res.status(200).json({
+          finalData: JSON.stringify(fhotels),
+          dataLen: len,
+        });
+        // use/access the results
+      })
+    )
+    .catch((errors) => {
+      console.log("ERRORR", errors.message);
+      res.status(500).send(errors.message);
+      // react on errors.
+    });
 });
 
 app.get("/hotelidprices", (req, res) => {
@@ -130,14 +162,14 @@ app.get("/hotelidprices", (req, res) => {
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log("get from: " + url);
 
   try {
     axios
       .get(url)
       .then((roomres) => {
-        console.log("got SPECIFIC HOTEL room prices " + roomres.data)
+        console.log("got SPECIFIC HOTEL room prices " + roomres.data);
         res.status(200);
         res.send(roomres.data); //returned data is in roomprices.data and send it to react frontend
       })
@@ -149,7 +181,6 @@ app.get("/hotelidprices", (req, res) => {
   }
 });
 
-
 //get hotel prices. need to match with the hotelID from /hotels route
 //maybe request hotels and its prices at the same time using the same API route
 //match up the hotel and its prices
@@ -160,9 +191,9 @@ app.get("/hotelprices", (req, res) => {
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`
+  var url = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log(url);
- 
+
   // const {destination_id, checkin,checkout} = req.query.searchData;
 
   try {
@@ -187,7 +218,9 @@ app.get("/hotels", (req, res) => {
 
   try {
     axios
-      .get("https://hotelapi.loyalty.dev/api/hotels", {params: {destination_id: destination_id}})
+      .get("https://hotelapi.loyalty.dev/api/hotels", {
+        params: { destination_id: destination_id },
+      })
       .then((hotelres) => {
         res.status(200);
         //console.log(hotelres.data);
@@ -202,12 +235,23 @@ app.get("/hotels", (req, res) => {
 });
 
 app.post("/deleteBook", async (req, res) => {
-  const docId = req.body.docId;
-  // const docId = "2eq7dD2A8rHhmjCsTxRC";
-  console.log(docId);
+  const { docId, userID } = req.body;
+  //check if id exist//////
+  //////
+  // const docId = "R3z3gkRt8b6GeuWgkv6s";
+  console.log(docId, userID);
   try {
     await deleteDoc(doc(db, "booking", docId));
-    res.status(200).send("deleted");
+    var finalData = [];
+    var ids = [];
+    const q = query(collection(db, "booking"), where("uid", "==", userID));
+    const docSnapshot = await getDocs(q);
+    const d = docSnapshot.docs.map((doc) => {
+      // const bookDt = doc.data();
+      // finalData.push(bookDt);
+      finalData.push([doc.id, doc.data()]);
+    });
+    res.status(200).json({ finalData: finalData });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -216,18 +260,17 @@ app.post("/deleteBook", async (req, res) => {
 
 app.get("/getBook", async (req, res) => {
   const userID = req.query.uid;
+  // const userID = "rRETHSuFXTVjzmyN6VjnAPDj7YB2";
   try {
-    const finalData = [];
-    const ids = [];
-    var count = 0;
+    var finalData = [];
+    var ids = [];
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
     const d = docSnapshot.docs.map((doc) => {
-      finalData.push(doc.data());
-      ids.push({ id: doc.id, index: count });
-      count++;
+      // finalData.push(doc.data());
+      finalData.push([doc.id, doc.data()]);
     });
-    res.status(200).json({ ids: ids, finalData: finalData });
+    res.status(200).json({ finalData: finalData });
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -331,6 +374,8 @@ app.get("/favicon.ico", (req, res) => {
 });
 
 // serve at port
-app.listen(PORT, () => {
-  console.log(`Server is listening on ${PORT}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server is listening on ${PORT}`);
+  });
+}

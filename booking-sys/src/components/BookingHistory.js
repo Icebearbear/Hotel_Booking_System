@@ -4,11 +4,14 @@ import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 function BookingHistory() {
   const userID = localStorage.getItem("USER_ID");
   const [bookObj, setBook] = useState([]);
-  const [idObj, setId] = useState([]);
+  const [removeBook, setRemove] = useState(false);
+  const [selBook, setSelBook] = useState(""); // contains the docId of the selected booking
   useEffect(() => {
     axios
       .get(
@@ -21,30 +24,37 @@ function BookingHistory() {
         }
       )
       .then((res) => {
-        // console.log(res.data);
+        console.log("BOOK HISTORY ", res.data.finalData);
         setBook(res.data.finalData);
-        setId(res.data.ids);
-        // console.log(bookObj);
         return;
       }).catch = (err) => {
       console.log(err);
     };
   }, []);
 
-  const onSubmit = (index) => {
-    // console.log("cancel", idObj[id]);
+  const onSubmit = (valuePass) => {
+    setRemove(true);
+    setSelBook(valuePass);
+  };
+
+  const onStop = () => {
+    setRemove(false);
+  };
+  const onCont = () => {
+    setRemove(false);
+    onRemove();
+  };
+  const onRemove = () => {
+    const dId = selBook;
     const docObj = {
-      docId: idObj[index].id,
+      docId: dId,
+      userID: userID,
     };
     axios
       .post("http://localhost:3001/deleteBook", docObj)
       .then((res) => {
-        if (index > -1) {
-          // only splice array when item is found
-          setBook(bookObj.splice(index, 1)); // 2nd parameter means remove one item only
-          console.log(bookObj);
-        }
-        console.log("deleted ", res);
+        setBook(res.data.finalData);
+        console.log(" BOOKING HSTORY current data ", res);
       })
       .catch((err) => {
         console.log(err);
@@ -52,34 +62,33 @@ function BookingHistory() {
   };
   return (
     <div>
-      {/* <RenderCard data={bookObj} details={idObj} /> */}
       {bookObj.map((value, index) => (
-        <div className="container mb-4 p-3 d-flex justify-content-around">
-          <Card key={index} style={{ width: "50rem", height: "20rem" }}>
+        <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
+          <Card key={index[1]} style={{ width: "50rem", height: "20rem" }}>
             <Card.Body>
-              <p>{value.uid}</p>
+              <p>{value[1].uid}</p>
               <h5>
-                <strong>{value.hotelID}</strong>
+                <strong>{value[1].hotelID}</strong>
               </h5>
               <></>
               <h5>
-                <strong>{value.bookingInfo.roomType}</strong>
+                <strong>{value[1].bookingInfo.roomType}</strong>
               </h5>
               <h5>
                 <strong>
-                  {value.bookingInfo.startDate +
+                  {value[1].bookingInfo.startDate +
                     " until " +
-                    value.bookingInfo.endDate}
+                    value[1].bookingInfo.endDate}
                 </strong>
               </h5>
-              {value.bookingInfo.noNight +
+              {value[1].bookingInfo.noNight +
                 " Room    " +
-                value.bookingInfo.noAdult +
+                value[1].bookingInfo.noAdult +
                 " Adults, " +
-                value.bookingInfo.noChild +
+                value[1].bookingInfo.noChild +
                 " Children / Per Room"}{" "}
               <br />
-              <Form.Label>{"SGD " + value.price}</Form.Label>
+              <Form.Label>{"SGD " + value[1].price}</Form.Label>
               <Form.Group as={Col} className="g-4">
                 <Row>
                   <Col sm={2}>
@@ -88,23 +97,44 @@ function BookingHistory() {
                   <Col sm={5}>
                     <p2>
                       <strong>
-                        {value.guestInformation.firstName +
+                        {value[1].guestInformation.firstName +
                           " " +
-                          value.guestInformation.lastName}
+                          value[1].guestInformation.lastName}
                       </strong>
                     </p2>
                   </Col>
                 </Row>
                 <div class="d-flex mt-2">
-                  <button onClick={() => onSubmit(index)} class="btn1 btn-dark">
+                  <button
+                    onClick={() => onSubmit(value[0])}
+                    class="btn1 btn-dark"
+                  >
                     Cancel
                   </button>
                 </div>
               </Form.Group>
             </Card.Body>
-          </Card>
+          </Card>{" "}
         </div>
       ))}
+
+      <Modal show={removeBook} onHide={onStop}>
+        <Modal.Header closeButton>
+          <Modal.Title>Booking Cancellation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {`Are you sure you want to cancel this booking ?`} <br />
+          {`Hotel doc id: ${selBook}`}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="info" onClick={onCont}>
+            Yes
+          </Button>
+          <Button variant="warning" onClick={onStop}>
+            No
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
