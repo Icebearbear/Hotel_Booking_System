@@ -28,15 +28,15 @@ function ViewHotel(props) {
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
   var no_of_guest = +(searchDataLocal['adults']) + (+searchDataLocal['childs']);
-  var guest_per_room = Math.floor(no_of_guest/searchDataLocal['rooms']);
+  var guest_per_room = Math.floor(no_of_guest / searchDataLocal['rooms']);
   var param_guests = "" + guest_per_room;
-  for (var i = 0; i< searchDataLocal['rooms'] -1; i++){
-    param_guests =param_guests +"|" + guest_per_room;
+  for (var i = 0; i < searchDataLocal['rooms'] - 1; i++) {
+    param_guests = param_guests + "|" + guest_per_room;
   }
-  
+
   searchData['destination_id'] = searchDataLocal['UID'];
-  searchData['checkin'] = searchDataLocal['startDate'].slice(0,10);
-  searchData['checkout'] = searchDataLocal['endDate'].slice(0,10);
+  searchData['checkin'] = searchDataLocal['startDate'].slice(0, 10);
+  searchData['checkout'] = searchDataLocal['endDate'].slice(0, 10);
   searchData['guests'] = param_guests;
 
   // hotel info from api
@@ -85,20 +85,6 @@ function ViewHotel(props) {
     }
   };
 
-  // const imageObjConstruction = () => {
-  //   var imageIndexList = imageIndexes.split(",");
-  //   const imageD = [];
-
-  //   imageIndexList.forEach(
-  //     (imageI) =>
-  //       (imageD[`${imageI}`] =
-  //         imageDetails["prefix"] + imageI + imageDetails["suffix"])
-  //   );
-
-  //   console.log(imageD);
-  //   setImageData(imageD);
-  // };
-
   const checkAmenities = (bool) => {
     if (bool === true) {
       return "Yes";
@@ -132,10 +118,28 @@ function ViewHotel(props) {
   //   }
   // }
 
+// pass to hotel booking page
+  const onSubmit = (key) => {
+    const passData = {
+      hotelName: hotelName,
+      roomType: roomsDetails[key].description,
+      noOfRooms: searchDataLocal['rooms'],
+      noOfAdults: searchDataLocal['adults'],
+      noOfChildren: searchDataLocal['childs'],
+      checkIn: searchData.checkin,
+      checkOut: searchData.checkout,
+      roomRate: roomsDetails[key].lowest_price,
+      taxRecovery: 0,  // the hotel rooms info don't have this, prob dont show in custinfo?
+  }
+    console.log(passData);
+    localStorage.setItem("BOOKING_DATA", JSON.stringify(passData));
+  }
+
+
+
   useEffect(() => {
     getHotelData();
     getHotelIdPrices();
-    // imageObjConstruction();
   }, [setLongitude, setImageData]);
 
   const containerStyle = {
@@ -250,8 +254,8 @@ function ViewHotel(props) {
                     state={{ hotelId: hotelId }}
                   >
                     <Button
+                      onClick={onSubmit(key)}
                       variant="primary"
-                      type="submit"
                       className="float-right"
                     >
                       Book hotel
