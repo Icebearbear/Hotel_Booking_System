@@ -14,25 +14,34 @@ function SearchHotelResult() {
   const [finalHotels, setFinalHotels] = useState([]);
   const [hotelQ, setHotelQ] = useState(0);
   const location = useLocation();
-  // const searchData = location.state; // get data passed from SearchHotel page
+  
+  
 
   /// for lazy loading
-  const NUM_PER_PAGE = 6;
+  const NUM_PER_PAGE = 10;
   const TOTAL_PAGES = hotelQ / NUM_PER_PAGE;
   const triggerRef = useRef(null);
   /////////////////////////////
 
-  const searchData = {
+  var searchData = {
     destination_id: "WD0M",
-    checkin: "2022-07-20",
-    checkout: "2022-07-21",
+    checkin: "2022-07-24",
+    checkout: "2022-07-25",
     // lang: "en_US",
     // currency: "SGD",
     // country_code: "SG",
     // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
     // partner_id: "1",
   };
-
+  if (location.state != null){
+    searchData = location.state; // get data passed from SearchHotel page
+    var guest_per_room = Math.floor(searchData['guests']/searchData['rooms']);
+    var param_guests = "" + guest_per_room;
+    for (var i = 0; i< searchData['rooms'] -1; i++){
+      param_guests =param_guests +"|" + guest_per_room;
+    }
+    searchData['guests'] = param_guests;
+  }
   const getHotelAndPrices = async () => {
     try {
       await axios
@@ -89,7 +98,7 @@ function SearchHotelResult() {
 }
 
 const LoadingPosts = () => {
-  return <h1>LOADINGGGG..............</h1>;
+  return <h1>LOADING..............</h1>;
 };
 /// display cards
 function HotelDisplay(props) {
@@ -99,19 +108,19 @@ function HotelDisplay(props) {
       <div className="d-flex p-2 justify-content-around">
         {/* <h3>{"LALAAL" + info.id}</h3> */}
         <Card className="text-center" style={{ width: "75rem" }}>
-          <Card.Header as="h5">{info.lowest_price}</Card.Header>
+          <Card.Header as="h5">{info.name}</Card.Header>
           <div className="d-flex" style={{ flexDirection: "row" }}>
             <Card.Img
               style={{ width: "18rem" }}
               src={`${info.image_details.prefix}${info.default_image_index}${info.image_details.suffix}`}
             ></Card.Img>
             <Card.Body>
-              <h2>Price</h2>
-              <p>{info.price}</p>
-              <p>{info.rating}</p>
+              <h2>Price <p>${info.price}</p></h2>
+              <h2>Hotel Rating</h2>
               <div className="overflow-auto">
                 <Card.Text>{info.rating + "   stars"}</Card.Text>
                 <Card.Text>{info.name}</Card.Text>
+                <Card.Text>{info.address}</Card.Text>
                 <Link to="/viewhotel" state={{ hotelId: info.id }}>
                   <Button
                     variant="primary"
