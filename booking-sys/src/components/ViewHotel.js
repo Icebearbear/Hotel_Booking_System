@@ -8,13 +8,13 @@ import ImageSlider from "./ImageSlider";
 // import Map from "../MapApp.js";
 
 function ViewHotel(props) {
-  const location = useLocation();
-  const { hotelId } = location.state; // get data passed from SearchHotelResult page
+  //const location = useLocation();
+  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
   //const hotelId = "diH7";
-
+  const hotelId = localStorage.getItem("HOTEL_ID");
   // get data passed from SearchHotelResult page
   const searchData = {
-    hotel_id: hotelId + "/",
+    hotel_id: hotelId,
     destination_id: "WD0M",
     checkin: "2022-08-01",
     checkout: "2022-08-05",
@@ -26,6 +26,7 @@ function ViewHotel(props) {
   };
 
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
+ 
 
   var no_of_guest = +(searchDataLocal['adults']) + (+searchDataLocal['childs']);
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal['rooms']);
@@ -60,7 +61,7 @@ function ViewHotel(props) {
     try {
       axios
         .get("http://localhost:3001/viewhotel", {
-          params: { hotelId: hotelId },
+          params: { hotelId: searchData.hotel_id },
         })
         .then((hoteldt) => {
           const hotelData = JSON.parse(hoteldt.data.data);
