@@ -1,9 +1,10 @@
 # Running the Website Locally
 
 ## Installation
+
 Only client installation is inside /booking-sys, while the rest are installed outside of /booking-sys
 
-### React (client) 
+### React (client)
 
 ```
 npm install react-bootstrap bootstrap
@@ -59,6 +60,57 @@ npm start
 cd booking-sys
 npm start
 ```
+
+# Testing (Jest)
+
+at /HOTEL_BOOKING_SYSTEM dir
+
+## Installation
+
+```
+npm i --save-dev jest supertest
+```
+
+## Things to add (at /HOTEL_BOOKING_SYSTEM dir)
+
+1.  add "test" line under "scripts" like this in package.json
+
+```
+    "scripts": {
+    "start": "nodemon server/index.js",
+    "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1"  },
+```
+
+2.  Additionally, add these lines in package.json after "scripts": {},
+
+```
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
+```
+
+3.  In server/index.js, the app.listen() (most bottom line) is change to this not let jest listen to that port.
+
+```
+if (process.env.NODE_ENV !== "test") {
+    console.log(`Server is listening on ${PORT}`);
+  });
+}
+```
+
+4.  Add "**tests**" folder at the same dir
+5.  Add testing file inside that folder. Name the file name as FILE_NAME.test.js
+
+## Important notes about Jest
+
+These are afew issues after installing Jest like stated above:
+
+1. babel-jest dependency error when npm start in /booking-sys to serve react. This is due to another jest lib inside react itself.
+2. Solution for issue in no.1 : uninstall jest in root dir
+3. It is okay for now because once backend testing using jest is done, the Jest in this dir can be removed before doing frontend testing
 
 # Development (Reference only from this point onwards)
 

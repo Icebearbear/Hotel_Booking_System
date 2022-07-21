@@ -8,7 +8,7 @@ import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import Stack from "react-bootstrap/Stack";
 import NavigationBar from "./NavigationBar";
-
+import "../css/user.min.css";
 function CustomerInformation() {
   // data from user inputs
   const [firstName, setFName] = useState("");
@@ -45,7 +45,9 @@ function CustomerInformation() {
   const [price, setPrice] = useState(3000);
   const [totalPrice, setTotalPrice] = useState("");
   const [noNight, setNight] = useState(2);
-
+  const comPrice = price * noNight;
+  const tax = (comPrice * 0.07).toFixed(2);
+  const tPrice = parseInt(comPrice) + parseInt(tax);
   // data stored from viewhotel
   // const ht = localStorage.getItem("SELECTED_HOTEL_INFO"); // get data from localStorage temporarily
   // const hotelInfo = JSON.parse(ht);
@@ -135,10 +137,10 @@ function CustomerInformation() {
   return (
     <div>
       <NavigationBar />
-      <Row lg={3}>
-        <Col className="d-flex">
-          <div className="container mt-4 mb-4 p-3 d-flex justify-content-left">
-            <Card style={{ width: "35rem", height: "30rem" }}>
+      <Row>
+        <Col md={{ span: 6, offset: 1 }}>
+          <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
+            <Card style={{ width: "40rem", height: "32rem" }}>
               <Card.Body>
                 <h1>Customer Information Page</h1>
                 <Form noValidate validated={validated}>
@@ -228,10 +230,9 @@ function CustomerInformation() {
               </Card.Body>
             </Card>
           </div>
-        </Col>
-        <Col className="d-flex">
-          <div className="container mt-4 mb-4 p-3 d-flex justify-content-left">
-            <Card style={{ width: "30rem", height: "36rem" }}>
+
+          <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
+            <Card style={{ width: "40rem", height: "36rem" }}>
               <Card.Body>
                 <h1>Special Requests</h1>
                 <div key={`inline-radio1`} className="mb-3">
@@ -302,62 +303,90 @@ function CustomerInformation() {
               </Card.Body>
             </Card>
           </div>
-          <div className="container mt-4 mb-4 p-3 d-flex justify-content-right">
-            <Card style={{ width: "40rem", height: "35rem" }}>
-              <Card.Body>
-                <Stack gap={3}>
-                  <h1>Booking Information</h1>
-                  <h5>
-                    <strong>{hotelName}</strong>
-                  </h5>
-                  <></>
-                  <h5>
-                    <strong>{hotelRoomType}</strong>
-                  </h5>
-                  <h5>
-                    {noNight +
-                      " Room    " +
-                      noAdult +
-                      " Adults, " +
-                      noChild +
-                      " Children / Per Room"}{" "}
-                  </h5>
+        </Col>
 
-                  {[
-                    ["Check-in", checkInDate],
-                    ["Check-out", checkOutDate],
-                    [" ", noNight + " Nights"],
-                    [
-                      "Room rate (" + noNight + " nights, " + "1 room",
-                      "SGD " + price,
-                    ],
-                    ["Tax recovery", "SGD " + (price * 0.07).toFixed(2)],
-                  ].map((display) => (
+        <Col md={4}>
+          <div className="userPage">
+            <div className="container mt-4 mb-4 p-3 d-flex justify-content-right">
+              <Card style={{ width: "40rem", height: "35rem" }}>
+                <Card.Body>
+                  <Stack gap={3}>
+                    <h3>Booking Information</h3>
+                    <h5>
+                      <strong>{hotelName}</strong>
+                    </h5>
+                    <></>
+                    <h5>
+                      <strong>{hotelRoomType}</strong>
+                    </h5>
+                    <h5>
+                      {noNight +
+                        " Room    " +
+                        noAdult +
+                        " Adults, " +
+                        noChild +
+                        " Children / Per Room"}{" "}
+                    </h5>
+
+                    {[
+                      ["Check-in", checkInDate],
+                      ["Check-out", checkOutDate],
+                      [" ", noNight + " Nights"],
+                      [
+                        "Room rate (" + noNight + " nights, " + "1 room",
+                        "SGD " + comPrice,
+                      ],
+                      ["Tax recovery", "SGD " + tax],
+                    ].map((display) => (
+                      <Form.Group as={Col} className="g-4">
+                        <Row>
+                          <Col sm={5}>
+                            <p3>{display[0]}</p3>
+                          </Col>
+                          <Col sm={5}>
+                            <p3>
+                              <strong>{display[1]}</strong>
+                            </p3>
+                          </Col>
+                        </Row>
+                      </Form.Group>
+                    ))}
                     <Form.Group as={Col} className="g-4">
                       <Row>
                         <Col sm={5}>
-                          <p3>{display[0]}</p3>
+                          <h5>
+                            <strong>Total:</strong>
+                          </h5>{" "}
                         </Col>
                         <Col sm={5}>
-                          <p2>
-                            <strong>{display[1]}</strong>
-                          </p2>
+                          <p3>
+                            <strong>{"SGD " + tPrice}</strong>
+                          </p3>
                         </Col>
                       </Row>
                     </Form.Group>
-                  ))}
-                </Stack>
-              </Card.Body>
-            </Card>
+                  </Stack>
+                </Card.Body>
+              </Card>
+            </div>
+            <div className="float-right">
+              <Button
+                variant="primary"
+                onClick={onSubmit}
+                className="float-right"
+              >
+                Proceed to next step
+              </Button>
+            </div>
           </div>
         </Col>
       </Row>
-
-      <Button variant="primary" onClick={onSubmit} className="float-right">
-        Proceed to next step
-      </Button>
+      {/* <div onClick={onSubmit} class="d-flex mt-2">
+        <button class="btn1 btn-dark">Proceed to Checkout</button>
+      </div> */}
     </div>
   );
 }
 
+const SpecialRequest = () => {};
 export default CustomerInformation;

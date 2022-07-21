@@ -40,7 +40,6 @@ function ViewHotel(props) {
 
   const [roomsDetails, setRoomsDetails] = useState({});
 
-
   const getHotelData = () => {
     try {
       axios
@@ -89,15 +88,18 @@ function ViewHotel(props) {
       return "Yes";
     }
     return "No";
-  }
+  };
 
   const getHotelIdPrices = () => {
-    axios.get("http://localhost:3001/hotelidprices", { params: { data: searchData } })
+    axios
+      .get("http://localhost:3001/hotelidprices", {
+        params: { data: searchData },
+      })
       .then((roomData) => {
         setRoomsDetails(roomData.data.rooms);
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
-  }
+  };
 
   const roomImg = (roomNo) => {
     var roomImgUrl = roomsDetails[roomNo].images.map(imgurl => imgurl.url)  // array containing room images
@@ -152,7 +154,6 @@ function ViewHotel(props) {
         {/* Hotel description */}
         <div class="d-flex flex-column justify-content-center align-items-center">
           <CardGroup>
-
             <div class="d-flex flex-column justify-content-center align-items-center">
               <Card style={{ width: "50rem", flex: 2.5 }}>
                 <Card.Body>
@@ -170,13 +171,14 @@ function ViewHotel(props) {
                   <h3>Amenities</h3>
                   <Card.Text class="text-justify">
                     {Object.entries(amenities).map(([key, value]) => (
-                      <Card.Text>{key + ": " + checkAmenities(value)}</Card.Text>
+                      <Card.Text>
+                        {key + ": " + checkAmenities(value)}
+                      </Card.Text>
                     ))}
                   </Card.Text>
                 </Card.Body>
               </Card>
             </div>
-
           </CardGroup>
         </div>
 
@@ -187,7 +189,9 @@ function ViewHotel(props) {
               <Card.Title>Hotel Reviews</Card.Title>
               <Card.Text class="text-justify">
                 {Object.entries(reviews).map(([key, value]) => (
-                  <Card.Text>{reviews[key]["name"] + ": " + reviews[key]["score"]}</Card.Text>
+                  <Card.Text>
+                    {reviews[key]["name"] + ": " + reviews[key]["score"]}
+                  </Card.Text>
                 ))}
               </Card.Text>
             </Card.Body>
@@ -213,7 +217,9 @@ function ViewHotel(props) {
           {Object.entries(roomsDetails).map(([key, value]) => (
             <Card style={{ width: "70rem", flex: 1 }}>
               <Card.Body>
-                <Card.Header>{roomsDetails[key]["roomNormalizedDescription"]}</Card.Header>
+                <Card.Header>
+                  {roomsDetails[key]["roomNormalizedDescription"]}
+                </Card.Header>
                 <div className="d-flex" style={{ flexDirection: "row" }}>
                   <Card.Img
                     style={{ width: "18rem" }}
@@ -222,8 +228,16 @@ function ViewHotel(props) {
                   <Card.Text>
                     {" Best price is $" + roomsDetails[key]["lowest_price"]}
                   </Card.Text>
-                  <Link className="link" to="/custinfo" state={{ hotelId: hotelId }}>
-                    <Button variant="primary" type="submit" className="float-right">
+                  <Link
+                    className="link"
+                    to="/custinfo"
+                    state={{ hotelId: hotelId }}
+                  >
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      className="float-right"
+                    >
                       Book hotel
                     </Button>
                   </Link>
@@ -232,14 +246,11 @@ function ViewHotel(props) {
             </Card>
           ))}
         </div>
-
       </Container>
 
-      <Container>
-        {/* <Map /> */}
-      </Container>
+      <Container>{/* <Map /> */}</Container>
     </>
-  )
+  );
 }
 
 export default ViewHotel;

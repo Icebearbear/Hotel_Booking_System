@@ -7,18 +7,14 @@ const NavigationBar = () => {
     <Navbar bg="dark">
       <Navbar.Collapse className="justify-content-end">
         {"  "}
-        <Nav.Link href="/bookinghistory">
-          <Button variant="warning">List bookings</Button> {"  "}
-        </Nav.Link>
-        {"  "}
 
         <Nav.Link href="/login">
           <Button variant="info">Login/Register</Button>
         </Nav.Link>
         {"  "}
 
-        <Nav.Link href="/userprofile">
-          <Button variant="info">User Profile</Button>
+        <Nav.Link href="/userspage">
+          <Button variant="warning">User Profile</Button>
         </Nav.Link>
       </Navbar.Collapse>
     </Navbar>

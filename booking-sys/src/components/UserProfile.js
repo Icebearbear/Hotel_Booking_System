@@ -40,7 +40,7 @@ function UserProfile() {
       .catch((error) => {
         console.log(error);
       });
-  });
+  }, []);
   const logOut = () => {
     console.log("logout callback");
     axios
