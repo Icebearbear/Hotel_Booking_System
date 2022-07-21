@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import clsx from "clsx";
 import axios from "axios";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import CardHeader from "react-bootstrap/esm/CardHeader";
 import { Component, lazy, Suspense } from "react";
@@ -13,7 +13,7 @@ function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
   const [finalHotels, setFinalHotels] = useState([]);
   const [hotelQ, setHotelQ] = useState(0);
-  const location = useLocation();
+  const navigate = useNavigate();
   
   
 
@@ -129,15 +129,15 @@ function HotelDisplay(props) {
                 <Card.Text>{info.rating + "   stars"}</Card.Text>
                 <Card.Text>{info.name}</Card.Text>
                 <Card.Text>{info.address}</Card.Text>
-                <Link to="/viewhotel" state={{ hotelId: info.id }}>
-                  <Button
+                  <Button  onClick={() => {
+                    localStorage.setItem("HOTEL_ID", info.id);
+                    navigate("/viewhotel");
+                  }} 
                     variant="primary"
-                    type="submit"
                     className="float-right"
                   >
                     Select hotel
                   </Button>
-                </Link>
               </div>
             </Card.Body>
           </div>
