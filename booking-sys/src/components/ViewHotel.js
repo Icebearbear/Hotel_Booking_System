@@ -5,7 +5,7 @@ import axios from "axios";
 import "react-slideshow-image/dist/styles.css";
 import ImageSlider from "./ImageSlider";
 
-import Map from "../MapApp.js";
+// import Map from "../MapApp.js";
 
 function ViewHotel(props) {
   const location = useLocation();
@@ -205,7 +205,7 @@ function ViewHotel(props) {
               <Card.Title>Hotel Location</Card.Title>
               <Container>
                 <div style={{ width: "60rem", height: "20rem" }}>
-                  <Map />
+                  {/* <Map /> */}
                 </div>
               </Container>
             </Card.Body>
