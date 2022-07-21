@@ -5,25 +5,41 @@ import axios from "axios";
 import "react-slideshow-image/dist/styles.css";
 import ImageSlider from "./ImageSlider";
 
-import Map from "./Map";
+// import Map from "../MapApp.js";
 
 function ViewHotel(props) {
   const location = useLocation();
-  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
-  const hotelId = "diH7";
-  //const searchData = location.state; // get data passed from SearchHotel page
+  const { hotelId } = location.state; // get data passed from SearchHotelResult page
+  //const hotelId = "diH7";
+
+  // get data passed from SearchHotelResult page
   const searchData = {
     hotel_id: hotelId + "/",
     destination_id: "WD0M",
-    checkin: "2022-07-20",
-    checkout: "2022-07-21",
-    // lang: "en_US",
-    // currency: "SGD",
-    // country_code: "SG",
-    // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
-    // partner_id: "1",
+    checkin: "2022-08-01",
+    checkout: "2022-08-05",
+    lang: "en_US",
+    currency: "SGD",
+    country_code: "SG",
+    guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    partner_id: "1",
   };
 
+  var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
+
+  var no_of_guest = +(searchDataLocal['adults']) + (+searchDataLocal['childs']);
+  var guest_per_room = Math.floor(no_of_guest/searchDataLocal['rooms']);
+  var param_guests = "" + guest_per_room;
+  for (var i = 0; i< searchDataLocal['rooms'] -1; i++){
+    param_guests =param_guests +"|" + guest_per_room;
+  }
+  
+  searchData['destination_id'] = searchDataLocal['UID'];
+  searchData['checkin'] = searchDataLocal['startDate'].slice(0,10);
+  searchData['checkout'] = searchDataLocal['endDate'].slice(0,10);
+  searchData['guests'] = param_guests;
+
+  // hotel info from api
   const [hotelName, setHotelName] = useState("");
   const [address, setAddress] = useState("");
   const [rating, setRating] = useState("");
@@ -97,17 +113,14 @@ function ViewHotel(props) {
       })
       .then((roomData) => {
         setRoomsDetails(roomData.data.rooms);
-        //sortByRoomPrices(roomsDetails);
-        // var pairs = {};
-
-        // roomsDetails[0].images.forEach(imageno => {
-        //   imageno.url.forEach(url => {
-        //     pairs[imageno] = url;
-        //   });
-        // });
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   };
+
+  const roomImg = (roomNo) => {
+    var roomImgUrl = roomsDetails[roomNo].images.map(imgurl => imgurl.url)  // array containing room images
+    return roomImgUrl;
+  }
 
   // const sortByRoomPrices = (rooms) => {
   //   roomsDetails.sort(function (a, b) {
@@ -203,10 +216,14 @@ function ViewHotel(props) {
 
         {/* Map */}
         <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card style={{ width: "70rem", flex: 1 }}>
+          <Card style={{ width: "70rem", height: "30rem" }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
-              {/* <Map /> */}
+              <Container>
+                <div style={{ width: "60rem", height: "20rem" }}>
+                  {/* <Map /> */}
+                </div>
+              </Container>
             </Card.Body>
           </Card>
         </div>
@@ -220,12 +237,12 @@ function ViewHotel(props) {
                   {roomsDetails[key]["roomNormalizedDescription"]}
                 </Card.Header>
                 <div className="d-flex" style={{ flexDirection: "row" }}>
-                  {/* <Card.Img
+                  <Card.Img
                     style={{ width: "18rem" }}
-                    src={`${roomsDetails[key]["images"][0]}}`}
-                  ></Card.Img> */}
+                    src={`${roomImg(key)[0]}`}
+                  ></Card.Img>
                   <Card.Text>
-                    {"Best price is $" + roomsDetails[key]["lowest_price"]}
+                    {" Best price is $" + roomsDetails[key]["lowest_price"]}
                   </Card.Text>
                   <Link
                     className="link"
