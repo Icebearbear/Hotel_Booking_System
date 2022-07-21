@@ -84,14 +84,23 @@ app.get("/viewhotel", (req, res) => {
       .get(`https://hotelapi.loyalty.dev/api/hotels/${hotelId}`)
       .then((hotelres) => {
         console.log("From API: " + hotelId);
-        const ids = hotelres.data.hires_image_index;
-        const imgId = ids.split(",");
         const imgDet = hotelres.data.image_details;
+        const ids = hotelres.data.hires_image_index;
+
         const imgUrl = [];
-        imgId.forEach(
-          (imageI) =>
-            (imgUrl[`${imageI}`] = imgDet["prefix"] + imageI + imgDet["suffix"])
-        );
+        if (typeof ids !== 'undefined') {
+          const imgId = ids.split(",");
+          imgId.forEach(
+            (imageI) =>
+              (imgUrl[`${imageI}`] = imgDet["prefix"] + imageI + imgDet["suffix"])
+          );
+        }
+        else{
+          for (let i = 0; i < hotelres.data.number_of_images; i++) {
+            imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"]
+          }
+            
+        }
 
         res.status(200).json({
           data: JSON.stringify(hotelres.data),

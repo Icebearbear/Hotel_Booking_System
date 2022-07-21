@@ -9,9 +9,10 @@ import ImageSlider from "./ImageSlider";
 
 function ViewHotel(props) {
   const location = useLocation();
-  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
-  const hotelId = "diH7";
-  //const searchData = location.state; // get data passed from SearchHotel page
+  const { hotelId } = location.state; // get data passed from SearchHotelResult page
+  //const hotelId = "diH7";
+
+  // get data passed from SearchHotelResult page
   const searchData = {
     hotel_id: hotelId + "/",
     destination_id: "WD0M",
@@ -24,6 +25,21 @@ function ViewHotel(props) {
     partner_id: "1",
   };
 
+  var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
+
+  var no_of_guest = +(searchDataLocal['adults']) + (+searchDataLocal['childs']);
+  var guest_per_room = Math.floor(no_of_guest/searchDataLocal['rooms']);
+  var param_guests = "" + guest_per_room;
+  for (var i = 0; i< searchDataLocal['rooms'] -1; i++){
+    param_guests =param_guests +"|" + guest_per_room;
+  }
+  
+  searchData['destination_id'] = searchDataLocal['UID'];
+  searchData['checkin'] = searchDataLocal['startDate'].slice(0,10);
+  searchData['checkout'] = searchDataLocal['endDate'].slice(0,10);
+  searchData['guests'] = param_guests;
+
+  // hotel info from api
   const [hotelName, setHotelName] = useState("");
   const [address, setAddress] = useState("");
   const [rating, setRating] = useState("");
