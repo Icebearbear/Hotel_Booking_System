@@ -17,11 +17,11 @@ function ViewHotel(props) {
     destination_id: "WD0M",
     checkin: "2022-08-01",
     checkout: "2022-08-05",
-    // lang: "en_US",
-    // currency: "SGD",
-    // country_code: "SG",
-    // guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
-    // partner_id: "1",
+    lang: "en_US",
+    currency: "SGD",
+    country_code: "SG",
+    guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    partner_id: "1",
   };
 
   const [hotelName, setHotelName] = useState("");
@@ -199,9 +199,11 @@ function ViewHotel(props) {
           <Card style={{ width: "70rem", height: "30rem" }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
-              <div style={{ width: "60rem", height: "20rem" }}>
-                <Map/>
-              </div>
+              <Container>
+                <div style={{ width: "60rem", height: "20rem" }}>
+                  <Map />
+                </div>
+              </Container>
             </Card.Body>
           </Card>
         </div>
