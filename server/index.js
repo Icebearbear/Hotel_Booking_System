@@ -112,8 +112,7 @@ app.get("/hotelnprices", (req, res) => {
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var guests = searchData.guests;
-  var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
+  var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   const requestPrice = axios.get(urlPrice);
   const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
     params: { destination_id: destination_id },
