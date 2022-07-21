@@ -211,6 +211,7 @@ Testing Stripe in checkout page:
 
 - USER_DB_ACCOUNT = {first_name: "", last_name: "", email:"", uid:"", dbdocId:""} - contains user account in db
 - USER_ID = {""} - contains user uid in db, stored in login page for booking purpose
+- SEARCH_DATA ={"destination_id":"","checkin":"","checkout":"","lang":"","currency":"","rooms":"", "adults":"","childs":"","guests":,"partner_id":""} - pass data from feature 1 to feature 2.
 - BOOKING_DATA = passData in ViewHotel, to pass to custinfo
 - HOTEL_BOOKING_INFO = infoObject in CustometInformation page - to keep data before checkout and use it after checkout is successful
 
