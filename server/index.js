@@ -172,7 +172,7 @@ app.get("/hotelidprices", (req, res) => {
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
+  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}/price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log("get from: " + url);
 
   try {
@@ -180,11 +180,18 @@ app.get("/hotelidprices", (req, res) => {
       .get(url)
       .then((roomres) => {
         console.log("got SPECIFIC HOTEL room prices ")
-        res.status(200);
-        res.send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+        if (roomres.data === "undefined") {
+          console.log("die")
+          res.status(404);
+        }
+        else {
+          console.log(roomres.data)
+          res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+        }
       })
       .catch((error) => {
         console.log(error.message);
+        res.status(error.response.status).send(error.message);
       });
   } catch (err) {
     res.status(500).send(err);
