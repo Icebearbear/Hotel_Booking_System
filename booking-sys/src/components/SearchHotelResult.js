@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
+import Spinner from "react-bootstrap/Spinner"
 import clsx from "clsx";
 import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
@@ -93,9 +94,11 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
+    <div className="d-flex p-2 justify-content-around">
+    <h3>{"showing hotels at " + searchData['destination_id']}</h3></div>
       <div className="grid grid-cols-3 gap-4 content-start">
         {data.map((hotels, index) => (
-          <HotelDisplay key={index} info={hotels} loading={loading} />
+          <HotelDisplay key={index} info={hotels} loading={loading} search={searchData}/>
         ))}
       </div>
       <div ref={triggerRef} className={clsx("trigger", { visible: loading })}>
@@ -106,7 +109,10 @@ function SearchHotelResult() {
 }
 
 const LoadingPosts = () => {
-  return <h1>LOADING..............</h1>;
+  return <div className="d-flex p-2 justify-content-around">
+    <Spinner animation="border" role="status" size="lg">
+      <span className="visually-hidden">Loading...</span>
+    </Spinner></div>;
 };
 /// display cards
 function HotelDisplay(props) {
@@ -114,7 +120,7 @@ function HotelDisplay(props) {
   return (
     <>
       <div className="d-flex p-2 justify-content-around">
-        {/* <h3>{"LALAAL" + info.id}</h3> */}
+        {/* <h3>{"showing hotels at" + props.search['destination_id']}</h3> */}
         <Card className="text-center" style={{ width: "75rem" }}>
           <Card.Header as="h5">{info.name}</Card.Header>
           <div className="d-flex" style={{ flexDirection: "row" }}>
