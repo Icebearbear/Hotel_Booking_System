@@ -103,6 +103,7 @@ function ViewHotel() {
   }
 
   function onClick(event, key) {
+    const surcharge = roomsDetails[key].roomAdditionalInfo.displayFields.surcharges.map(fee => fee.amount);
     const passData = {
       destination_id: searchData["destination_id"],
       hotelId: hotelId,
@@ -114,7 +115,7 @@ function ViewHotel() {
       checkIn: searchData.checkin,
       checkOut: searchData.checkout,
       roomRate: roomsDetails[key].lowest_price,
-      taxRecovery: 0,  // the hotel rooms info don't have this, prob dont show in custinfo?
+      surcharges: surcharge[0], 
     }
     console.log(passData);
     localStorage.setItem("BOOKING_DATA", JSON.stringify(passData));
@@ -242,36 +243,6 @@ function ViewHotel() {
                 </Link>
               </Card.Body>
             </Card>
-            // <Card className="flex-fill" style={{ width: "70rem", flexDirection: "row", flex: 1 }}>
-            //   <Card.Header className="text-center">
-            //     {roomsDetails[key]["roomNormalizedDescription"]}
-            //   </Card.Header>
-            //   <Card.Img
-            //     style={{ width: "30%" }}
-            //     src={`${roomImg(key)[0]}`}
-            //   ></Card.Img>
-            //   <Card.Body>
-            //     {/* <div className="d-flex" style={{ flexDirection: "row" }}> */}
-            //     <Card.Text>
-            //       {" Best price is $" + roomsDetails[key]["lowest_price"]}
-            //     </Card.Text>
-            //     {/* </div> */}
-            //   </Card.Body>
-            //   <Card.Footer className="text-center">
-            //     <Link
-            //       className="link"
-            //       to="/custinfo"
-            //     >
-            //       <Button
-            //         onClick={event => onClick(event, key)}
-            //         variant="primary"
-            //         className="float-right"
-            //       >
-            //         Book hotel
-            //       </Button>
-            //     </Link>
-            //   </Card.Footer>
-            // </Card>
           ))}
         </div>
       </Container>
