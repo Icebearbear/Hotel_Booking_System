@@ -2,31 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Container, Card, CardGroup, Col, Row, Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import "react-slideshow-image/dist/styles.css";
+// import "react-slideshow-image/dist/styles.css";
 import ImageSlider from "./ImageSlider";
-
+import NavigationBar from "./NavigationBar";
+import testimg from "./0.jpg";
 // import Map from "../MapApp.js";
 
-function ViewHotel(props) {
-  //const location = useLocation();
-  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
+function ViewHotel() {
+  // get data passed from SearchHotelResult page
   //const hotelId = "diH7";
   const hotelId = localStorage.getItem("HOTEL_ID");
-  // get data passed from SearchHotelResult page
-  const searchData = {
-    hotel_id: hotelId,
-    destination_id: "WD0M",
-    checkin: "2022-08-01",
-    checkout: "2022-08-05",
-    lang: "en_US",
-    currency: "SGD",
-    country_code: "SG",
-    guests: "2",  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
-    partner_id: "1",
-  };
 
+  // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
- 
 
   var no_of_guest = +(searchDataLocal['adults']) + (+searchDataLocal['childs']);
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal['rooms']);
@@ -35,10 +23,17 @@ function ViewHotel(props) {
     param_guests = param_guests + "|" + guest_per_room;
   }
 
-  searchData['destination_id'] = searchDataLocal['UID'];
-  searchData['checkin'] = searchDataLocal['startDate'].slice(0, 10);
-  searchData['checkout'] = searchDataLocal['endDate'].slice(0, 10);
-  searchData['guests'] = param_guests;
+  const searchData = {
+    hotel_id: hotelId,
+    destination_id: searchDataLocal['UID'],
+    checkin: searchDataLocal['startDate'].slice(0, 10),
+    checkout: searchDataLocal['endDate'].slice(0, 10),
+    lang: "en_US",
+    currency: "SGD",
+    country_code: "SG",
+    guests: param_guests,  // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    partner_id: "1",
+  };
 
   // hotel info from api
   const [hotelName, setHotelName] = useState("");
@@ -109,19 +104,10 @@ function ViewHotel(props) {
     return roomImgUrl;
   }
 
-  // const sortByRoomPrices = (rooms) => {
-  //   roomsDetails.sort(function (a, b) {
-  //     return a.lowest_price - b.lowest_price;
-  //   });
-
-  //   for (let i = 0; i < rooms.length; i++) {
-  //     console.log(rooms[i]["roomNormalizedDescription"] + " " + rooms[i]["lowest_price"])
-  //   }
-  // }
-
-// pass to hotel booking page
-  const onSubmit = (key) => {
+  function onClick(event, key) {
     const passData = {
+      destination_id: searchData["destination_id"],
+      hotelId: hotelId,
       hotelName: hotelName,
       roomType: roomsDetails[key].description,
       noOfRooms: searchDataLocal['rooms'],
@@ -131,12 +117,10 @@ function ViewHotel(props) {
       checkOut: searchData.checkout,
       roomRate: roomsDetails[key].lowest_price,
       taxRecovery: 0,  // the hotel rooms info don't have this, prob dont show in custinfo?
-  }
+    }
     console.log(passData);
     localStorage.setItem("BOOKING_DATA", JSON.stringify(passData));
   }
-
-
 
   useEffect(() => {
     getHotelData();
@@ -151,7 +135,7 @@ function ViewHotel(props) {
 
   return (
     <>
-      {/* <div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> */}
+      <NavigationBar />
       <div class="image d-flex flex-column justify-content-center align-items-center">
         <Card style={{ width: "70rem", flex: 1 }}>
           <Row>
@@ -169,9 +153,8 @@ function ViewHotel(props) {
           </Row>
         </Card>
       </div>
-      <Container maxWidth="lg" className="p-4">
-        {/* Intro Section */}
 
+      <Container maxWidth="lg" className="p-4">
         {/* Hotel description */}
         <div class="d-flex flex-column justify-content-center align-items-center">
           <CardGroup>
@@ -220,51 +203,77 @@ function ViewHotel(props) {
         </div>
 
         {/* Map */}
-        <div class="d-flex flex-column justify-content-center align-items-center">
+        {/* <div class="d-flex flex-column justify-content-center align-items-center">
           <Card style={{ width: "70rem", height: "30rem" }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
               <Container>
                 <div style={{ width: "60rem", height: "20rem" }}>
-                  {/* <Map /> */}
+                  <Map />
                 </div>
               </Container>
             </Card.Body>
           </Card>
-        </div>
+        </div> */}
 
         {/* Rooms */}
         <div class="d-flex flex-column justify-content-center align-items-center">
+          <Card style={{ width: "70rem", flex: 1 }}>
+            <Card.Body>
+              <Card.Title>Available Rooms</Card.Title>
+            </Card.Body>
+          </Card>
+
           {Object.entries(roomsDetails).map(([key, value]) => (
-            <Card style={{ width: "70rem", flex: 1 }}>
-              <Card.Body>
-                <Card.Header>
-                  {roomsDetails[key]["roomNormalizedDescription"]}
-                </Card.Header>
-                <div className="d-flex" style={{ flexDirection: "row" }}>
-                  <Card.Img
-                    style={{ width: "18rem" }}
-                    src={`${roomImg(key)[0]}`}
-                  ></Card.Img>
-                  <Card.Text>
-                    {" Best price is $" + roomsDetails[key]["lowest_price"]}
-                  </Card.Text>
-                  <Link
-                    className="link"
-                    to="/custinfo"
-                    state={{ hotelId: hotelId }}
+            <Card className="flex-fill" style={{ height: "20rem", width: "70rem", flexDirection: "row", alignItems: "flex-start" }}>
+              <Card.Img style={{ height: "100%", width: "40%", borderRadius: 0 }} src={`${roomImg(key)[0]}`} />
+              <Card.Body className="d-flex flex-column">
+                <Card.Title>{roomsDetails[key]["roomNormalizedDescription"]}</Card.Title>
+                <Card.Text>
+                  {`Offered at \$${roomsDetails[key]["lowest_price"]} down from \$${roomsDetails[key]["price"]}!`} <br/>
+                  {`*Room surcharges at \$${roomsDetails[key].roomAdditionalInfo.displayFields.surcharges.map(fee => fee.amount)}.`}
+                </Card.Text>
+                <Link className="link" to="/custinfo">
+                  <Button
+                    onClick={event => onClick(event, key)}
+                    variant="primary"
+                    className="float-right"
                   >
-                    <Button
-                      onClick={onSubmit(key)}
-                      variant="primary"
-                      className="float-right"
-                    >
-                      Book hotel
-                    </Button>
-                  </Link>
-                </div>
+                    Book your room
+                  </Button>
+                </Link>
               </Card.Body>
             </Card>
+            // <Card className="flex-fill" style={{ width: "70rem", flexDirection: "row", flex: 1 }}>
+            //   <Card.Header className="text-center">
+            //     {roomsDetails[key]["roomNormalizedDescription"]}
+            //   </Card.Header>
+            //   <Card.Img
+            //     style={{ width: "30%" }}
+            //     src={`${roomImg(key)[0]}`}
+            //   ></Card.Img>
+            //   <Card.Body>
+            //     {/* <div className="d-flex" style={{ flexDirection: "row" }}> */}
+            //     <Card.Text>
+            //       {" Best price is $" + roomsDetails[key]["lowest_price"]}
+            //     </Card.Text>
+            //     {/* </div> */}
+            //   </Card.Body>
+            //   <Card.Footer className="text-center">
+            //     <Link
+            //       className="link"
+            //       to="/custinfo"
+            //     >
+            //       <Button
+            //         onClick={event => onClick(event, key)}
+            //         variant="primary"
+            //         className="float-right"
+            //       >
+            //         Book hotel
+            //       </Button>
+            //     </Link>
+            //   </Card.Footer>
+            // </Card>
           ))}
         </div>
       </Container>

@@ -45,9 +45,10 @@ app.get("/api", (req, res) => {
 const stripe = require("stripe")(`${process.env.PRIVATE_KEY}`);
 // check out page served by Stripe for payment
 app.post("/create-checkout-session", async (req, res) => {
-  const hotel = req.body.hotelID;
+  const hotel = req.body.hotelName;
   const price = req.body.price;
-  const noNight = req.body.bookingInfo.noNight;
+  const noNight = req.body.noNight;
+  console.log(hotel, price, noNight);
   // price set by Stripe is in cents. So convert to cents to show the correct on Stripe checkout page (price*50)
   try {
     const session = await stripe.checkout.sessions.create({
@@ -60,7 +61,7 @@ app.post("/create-checkout-session", async (req, res) => {
             product_data: {
               name: hotel,
             },
-            unit_amount: price * 50,
+            unit_amount: Math.floor(price * 50),
           },
           quantity: noNight,
         },
@@ -73,6 +74,7 @@ app.post("/create-checkout-session", async (req, res) => {
       .status(200)
       .json({ url: session.url, paymentID: session.payment_intent });
   } catch (e) {
+    console.log(e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -118,7 +120,7 @@ app.get("/viewhotel", (req, res) => {
 
 app.get("/hotelnprices", (req, res) => {
   const searchData = JSON.parse(req.query.data);
-  console.log(searchData);
+  // console.log(searchData);
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
@@ -174,7 +176,7 @@ app.get("/hotelnprices", (req, res) => {
 
 app.get("/hotelidprices", (req, res) => {
   const searchData = JSON.parse(req.query.data);
-  console.log(searchData);
+  // console.log(searchData);
   var hotel_id = searchData.hotel_id;
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
@@ -191,8 +193,11 @@ app.get("/hotelidprices", (req, res) => {
           console.log("die")
           res.status(404);
         }
+        // else {
+        //   console.log(roomres.data)
+        // } 
         else {
-          console.log(roomres.data)
+          // console.log(roomres.data);
           res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
         }
       })
@@ -211,7 +216,7 @@ app.get("/hotelidprices", (req, res) => {
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
   const searchData = JSON.parse(req.query.data);
-  console.log(searchData);
+  // console.log(searchData);
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
@@ -326,7 +331,7 @@ app.post("/bookhotel", async (req, res) => {
 
     console.log("booked");
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).send(err);
   }
 });
@@ -341,13 +346,13 @@ app.get("/user", async (req, res) => {
       res.send(404);
     }
     docSnapshot.docs.map((doc) => {
-      console.log(doc.id, doc.data());
+      // console.log(doc.id, doc.data());
       res.status(200).json({ id: doc.id, data: doc.data() });
     });
 
     // reach this point means docSnapshot is empty
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).send(err);
   }
 });
@@ -392,7 +397,7 @@ app.post("/edituser", async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).send(error);
   }
 });
@@ -411,7 +416,7 @@ app.post("/login", async (req, res) => {
     const r = await signInWithEmailAndPassword(auth, email, password).then(
       (userCredentials) => {
         var data = userCredentials.user.reloadUserInfo;
-        console.log(data.localId, data.email);
+        // console.log(data.localId, data.email);
         res.status(200).json({ userId: data.localId, email: data.email });
       }
     );
