@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Container, Card, CardGroup, Col, Row, Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-// import "react-slideshow-image/dist/styles.css";
 import ImageSlider from "./ImageSlider";
 import NavigationBar from "./NavigationBar";
-import testimg from "./0.jpg";
 // import Map from "../MapApp.js";
 
 function ViewHotel() {
