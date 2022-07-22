@@ -1,6 +1,8 @@
 const request = require("supertest");
 const baseURL = "http://localhost:3001";
 const server = require("../server/index");
+let rand = Math.floor(Math.random() * 10);
+
 describe("POST /api", () => {
   it("should return 200", async () => {
     const response = await request(baseURL).get("/api");
@@ -13,7 +15,7 @@ describe("POST /registration", () => {
     const userDetails = {
       first_name: "test_first_name",
       last_name: "test_last_name",
-      email: "aa@gmail.com",
+      email: "aa" + rand + "@gmail.com",
       password: "123qwe",
     };
     const response = await request(baseURL).post("/register").send(userDetails);
@@ -122,8 +124,6 @@ describe("POST /logout", () => {
     expect(response.text).toBe("signed out");
   });
 });
-
-let rand = Math.floor(Math.random() * 10);
 
 /////// change userDetails before start testing
 describe("POST /edituser", () => {

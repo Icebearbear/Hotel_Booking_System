@@ -39,12 +39,13 @@ const infoObject = {
     paymentID: "",
     payeeID: "uid",
   },
-  uid: "NPkGDo2eyEYqcN48BjBkvj6mA1h2",
+  uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
 };
 
 describe("POST /getBook", () => {
+  const current_total = 13;
   var userDetails = {
-    uid: "NPkGDo2eyEYqcN48BjBkvj6mA1h2",
+    uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
   };
   var wrongUserDetails = {
     uid: "wrong_uid",
@@ -52,7 +53,7 @@ describe("POST /getBook", () => {
   it("should return booking data with matched uid", async () => {
     const response = await request(baseURL).get("/getBook").query(userDetails);
     expect(response.statusCode).toBe(200);
-    expect(response.body.finalData.length).toBe(2); // returned booking data by user uid
+    expect(response.body.finalData.length).toBe(current_total); // returned booking data by user uid
     // check if all of the uid from data returned matches the input uid
     for (var i = 0; i < response.body.finalData.length; i++) {
       expect(response.body.finalData[i][1]["uid"]).toBe(userDetails.uid);
@@ -74,7 +75,7 @@ describe("POST /deleteBook", () => {
 
   beforeAll(async () => {
     const userDetails = {
-      uid: "NPkGDo2eyEYqcN48BjBkvj6mA1h2",
+      uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
     };
     const response = await request(baseURL).get("/getBook").query(userDetails);
     totalBooking = response.body.finalData.length;
@@ -88,7 +89,7 @@ describe("POST /deleteBook", () => {
     var item = bookingList[Math.floor(Math.random() * bookingList.length)];
     const delDetails = {
       docId: item,
-      userID: "NPkGDo2eyEYqcN48BjBkvj6mA1h2",
+      userID: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
     };
     const response = await request(baseURL)
       .post("/deleteBook")

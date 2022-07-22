@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import "react-slideshow-image/dist/styles.css";
 import ImageSlider from "./ImageSlider";
-
+import NavigationBar from "./NavigationBar";
 // import Map from "../MapApp.js";
 
 function ViewHotel(props) {
@@ -121,6 +121,8 @@ function ViewHotel(props) {
   // pass to hotel booking page
   const onSubmit = (key) => {
     const passData = {
+      destination_id: searchData["destination_id"],
+      hotelId: hotelId,
       hotelName: hotelName,
       roomType: roomsDetails[key].description,
       noOfRooms: searchDataLocal["rooms"],
@@ -149,6 +151,7 @@ function ViewHotel(props) {
   return (
     <>
       {/* <div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> */}
+      <NavigationBar />
       <div class="image d-flex flex-column justify-content-center align-items-center">
         <Card style={{ width: "70rem", flex: 1 }}>
           <Row>
