@@ -30,7 +30,7 @@ function BookingHistory() {
       }).catch = (err) => {
       console.log(err);
     };
-  }, []);
+  }, [setBook]);
 
   const onSubmit = (valuePass) => {
     setRemove(true);
