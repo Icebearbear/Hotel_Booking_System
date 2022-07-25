@@ -29,10 +29,9 @@ describe("/viewhotel call api with hotelId", () => {
         const response = await request(baseURL).get("/viewhotel").query(invalidHotelId);
         expect(response.body.data).toBe("{}");
     })
-})
+}) 
 
 describe("call api with searchData from searchhotelresults", () => {
-    
     const searchData = {
         hotel_id: "eqUd",
         destination_id: "RsBU",

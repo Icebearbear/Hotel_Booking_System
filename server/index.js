@@ -91,17 +91,18 @@ app.get("/viewhotel", (req, res) => {
         const ids = hotelres.data.hires_image_index;
 
         const imgUrl = [];
-        if (typeof ids !== "undefined") {
+        if (typeof ids !== 'undefined') {
           const imgId = ids.split(",");
           imgId.forEach(
             (imageI) =>
-              (imgUrl[`${imageI}`] =
-                imgDet["prefix"] + imageI + imgDet["suffix"])
+              (imgUrl[`${imageI}`] = imgDet["prefix"] + imageI + imgDet["suffix"])
           );
-        } else {
+        }
+        else{
           for (let i = 0; i < hotelres.data.number_of_images; i++) {
-            imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
+            imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"]
           }
+            
         }
 
         res.status(200).json({
@@ -187,11 +188,15 @@ app.get("/hotelidprices", (req, res) => {
     axios
       .get(url)
       .then((roomres) => {
-        console.log("got SPECIFIC HOTEL room prices ");
+        console.log("got SPECIFIC HOTEL room prices ")
         if (roomres.data === "undefined") {
-          console.log("die");
+          console.log("die")
           res.status(404);
-        } else {
+        }
+        // else {
+        //   console.log(roomres.data)
+        // } 
+        else {
           // console.log(roomres.data);
           res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
         }
