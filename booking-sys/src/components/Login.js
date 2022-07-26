@@ -31,7 +31,7 @@ function Login() {
     setError(true);
     setErrorMsg(errMsg);
   };
-  
+
   const onSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -52,7 +52,8 @@ function Login() {
         if (res.status === 200) {
           localStorage.setItem("USER_ID", res.data.userId); // store data from localStorage temporarily
           localStorage.setItem("USER_EMAIL", res.data.email); // store data from localStorage temporarily
-          navigate("/searchhotel");
+          // document.getElementById("nav-bar").style.display = "none";
+          navigate(-1);
         }
         if (res.status === 500) {
           updateError(res);

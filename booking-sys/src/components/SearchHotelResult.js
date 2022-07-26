@@ -9,7 +9,6 @@ import CardHeader from "react-bootstrap/esm/CardHeader";
 import { Component, lazy, Suspense } from "react";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 import useLazyLoad from "./useLazyLoad";
-import NavigationBar from "./NavigationBar";
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
@@ -92,8 +91,7 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
-      <NavigationBar />
-      <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+      <div class="container mb-4 p-3 d-flex justify-content-center">
         {/* <h3>{"showing hotels at " + searchData["destination_id"]}</h3> */}
         <h3>Showing hotels search result</h3>
       </div>

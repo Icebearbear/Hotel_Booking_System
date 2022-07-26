@@ -127,8 +127,7 @@ function SearchHotel() {
 
   return (
     <div className="SearchHotel">
-      <NavigationBar />
-      <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
+      <div className="container mb-4 p-3 d-flex justify-content-around">
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
             <h1>Search Page</h1>

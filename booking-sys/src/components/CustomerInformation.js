@@ -7,7 +7,6 @@ import Col from "react-bootstrap/Col";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import Stack from "react-bootstrap/Stack";
-import NavigationBar from "./NavigationBar";
 import "../css/user.min.css";
 function CustomerInformation() {
   // data from user inputs
@@ -26,6 +25,10 @@ function CustomerInformation() {
   const [extraReq, setExtraReq] = useState("");
 
   const uid = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
+  // const [loginWarning, setLoginWarning] = useState(false);
+  // const [login, setLogin] = useState(false);
+
+  // setLogin(localStorage.getItem("LOGIN")); // get data from localStorage FOR LOGIN
 
   // for input fields validation
   const [validated, setValidated] = useState(false); //for input field validation
@@ -46,10 +49,12 @@ function CustomerInformation() {
     hotelName: hotelInfo.hotelName,
     price: comPrice,
     noNight: noNight,
+    email: email,
   };
   const infoObject = {
     destinationID: hotelInfo.destination_id,
     hotelID: hotelInfo.hotelId,
+    hotelName: hotelInfo.hotelName,
     bookingInfo: {
       noNight: noNight,
       startDate: hotelInfo.checkIn,
@@ -101,6 +106,16 @@ function CustomerInformation() {
     }
   };
 
+  // const getUser = async () => {
+  //   try {
+  //     await axios.get("http://localhost:3001/getSession").then((res) => {
+  //       setLogin(res.data.login);
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const onSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -113,6 +128,9 @@ function CustomerInformation() {
     }
     setValidated(true);
 
+    // if (!login) {
+    //   setLoginWarning(true);
+    // }
     if (noInput === false) {
       console.log(infoObject);
       axios
@@ -132,7 +150,6 @@ function CustomerInformation() {
   };
   return (
     <div>
-      <NavigationBar />
       <Row>
         <Col md={{ span: 6, offset: 1 }}>
           <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
