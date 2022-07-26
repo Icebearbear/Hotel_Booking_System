@@ -17,6 +17,7 @@ const {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  onAuthStateChanged,
 } = require("firebase/auth");
 const {
   getFirestore,
@@ -44,9 +45,10 @@ app.get("/api", (req, res) => {
 const stripe = require("stripe")(`${process.env.PRIVATE_KEY}`);
 // check out page served by Stripe for payment
 app.post("/create-checkout-session", async (req, res) => {
-  const hotel = req.body.hotelID;
+  const hotel = req.body.hotelName;
   const price = req.body.price;
-  const noNight = req.body.bookingInfo.noNight;
+  const noNight = req.body.noNight;
+  console.log(hotel, price, noNight);
   // price set by Stripe is in cents. So convert to cents to show the correct on Stripe checkout page (price*50)
   try {
     const session = await stripe.checkout.sessions.create({
@@ -59,7 +61,7 @@ app.post("/create-checkout-session", async (req, res) => {
             product_data: {
               name: hotel,
             },
-            unit_amount: price * 50,
+            unit_amount: Math.floor(price * 50),
           },
           quantity: noNight,
         },
@@ -72,6 +74,7 @@ app.post("/create-checkout-session", async (req, res) => {
       .status(200)
       .json({ url: session.url, paymentID: session.payment_intent });
   } catch (e) {
+    console.log(e.message);
     res.status(500).json({ error: e.message });
   }
 });
@@ -88,18 +91,17 @@ app.get("/viewhotel", (req, res) => {
         const ids = hotelres.data.hires_image_index;
 
         const imgUrl = [];
-        if (typeof ids !== 'undefined') {
+        if (typeof ids !== "undefined") {
           const imgId = ids.split(",");
           imgId.forEach(
             (imageI) =>
-              (imgUrl[`${imageI}`] = imgDet["prefix"] + imageI + imgDet["suffix"])
+              (imgUrl[`${imageI}`] =
+                imgDet["prefix"] + imageI + imgDet["suffix"])
           );
-        }
-        else{
+        } else {
           for (let i = 0; i < hotelres.data.number_of_images; i++) {
-            imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"]
+            imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
           }
-            
         }
 
         res.status(200).json({
@@ -117,10 +119,14 @@ app.get("/viewhotel", (req, res) => {
 
 app.get("/hotelnprices", (req, res) => {
   const searchData = JSON.parse(req.query.data);
-  console.log(searchData);
+  // console.log(searchData);
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
+  // var today = new Date();
+  // var date = +(today.getFullYear()+''+(today.getMonth()+1)+''+today.getDate());
+  // var start = +(checkin.replace(/-/g,""));
+  // var end = +(checkout.replace(/-/g,""));
   var guests = searchData.guests;
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
   const requestPrice = axios.get(urlPrice);
@@ -148,6 +154,7 @@ app.get("/hotelnprices", (req, res) => {
             len = len + 1;
           }
         });
+        console.log(len);
         // console.log("ONEEEE ", fhotels);
         // // console.log("TWOOOOOO ", responsetWO.data);
 
@@ -159,32 +166,39 @@ app.get("/hotelnprices", (req, res) => {
       })
     )
     .catch((errors) => {
+      //console.log(errors.response.status);
       console.log("ERRORR", errors.message);
-      res.status(500).send(errors.message);
+      res.status(errors.response.status).send(errors.message);
       // react on errors.
     });
 });
 
 app.get("/hotelidprices", (req, res) => {
   const searchData = JSON.parse(req.query.data);
-  console.log(searchData);
+  // console.log(searchData);
   var hotel_id = searchData.hotel_id;
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
-  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
+  var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}/price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log("get from: " + url);
 
   try {
     axios
       .get(url)
       .then((roomres) => {
-        console.log("got SPECIFIC HOTEL room prices ")
-        res.status(200);
-        res.send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+        console.log("got SPECIFIC HOTEL room prices ");
+        if (roomres.data === "undefined") {
+          console.log("die");
+          res.status(404);
+        } else {
+          // console.log(roomres.data);
+          res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+        }
       })
       .catch((error) => {
         console.log(error.message);
+        res.status(error.response.status).send(error.message);
       });
   } catch (err) {
     res.status(500).send(err);
@@ -197,7 +211,7 @@ app.get("/hotelidprices", (req, res) => {
 //pass a clean data to the front end
 app.get("/hotelprices", (req, res) => {
   const searchData = JSON.parse(req.query.data);
-  console.log(searchData);
+  // console.log(searchData);
   var destination_id = searchData.destination_id;
   var checkin = searchData.checkin;
   var checkout = searchData.checkout;
@@ -261,7 +275,12 @@ app.post("/deleteBook", async (req, res) => {
       // finalData.push(bookDt);
       finalData.push([doc.id, doc.data()]);
     });
-    res.status(200).json({ finalData: finalData });
+
+    if (finalData.length == 0) {
+      res.status(404).send("No such booking found");
+    } else {
+      res.status(200).json({ finalData: finalData });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -276,26 +295,38 @@ app.get("/getBook", async (req, res) => {
     var ids = [];
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
-    const d = docSnapshot.docs.map((doc) => {
-      // finalData.push(doc.data());
-      finalData.push([doc.id, doc.data()]);
-    });
-    res.status(200).json({ finalData: finalData });
+    if (docSnapshot.docs.length == 0) {
+      res.send(404);
+    } else {
+      const d = docSnapshot.docs.map((doc) => {
+        finalData.push([doc.id, doc.data()]);
+      });
+      // console.log("lalalal", finalData);
+      res.status(200).json({ finalData: finalData });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
 });
 // book hotel
-app.post("/bookhotel", (req, res) => {
+app.post("/bookhotel", async (req, res) => {
   console.log("bookhotel");
   try {
     const hotelBookRef = collection(db, "booking");
-    addDoc(hotelBookRef, req.body);
+    const docRef = await addDoc(hotelBookRef, req.body);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        res.status(200).json({ status: "booked", docId: docRef.id });
+      } else {
+        res.status(500).send("Login required");
+      }
+    });
+    console.log("lala");
+
     console.log("booked");
-    res.status(200).send("booked");
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).send(err);
   }
 });
@@ -306,11 +337,17 @@ app.get("/user", async (req, res) => {
   try {
     const q = query(collection(db, "users"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
-    const d = docSnapshot.docs.map((doc) => {
+    if (docSnapshot.docs.length == 0) {
+      res.send(404);
+    }
+    docSnapshot.docs.map((doc) => {
+      // console.log(doc.id, doc.data());
       res.status(200).json({ id: doc.id, data: doc.data() });
     });
+
+    // reach this point means docSnapshot is empty
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).send(err);
   }
 });
@@ -319,15 +356,43 @@ app.post("/edituser", async (req, res) => {
   const { first_name, last_name, email, uid, dbDocId } = req.body;
   // console.log(dbDocId, first_name, last_name, email, uid);
   try {
-    const userRef = doc(db, "users", dbDocId);
-    updateDoc(userRef, {
-      email: email,
-      first_name: first_name,
-      last_name: last_name,
-    });
-    res.status(200).send("updated");
+    // onAuthStateChanged(auth, (user) => {
+    //   if (!user) {
+    //     res.status(500).send("Login required");
+    //   }
+    // });
+    var update = true;
+    const q = query(collection(db, "users"), where("uid", "==", uid));
+    const docSnapshot = await getDocs(q);
+    console.log(docSnapshot.docs.length);
+    if (docSnapshot.docs.length == 0) {
+      res.status(404).send("not-found");
+    } else {
+      docSnapshot.docs.map((doc) => {
+        if (
+          doc.data().first_name == first_name ||
+          doc.data().last_name == last_name ||
+          doc.data().email == email
+        ) {
+          update = false;
+        }
+      });
+      console.log(update);
+
+      if (update == false) {
+        res.status(500).send({ code: "not-new-data-given" });
+      } else {
+        const userRef = doc(db, "users", dbDocId);
+        await updateDoc(userRef, {
+          email: email,
+          first_name: first_name,
+          last_name: last_name,
+        });
+        res.status(200).send("updated");
+      }
+    }
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).send(error);
   }
 });
@@ -346,6 +411,7 @@ app.post("/login", async (req, res) => {
     const r = await signInWithEmailAndPassword(auth, email, password).then(
       (userCredentials) => {
         var data = userCredentials.user.reloadUserInfo;
+        // console.log(data.localId, data.email);
         res.status(200).json({ userId: data.localId, email: data.email });
       }
     );
@@ -371,10 +437,12 @@ app.post("/register", async (req, res) => {
       email,
     });
     console.log("registered user");
-    res.status(200).send("user added");
+    res
+      .status(200)
+      .json({ data: JSON.stringify("user added with email: " + email) });
   } catch (error) {
     console.log("ERROR ", error);
-    res.status(500).send(error);
+    res.status(500).json(error);
   }
 });
 

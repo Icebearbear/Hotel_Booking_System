@@ -17,3 +17,10 @@ describe("test handle filter",()=> {
         expect(subset).toBe(true);
     })
 })
+describe("POST /api", () => {
+  it("should return 200", async () => {
+    const response = await request(baseURL).get("/api");
+    expect(response.statusCode).toBe(200);
+    // expect(response.body.error).toBe(null);
+  });
+});
