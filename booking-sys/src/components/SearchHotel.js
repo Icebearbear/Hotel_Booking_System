@@ -46,12 +46,16 @@ function SearchHotel() {
   };
   // prompt user these data and pass to SearchHotelResult to search for hotels
   const passData = {
-    UID: uid,
-    startDate: selectedDate,
-    endDate: selectedDate2,
+    destination_id: uid,
+    checkin: selectedDate,
+    checkout: selectedDate2,
+    lang: "en_US",
+    currency: "SGD",
     rooms: nrooms,
     adults: nadults,
     childs: nchildren,
+    guests: null,
+    partner_id: "1",
   };
   const selectDest = (event, term, uid) => {
     setWordEntered(term);
@@ -90,12 +94,16 @@ function SearchHotel() {
   const selectAdults = (adult) => {
     // passData['adults'] = adult;
     setnadults(adult);
+    // setnguests(+nadults + +nchildren);
+    console.log(passData);
     // alert(passData['adults']);
   };
 
   const selectChild = (child) => {
     // passData['childs'] = child;
     setnchildren(child);
+    // setnguests(+nadults + +nchildren);
+    console.log(passData);
     // alert(passData['childs']);
   };
 
@@ -109,19 +117,20 @@ function SearchHotel() {
     }
     setValidated(true);
 
-    if (passData["UID"] == null || passData["endDate"] == null) {
+
+    if(passData["destination_id"] == null || passData["checkout"]==null){
       alert("empty fields");
       return;
     }
 
-    console.log(passData["endDate"]);
 
+    // console.log(passData['endDate']);
+    passData['guests'] = +nadults + +nchildren;
+    // console.log(+nadults + +nchildren);
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
-    console.log(
-      new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).endDate)
-    ); //must pass into new Date object to get back Date format
-    alert(JSON.parse(localStorage.getItem("SEARCH_DATA")).endDate);
+    console.log(new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout)); //must pass into new Date object to get back Date format
+    // alert(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout);
     navigate("/searchhotelresult");
   };
 
