@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
@@ -25,43 +25,39 @@ function CustomerInformation() {
   const [airportTransfer, setAirportTransfer] = useState(false);
   const [extraReq, setExtraReq] = useState("");
 
-  const location = useLocation();
-  const { hotelId } = location.state;
   const uid = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
 
+  // for input fields validation
   const [validated, setValidated] = useState(false); //for input field validation
   const [noInput, setNoInput] = useState(true);
 
-  // hotel data from API
-  const [destId, setDestId] = useState("");
-  const [hotelName, setHotelName] = useState("Santa Grand Hotel East Coast");
-  const [hotelRoomType, setHotelRoomType] = useState(
-    "Superior Double or Twin Room Only"
-  );
-  const [noAdult, setAdult] = useState(2);
-  const [noChild, setChild] = useState(2);
-  const [checkInDate, setCheckInDate] = useState("3 Dec 2022");
-  const [checkOutDate, setCheckOutDate] = useState("5 Dec 2022");
-  const [price, setPrice] = useState(3000);
-  const [totalPrice, setTotalPrice] = useState("");
+  /// Booking Information
+  const [hotelInfo, setHotelInfo] = useState([]);
   const [noNight, setNight] = useState(2);
-  const comPrice = price * noNight;
-  const tax = (comPrice * 0.07).toFixed(2);
-  const tPrice = parseInt(comPrice) + parseInt(tax);
-  // data stored from viewhotel
-  // const ht = localStorage.getItem("SELECTED_HOTEL_INFO"); // get data from localStorage temporarily
-  // const hotelInfo = JSON.parse(ht);
+  const comPrice = parseInt(hotelInfo.roomRate * noNight);
+  useEffect(() => {
+    const selectedObj = JSON.parse(localStorage.getItem("BOOKING_DATA")); // data stored from viewhotel
+    setHotelInfo(selectedObj);
+    setNight(2);
+  }, [setNight]);
+  /////////
+
+  const checkoutObj = {
+    hotelName: hotelInfo.hotelName,
+    price: comPrice,
+    noNight: noNight,
+  };
   const infoObject = {
-    destinationID: destId,
-    hotelID: hotelId,
+    destinationID: hotelInfo.destination_id,
+    hotelID: hotelInfo.hotelId,
     bookingInfo: {
       noNight: noNight,
-      startDate: checkInDate,
-      endDate: checkOutDate,
-      noAdult: noAdult,
-      noChildren: noChild,
+      startDate: hotelInfo.checkIn,
+      endDate: hotelInfo.checkOut,
+      noAdult: hotelInfo.noOfAdults,
+      noChildren: hotelInfo.noOfChildren,
       message: "booking for birthday celebration",
-      roomType: hotelRoomType,
+      roomType: hotelInfo.roomType,
       bookForSomeone: bookForSomeone,
       smoking: smoking,
       bedType: bed,
@@ -71,7 +67,7 @@ function CustomerInformation() {
       airportTransfer: airportTransfer,
       extraReq: extraReq,
     },
-    price: price,
+    price: comPrice,
     supplierBookingID: "sbID",
     supplierBookingRespond: "sbrID",
     bookingReference: "bref",
@@ -120,7 +116,7 @@ function CustomerInformation() {
     if (noInput === false) {
       console.log(infoObject);
       axios
-        .post("http://localhost:3001/create-checkout-session", infoObject)
+        .post("http://localhost:3001/create-checkout-session", checkoutObj)
         .then((res) => {
           infoObject.payeeInformation.paymentID = res.data.paymentID; // update paymentID from Stripe
           localStorage.setItem(
@@ -313,30 +309,33 @@ function CustomerInformation() {
                   <Stack gap={3}>
                     <h3>Booking Information</h3>
                     <h5>
-                      <strong>{hotelName}</strong>
+                      <strong>{hotelInfo.hotelName}</strong>
                     </h5>
                     <></>
                     <h5>
-                      <strong>{hotelRoomType}</strong>
+                      <strong>{hotelInfo.roomType}</strong>
                     </h5>
                     <h5>
                       {noNight +
                         " Room    " +
-                        noAdult +
+                        hotelInfo.noOfAdults +
                         " Adults, " +
-                        noChild +
+                        hotelInfo.noOfChildren +
                         " Children / Per Room"}{" "}
                     </h5>
 
                     {[
-                      ["Check-in", checkInDate],
-                      ["Check-out", checkOutDate],
+                      ["Check-in", hotelInfo.checkIn],
+                      ["Check-out", hotelInfo.checkOut],
                       [" ", noNight + " Nights"],
                       [
-                        "Room rate (" + noNight + " nights, " + "1 room",
-                        "SGD " + comPrice,
+                        "Room rate (" +
+                          noNight +
+                          " nights, " +
+                          hotelInfo.noOfRooms +
+                          "room",
+                        "SGD " + hotelInfo.roomRate,
                       ],
-                      ["Tax recovery", "SGD " + tax],
                     ].map((display) => (
                       <Form.Group as={Col} className="g-4">
                         <Row>
@@ -360,7 +359,7 @@ function CustomerInformation() {
                         </Col>
                         <Col sm={5}>
                           <p3>
-                            <strong>{"SGD " + tPrice}</strong>
+                            <strong>{"SGD " + comPrice}</strong>
                           </p3>
                         </Col>
                       </Row>
