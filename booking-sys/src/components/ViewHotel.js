@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, CardGroup, Col, Row, Button } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import { Container, Card, CardGroup, Col, Row, Button, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
+// import { HashLink } from "react-router-hash-link";
 import axios from "axios";
 import ImageSlider from "./ImageSlider";
 import NavigationBar from "./NavigationBar";
@@ -49,6 +50,8 @@ function ViewHotel() {
   const [longitude, setLongitude] = useState("");
 
   const [roomsDetails, setRoomsDetails] = useState({});
+  const [roomFlag, setRoomFlag] = useState("");
+  const [CheapestRoomPrice, setCheapestRoomPrice] = useState("");
 
   const getHotelData = () => {
     try {
@@ -79,7 +82,20 @@ function ViewHotel() {
     }
   };
 
-  const checkAmenities = (bool) => {
+  // check if there are amenities data given
+  const checkAmenities = () => {
+    if (Object.keys(amenities).length === 0) {
+      return "No information was provided.";
+    }
+  }
+  // check if there are reviews
+  const checkReviews = () => {
+    if (reviews.length === 0) {
+      return "This hotel does not have any reviews.";
+    }
+  }
+  // convert true into yes and false into no for UI purposes
+  const convertAmenities = (bool) => {
     if (bool === true) {
       return "Yes";
     }
@@ -92,7 +108,10 @@ function ViewHotel() {
         params: { data: searchData },
       })
       .then((roomData) => {
+        setRoomFlag(roomData.data.completed);
+        console.log("set rooms");
         setRoomsDetails(roomData.data.rooms);
+        setCheapestRoomPrice(roomData.data.rooms[0].lowest_price);
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   };
@@ -115,7 +134,7 @@ function ViewHotel() {
       checkIn: searchData.checkin,
       checkOut: searchData.checkout,
       roomRate: roomsDetails[key].lowest_price,
-      surcharges: surcharge[0], 
+      surcharges: surcharge[0],
     }
     console.log(passData);
     localStorage.setItem("BOOKING_DATA", JSON.stringify(passData));
@@ -138,16 +157,37 @@ function ViewHotel() {
       <div class="image d-flex flex-column justify-content-center align-items-center">
         <Card style={{ width: "70rem", flex: 1 }}>
           <Row>
+            {/* IMAGE SLIDER COL */}
             <Col>
               <div style={containerStyle}>
                 <ImageSlider slides={imageData} />
               </div>
             </Col>
+            {/* TEXT COL */}
             <Col>
-              <h1 class="card-title">{hotelName}</h1>
-              <h5>{"Hotel rating: " + rating + "/5 stars"}</h5>
-              <address>{address}</address>
-              <h6>{"Hotel id: " + hotelId}</h6>
+              <Row>
+                <Card.Text>
+                  <Row><h2 class="card-title">{hotelName}, {hotelId}</h2></Row>
+                  <Row>
+                    <Col>
+                      <address>{address}</address> <br />
+                      No. of reviews: {reviews.length} <br />
+                      <a href="#location">Show on map</a>
+                    </Col>
+                    <Col>
+                      <h5>{"Hotel rating: " + rating + "/5 stars"}</h5> <br /> <br />
+                      <a href="#reviews">View reviews</a>
+                    </Col>
+                  </Row>
+                  Select a room starting from ${CheapestRoomPrice}. <br />
+                </Card.Text>
+                <Button
+                    variant="primary"
+                    className="float-right"
+                  >
+                    <a href="#rooms" style={{ color: "white", textDecoration: "none", flex: 1 }}>View room options</a>
+                  </Button>
+              </Row>
             </Col>
           </Row>
         </Card>
@@ -173,9 +213,10 @@ function ViewHotel() {
                 <Card.Body>
                   <h3>Amenities</h3>
                   <Card.Text class="text-justify">
+                    <Card.Text>{checkAmenities()}</Card.Text>
                     {Object.entries(amenities).map(([key, value]) => (
                       <Card.Text>
-                        {key + ": " + checkAmenities(value)}
+                        {key + ": " + convertAmenities(value)}
                       </Card.Text>
                     ))}
                   </Card.Text>
@@ -187,10 +228,11 @@ function ViewHotel() {
 
         {/* Hotel Reviews */}
         <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card style={{ width: "70rem", flex: 1 }}>
+          <Card id="reviews" style={{ width: "70rem", flex: 1 }} >
             <Card.Body>
               <Card.Title>Hotel Reviews</Card.Title>
               <Card.Text class="text-justify">
+                <Card.Text>{checkReviews()}</Card.Text>
                 {Object.entries(reviews).map(([key, value]) => (
                   <Card.Text>
                     {reviews[key]["name"] + ": " + reviews[key]["score"]}
@@ -202,36 +244,39 @@ function ViewHotel() {
         </div>
 
         {/* Map */}
-        {/* <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card style={{ width: "70rem", height: "30rem" }}>
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          <Card id="location" style={{ width: "70rem", height: "30rem" }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
               <Container>
                 <div style={{ width: "60rem", height: "20rem" }}>
-                  <Map />
+                  {/* <Map /> */}
                 </div>
               </Container>
             </Card.Body>
           </Card>
-        </div> */}
+        </div>
 
         {/* Rooms */}
-        <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card style={{ width: "70rem", flex: 1 }}>
+        <div class="d-flex flex-column justify-content-center align-items-center" >
+          <Card id="rooms" style={{ width: "70rem", flex: 1 }}>
             <Card.Body>
               <Card.Title>Available Rooms</Card.Title>
             </Card.Body>
           </Card>
 
           {Object.entries(roomsDetails).map(([key, value]) => (
-            <Card className="flex-fill" style={{ height: "20rem", width: "70rem", flexDirection: "row", alignItems: "flex-start" }}>
+            <Card className="flex-fill" style={{ height: "23rem", width: "70rem", flexDirection: "row", alignItems: "flex-start", flex: 1 }}>
               <Card.Img style={{ height: "100%", width: "40%", borderRadius: 0 }} src={`${roomImg(key)[0]}`} />
               <Card.Body className="d-flex flex-column">
                 <Card.Title>{roomsDetails[key]["roomNormalizedDescription"]}</Card.Title>
-                <Card.Text>
-                  {`Offered at \$${roomsDetails[key]["lowest_price"]} down from \$${roomsDetails[key]["price"]}!`} <br/>
-                  {`*Room surcharges at \$${roomsDetails[key].roomAdditionalInfo.displayFields.surcharges.map(fee => fee.amount)}.`}
-                </Card.Text>
+                <div class="scrollable" style={{ overflow: "auto", maxHeight: "195px" }} >
+                  <Card.Text style={{ flex: 1, flexWrap: 'wrap' }}>
+                    Offered at <b>${roomsDetails[key]["lowest_price"]}</b>, down from ${roomsDetails[key]["price"]}! <br /> <br />
+                    <div dangerouslySetInnerHTML={{ __html: roomsDetails[key]["long_description"] }} />
+                  </Card.Text>
+                </div>
+                <br />
                 <Link className="link" to="/custinfo">
                   <Button
                     onClick={event => onClick(event, key)}
@@ -241,6 +286,7 @@ function ViewHotel() {
                     Book your room
                   </Button>
                 </Link>
+                <Card.Text> *Room surcharges at ${roomsDetails[key].roomAdditionalInfo.displayFields.surcharges.map(fee => fee.amount)}. </Card.Text>
               </Card.Body>
             </Card>
           ))}

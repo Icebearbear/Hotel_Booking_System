@@ -184,30 +184,50 @@ app.get("/hotelidprices", (req, res) => {
   var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}/price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log("get from: " + url);
 
-  try {
+//   try{
+//   return new Promise((resolve, reject) => {
+//     const request = (retries) => {
+//       axios
+//       .get(url)
+//       .then((roomres) => {
+//         console.log("got hotel rooms, completed: " + roomres.data.completed)
+//         if (roomres.data.completed === false && retries > 0) {
+//           console.log("false");
+//           request(--retries);
+//         }
+//         else {
+//           console.log(roomres.data);
+//           res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+//           return resolve(roomres.data);
+//         }
+//       })
+//       .catch((error) => {
+//         console.log(error.message);
+//         res.status(error.response.status).send(error.message);
+//         reject(error);
+//       });
+//     }
+//     request(5);
+//   }) 
+// }
+//   catch (err) {
+//     res.status(500).send(err);
+//   }
     axios
       .get(url)
       .then((roomres) => {
-        console.log("got SPECIFIC HOTEL room prices ")
-        if (roomres.data === "undefined") {
-          console.log("die")
-          res.status(404);
-        }
+        console.log("got hotel rooms, completed: " + roomres.data.completed)
+        // if (roomres.data.completed === false) {
+        //   console.log("die");
+        // }
         // else {
-        //   console.log(roomres.data)
-        // } 
-        else {
-          // console.log(roomres.data);
           res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
-        }
+        // }
       })
       .catch((error) => {
         console.log(error.message);
         res.status(error.response.status).send(error.message);
       });
-  } catch (err) {
-    res.status(500).send(err);
-  }
 });
 
 //get hotel prices. need to match with the hotelID from /hotels route
