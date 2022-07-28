@@ -45,8 +45,16 @@ function SearchHotelResult() {
   // adjust destination id
   searchData["destination_id"] = inputed["UID"];
   // adjust check in check out
-  searchData["checkin"] = new Date(inputed["checkin"]);
-  searchData["checkout"] = new Date(inputed["checkout"]);
+  const dateFormat = (string) => {
+    date = new Date(string);
+    var day = date.getDate();
+    var month = date.getMonth()+1;
+    var year = date.getFullYear();
+    var format = year + '-' + month + '-' + day;
+    return format
+  }
+  searchData["checkin"] = dateFormat(inputed['checkin']);
+  searchData["checkout"] = dateFormat(inputed['checkout']);
 
   //}
   const getHotelAndPrices = async () => {
