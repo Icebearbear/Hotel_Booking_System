@@ -9,6 +9,7 @@ import CardHeader from "react-bootstrap/esm/CardHeader";
 import { Component, lazy, Suspense } from "react";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 import useLazyLoad from "./useLazyLoad";
+import NavigationBar from "./NavigationBar";
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
@@ -34,7 +35,7 @@ function SearchHotelResult() {
   //if (location.state != null){
   var inputed = JSON.parse(localStorage.getItem("SEARCH_DATA")); // get data passed from SearchHotel page
   // adjust guest param
-  var no_of_guest = +inputed["adults"] + +inputed["childs"];
+  var no_of_guest = inputed["guests"];
   var guest_per_room = Math.floor(no_of_guest / inputed["rooms"]);
   var param_guests = "" + guest_per_room;
   for (var i = 0; i < inputed["rooms"] - 1; i++) {
@@ -42,10 +43,20 @@ function SearchHotelResult() {
   }
   searchData["guests"] = param_guests;
   // adjust destination id
-  searchData["destination_id"] = inputed["UID"];
+  searchData["destination_id"] = inputed["destination_id"];
   // adjust check in check out
-  searchData["checkin"] = inputed["startDate"].slice(0, 10);
-  searchData["checkout"] = inputed["endDate"].slice(0, 10);
+  const dateFormat = (string) => {
+    var date = new Date(string);
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    var format = year + "-" + month + "-" + day;
+    return format;
+  };
+
+  console.log(dateFormat(inputed["checkin"]));
+  searchData["checkin"] = dateFormat(inputed["checkin"]);
+  searchData["checkout"] = dateFormat(inputed["checkout"]);
 
   //}
   const getHotelAndPrices = async () => {
@@ -91,7 +102,7 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
-      <div class="container mb-4 p-3 d-flex justify-content-center">
+      <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
         {/* <h3>{"showing hotels at " + searchData["destination_id"]}</h3> */}
         <h3>Showing hotels search result</h3>
       </div>
