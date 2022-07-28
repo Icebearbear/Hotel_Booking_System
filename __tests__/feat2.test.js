@@ -25,7 +25,7 @@ const noID = {
   guests: "2",
 };
 // specific hotels in this case
-const length = 175;
+const length = 174;
 
 describe("given params from feature 1, call api", () => {
   it("should respond with 200 status code", async () => {

@@ -48,15 +48,16 @@ function SearchHotelResult() {
   const dateFormat = (string) => {
     var date = new Date(string);
     var day = date.getDate();
-    var month = date.getMonth()+1;
-    var year = date.getFullYear();
-    var format = year + '-' + month + '-' + day;
-    return format
-  }
 
-  console.log(dateFormat(inputed['checkin']));
-  searchData["checkin"] = dateFormat(inputed['checkin']);
-  searchData["checkout"] = dateFormat(inputed['checkout']);
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    var format = year + "-" + month + "-" + day;
+    return format;
+  };
+
+  console.log(dateFormat(inputed["checkin"]));
+  searchData["checkin"] = dateFormat(inputed["checkin"]);
+  searchData["checkout"] = dateFormat(inputed["checkout"]);
 
   //}
   const getHotelAndPrices = async () => {
@@ -102,7 +103,6 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
-      <NavigationBar />
       <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
         {/* <h3>{"showing hotels at " + searchData["destination_id"]}</h3> */}
         <h3>Showing hotels search result</h3>

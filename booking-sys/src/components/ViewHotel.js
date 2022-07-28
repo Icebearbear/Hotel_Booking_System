@@ -1,30 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Container, Card, CardGroup, Col, Row, Button } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "react-slideshow-image/dist/styles.css";
 import ImageSlider from "./ImageSlider";
-import NavigationBar from "./NavigationBar";
+import { Modal } from "react-bootstrap";
 // import Map from "../MapApp.js";
 
-function ViewHotel(props) {
-  //const location = useLocation();
-  //const { hotelId } = location.state; // get data passed from SearchHotelResult page
-  //const hotelId = "diH7";
-  const hotelId = localStorage.getItem("HOTEL_ID");
+function ViewHotel() {
   // get data passed from SearchHotelResult page
-  const searchData = {
-    hotel_id: hotelId,
-    destination_id: "WD0M",
-    checkin: "2022-08-01",
-    checkout: "2022-08-05",
-    lang: "en_US",
-    currency: "SGD",
-    country_code: "SG",
-    guests: "2", // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
-    partner_id: "1",
-  };
+  //const hotelId = "diH7";
+  const navigate = useNavigate();
+  const hotelId = localStorage.getItem("HOTEL_ID");
 
+  // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
   var no_of_guest = +searchDataLocal["adults"] + +searchDataLocal["childs"];
@@ -34,10 +22,17 @@ function ViewHotel(props) {
     param_guests = param_guests + "|" + guest_per_room;
   }
 
-  searchData["destination_id"] = searchDataLocal["UID"];
-  searchData["checkin"] = searchDataLocal["startDate"].slice(0, 10);
-  searchData["checkout"] = searchDataLocal["endDate"].slice(0, 10);
-  searchData["guests"] = param_guests;
+  const searchData = {
+    hotel_id: hotelId,
+    destination_id: searchDataLocal["UID"],
+    checkin: searchDataLocal["startDate"].slice(0, 10),
+    checkout: searchDataLocal["endDate"].slice(0, 10),
+    lang: "en_US",
+    currency: "SGD",
+    country_code: "SG",
+    guests: param_guests, // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    partner_id: "1",
+  };
 
   // hotel info from api
   const [hotelName, setHotelName] = useState("");
@@ -55,6 +50,8 @@ function ViewHotel(props) {
   const [longitude, setLongitude] = useState("");
 
   const [roomsDetails, setRoomsDetails] = useState({});
+  const [warning, setWarning] = useState(false);
+  const [login, setLogin] = useState("false");
 
   const getHotelData = () => {
     try {
@@ -108,18 +105,32 @@ function ViewHotel(props) {
     return roomImgUrl;
   };
 
-  // const sortByRoomPrices = (rooms) => {
-  //   roomsDetails.sort(function (a, b) {
-  //     return a.lowest_price - b.lowest_price;
-  //   });
+  const onClose = () => {
+    setWarning(false);
+  };
 
-  //   for (let i = 0; i < rooms.length; i++) {
-  //     console.log(rooms[i]["roomNormalizedDescription"] + " " + rooms[i]["lowest_price"])
-  //   }
-  // }
+  const getLogin = () => {
+    const lin = localStorage.getItem("LOGIN");
+    console.log("linn", lin);
+    setLogin(lin);
+  };
+  function onClick(event, key) {
+    getLogin();
+    console.log("LOGINNNN ", login);
+    if (login == "false") {
+      setWarning(true);
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+      setWarning(false);
+      goNextPage(event, key);
+    }
+  }
 
-  // pass to hotel booking page
-  const onSubmit = (key) => {
+  const goNextPage = (event, key) => {
+    const surcharge = roomsDetails[
+      key
+    ].roomAdditionalInfo.displayFields.surcharges.map((fee) => fee.amount);
     const passData = {
       destination_id: searchData["destination_id"],
       hotelId: hotelId,
@@ -131,16 +142,17 @@ function ViewHotel(props) {
       checkIn: searchData.checkin,
       checkOut: searchData.checkout,
       roomRate: roomsDetails[key].lowest_price,
-      taxRecovery: 0, // the hotel rooms info don't have this, prob dont show in custinfo?
+      surcharges: surcharge[0],
     };
     console.log(passData);
     localStorage.setItem("BOOKING_DATA", JSON.stringify(passData));
   };
 
   useEffect(() => {
+    getLogin();
     getHotelData();
     getHotelIdPrices();
-  }, [setLongitude, setImageData]);
+  }, [setLongitude, setImageData, setLogin]);
 
   const containerStyle = {
     width: "500px",
@@ -150,9 +162,7 @@ function ViewHotel(props) {
 
   return (
     <>
-      {/* <div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> */}
-      <NavigationBar />
-      <div class="image d-flex flex-column justify-content-center align-items-center">
+      <div class="image mt-4 d-flex flex-column justify-content-center align-items-center">
         <Card style={{ width: "70rem", flex: 1 }}>
           <Row>
             <Col>
@@ -169,9 +179,8 @@ function ViewHotel(props) {
           </Row>
         </Card>
       </div>
-      <Container maxWidth="lg" className="p-4">
-        {/* Intro Section */}
 
+      <Container maxWidth="lg" className="p-4">
         {/* Hotel description */}
         <div class="d-flex flex-column justify-content-center align-items-center">
           <CardGroup>
@@ -220,56 +229,80 @@ function ViewHotel(props) {
         </div>
 
         {/* Map */}
-        <div class="d-flex flex-column justify-content-center align-items-center">
+        {/* <div class="d-flex flex-column justify-content-center align-items-center">
           <Card style={{ width: "70rem", height: "30rem" }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
               <Container>
                 <div style={{ width: "60rem", height: "20rem" }}>
-                  {/* <Map /> */}
+                  <Map />
                 </div>
               </Container>
             </Card.Body>
           </Card>
-        </div>
+        </div> */}
 
         {/* Rooms */}
         <div class="d-flex flex-column justify-content-center align-items-center">
+          <Card style={{ width: "70rem", flex: 1 }}>
+            <Card.Body>
+              <Card.Title>Available Rooms</Card.Title>
+            </Card.Body>
+          </Card>
+
           {Object.entries(roomsDetails).map(([key, value]) => (
-            <Card style={{ width: "70rem", flex: 1 }}>
-              <Card.Body>
-                <Card.Header>
+            <Card
+              className="flex-fill"
+              style={{
+                height: "20rem",
+                width: "70rem",
+                flexDirection: "row",
+                alignItems: "flex-start",
+              }}
+            >
+              <Card.Img
+                style={{ height: "100%", width: "40%", borderRadius: 0 }}
+                src={`${roomImg(key)[0]}`}
+              />
+              <Card.Body className="d-flex flex-column">
+                <Card.Title>
                   {roomsDetails[key]["roomNormalizedDescription"]}
-                </Card.Header>
-                <div className="d-flex" style={{ flexDirection: "row" }}>
-                  <Card.Img
-                    style={{ width: "18rem" }}
-                    src={`${roomImg(key)[0]}`}
-                  ></Card.Img>
-                  <Card.Text>
-                    {" Best price is $" + roomsDetails[key]["lowest_price"]}
-                  </Card.Text>
-                  <Link
-                    className="link"
-                    to="/custinfo"
-                    state={{ hotelId: hotelId }}
+                </Card.Title>
+                <Card.Text>
+                  {`Offered at \$${roomsDetails[key]["lowest_price"]} down from \$${roomsDetails[key]["price"]}!`}{" "}
+                  <br />
+                  {`*Room surcharges at \$${roomsDetails[
+                    key
+                  ].roomAdditionalInfo.displayFields.surcharges.map(
+                    (fee) => fee.amount
+                  )}.`}
+                </Card.Text>
+                <Link className="link" to="/custinfo">
+                  <Button
+                    onClick={(event) => onClick(event, key)}
+                    variant="primary"
+                    className="float-right"
                   >
-                    <Button
-                      onClick={onSubmit(key)}
-                      variant="primary"
-                      className="float-right"
-                    >
-                      Book hotel
-                    </Button>
-                  </Link>
-                </div>
+                    Book your room
+                  </Button>
+                </Link>
               </Card.Body>
             </Card>
           ))}
         </div>
       </Container>
 
-      <Container>{/* <Map /> */}</Container>
+      <Modal show={warning} onHide={onClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Booking Cancellation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Login is required to book hotel</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onClose}>
+            Back
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

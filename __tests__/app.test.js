@@ -10,57 +10,57 @@ describe("POST /api", () => {
     // expect(response.body.error).toBe(null);
   });
 });
-describe("POST /registration", () => {
-  it("should return user added with email: a@gmail.com", async () => {
-    const userDetails = {
-      first_name: "test_first_name",
-      last_name: "test_last_name",
-      email: "aa" + rand + "@gmail.com",
-      password: "123qwe",
-    };
-    const response = await request(baseURL).post("/register").send(userDetails);
-    expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body.data)).toBe(
-      "user added with email: " + userDetails.email
-    );
-  });
+// describe("POST /registration", () => {
+//   it("should return user added with email: a@gmail.com", async () => {
+//     const userDetails = {
+//       first_name: "test_first_name",
+//       last_name: "test_last_name",
+//       email: "aa" + rand + "@gmail.com",
+//       password: "123qwe",
+//     };
+//     const response = await request(baseURL).post("/register").send(userDetails);
+//     expect(response.statusCode).toBe(200);
+//     expect(JSON.parse(response.body.data)).toBe(
+//       "user added with email: " + userDetails.email
+//     );
+//   });
 
-  it("return email-already-exist", async () => {
-    const userDetails = {
-      first_name: "test_first_name",
-      last_name: "test_last_name",
-      email: "a@gmail.com",
-      password: "123qwe",
-    };
-    const response = await request(baseURL).post("/register").send(userDetails);
-    expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.text).code).toBe("auth/email-already-in-use");
-  });
+//   it("return email-already-exist", async () => {
+//     const userDetails = {
+//       first_name: "test_first_name",
+//       last_name: "test_last_name",
+//       email: "a@gmail.com",
+//       password: "123qwe",
+//     };
+//     const response = await request(baseURL).post("/register").send(userDetails);
+//     expect(response.statusCode).toBe(500);
+//     expect(JSON.parse(response.text).code).toBe("auth/email-already-in-use");
+//   });
 
-  it("return invalid-email", async () => {
-    const userDetails = {
-      first_name: "test_first_name",
-      last_name: "test_last_name",
-      email: "agmail.com",
-      password: "123qwe",
-    };
-    const response = await request(baseURL).post("/register").send(userDetails);
-    expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.text).code).toBe("auth/invalid-email");
-  });
+//   it("return invalid-email", async () => {
+//     const userDetails = {
+//       first_name: "test_first_name",
+//       last_name: "test_last_name",
+//       email: "agmail.com",
+//       password: "123qwe",
+//     };
+//     const response = await request(baseURL).post("/register").send(userDetails);
+//     expect(response.statusCode).toBe(500);
+//     expect(JSON.parse(response.text).code).toBe("auth/invalid-email");
+//   });
 
-  it("return weak-password", async () => {
-    const userDetails = {
-      first_name: "test_first_name",
-      last_name: "test_last_name",
-      email: "a@gmail.com",
-      password: "123",
-    };
-    const response = await request(baseURL).post("/register").send(userDetails);
-    expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.text).code).toBe("auth/weak-password");
-  });
-});
+//   it("return weak-password", async () => {
+//     const userDetails = {
+//       first_name: "test_first_name",
+//       last_name: "test_last_name",
+//       email: "a@gmail.com",
+//       password: "123",
+//     };
+//     const response = await request(baseURL).post("/register").send(userDetails);
+//     expect(response.statusCode).toBe(500);
+//     expect(JSON.parse(response.text).code).toBe("auth/weak-password");
+//   });
+// });
 
 describe("POST /login", () => {
   it("should return userId and email", async () => {

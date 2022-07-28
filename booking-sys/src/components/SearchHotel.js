@@ -117,27 +117,26 @@ function SearchHotel() {
     }
     setValidated(true);
 
-
-    if(passData["destination_id"] == null || passData["checkout"]==null){
+    if (passData["destination_id"] == null || passData["checkout"] == null) {
       alert("empty fields");
       return;
     }
 
-
     // console.log(passData['endDate']);
-    passData['guests'] = +nadults + +nchildren;
+    passData["guests"] = +nadults + +nchildren;
     // console.log(+nadults + +nchildren);
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
-    console.log(new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout)); //must pass into new Date object to get back Date format
+    console.log(
+      new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout)
+    ); //must pass into new Date object to get back Date format
     // alert(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout);
     navigate("/searchhotelresult");
   };
 
   return (
     <div className="SearchHotel">
-      <NavigationBar />
-      <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
+      <div className="container mb-4 p-3 d-flex justify-content-around">
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
             <h1>Search Page</h1>

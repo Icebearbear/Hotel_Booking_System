@@ -7,7 +7,6 @@ import Col from "react-bootstrap/Col";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import Stack from "react-bootstrap/Stack";
-import NavigationBar from "./NavigationBar";
 import "../css/user.min.css";
 function CustomerInformation() {
   // data from user inputs
@@ -46,10 +45,12 @@ function CustomerInformation() {
     hotelName: hotelInfo.hotelName,
     price: comPrice,
     noNight: noNight,
+    email: email,
   };
   const infoObject = {
     destinationID: hotelInfo.destination_id,
     hotelID: hotelInfo.hotelId,
+    hotelName: hotelInfo.hotelName,
     bookingInfo: {
       noNight: noNight,
       startDate: hotelInfo.checkIn,
@@ -132,7 +133,6 @@ function CustomerInformation() {
   };
   return (
     <div>
-      <NavigationBar />
       <Row>
         <Col md={{ span: 6, offset: 1 }}>
           <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
@@ -387,5 +387,4 @@ function CustomerInformation() {
   );
 }
 
-const SpecialRequest = () => {};
 export default CustomerInformation;

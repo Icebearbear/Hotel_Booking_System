@@ -31,10 +31,6 @@ function UserProfile() {
           uid: uid,
           dbdocId: dbDocId,
         };
-        const userDBAccount = localStorage.setItem(
-          "USER_DB_ACCOUNT",
-          JSON.stringify(dbUserObj)
-        );
         // console.log(res.data);
       })
       .catch((error) => {
@@ -46,7 +42,11 @@ function UserProfile() {
     axios
       .post("http://localhost:3001/logout")
       .then((res) => {
-        navigate("/login");
+        // localStorage.setItem(
+        //   "SESSION",
+        //   JSON.stringify({ login: false, uid: null })
+        // );
+        navigate(-1);
         console.log(res);
       })
       .catch((error) => {
@@ -55,7 +55,7 @@ function UserProfile() {
   };
 
   return (
-    <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+    <div class="container mb-4 p-3 d-flex justify-content-center">
       <div class="card p-4">
         <div class="image d-flex flex-column justify-content-center align-items-center">
           <button class="btn btn-secondary">
