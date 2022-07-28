@@ -43,7 +43,7 @@ function SearchHotelResult() {
   }
   searchData["guests"] = param_guests;
   // adjust destination id
-  searchData["destination_id"] = inputed["UID"];
+  searchData["destination_id"] = inputed["destination_id"];
   // adjust check in check out
   const dateFormat = (string) => {
     var date = new Date(string);
