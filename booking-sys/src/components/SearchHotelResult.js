@@ -46,13 +46,15 @@ function SearchHotelResult() {
   searchData["destination_id"] = inputed["UID"];
   // adjust check in check out
   const dateFormat = (string) => {
-    date = new Date(string);
+    var date = new Date(string);
     var day = date.getDate();
     var month = date.getMonth()+1;
     var year = date.getFullYear();
     var format = year + '-' + month + '-' + day;
     return format
   }
+
+  console.log(dateFormat(inputed['checkin']));
   searchData["checkin"] = dateFormat(inputed['checkin']);
   searchData["checkout"] = dateFormat(inputed['checkout']);
 
