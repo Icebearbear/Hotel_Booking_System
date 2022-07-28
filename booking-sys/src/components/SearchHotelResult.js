@@ -35,7 +35,7 @@ function SearchHotelResult() {
   //if (location.state != null){
   var inputed = JSON.parse(localStorage.getItem("SEARCH_DATA")); // get data passed from SearchHotel page
   // adjust guest param
-  var no_of_guest = +inputed["adults"] + +inputed["childs"];
+  var no_of_guest = inputed["guests"];
   var guest_per_room = Math.floor(no_of_guest / inputed["rooms"]);
   var param_guests = "" + guest_per_room;
   for (var i = 0; i < inputed["rooms"] - 1; i++) {
@@ -45,8 +45,8 @@ function SearchHotelResult() {
   // adjust destination id
   searchData["destination_id"] = inputed["UID"];
   // adjust check in check out
-  searchData["checkin"] = inputed["startDate"].slice(0, 10);
-  searchData["checkout"] = inputed["endDate"].slice(0, 10);
+  searchData["checkin"] = new Date(inputed["checkin"]);
+  searchData["checkout"] = new Date(inputed["checkout"]);
 
   //}
   const getHotelAndPrices = async () => {
