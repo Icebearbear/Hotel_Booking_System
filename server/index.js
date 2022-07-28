@@ -133,6 +133,7 @@ app.get("/hotelnprices", (req, res) => {
   // var end = +(checkout.replace(/-/g,""));
   var guests = searchData.guests;
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
+  console.log(urlPrice);
   const requestPrice = axios.get(urlPrice);
   const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
     params: { destination_id: destination_id },
@@ -506,10 +507,10 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/favicon.ico", (req, res) => {
-  // Use actual relative path to your .ico file here
-  res.sendFile(path.resolve(__dirname, "../favicon.ico"));
-});
+// app.get("/favicon.ico", (req, res) => {
+//   // Use actual relative path to your .ico file here
+//   res.sendFile(path.resolve(__dirname, "../favicon.ico"));
+// });
 
 // serve at port
 if (process.env.NODE_ENV !== "test") {

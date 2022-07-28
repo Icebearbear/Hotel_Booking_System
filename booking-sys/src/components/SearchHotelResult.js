@@ -48,6 +48,7 @@ function SearchHotelResult() {
   const dateFormat = (string) => {
     var date = new Date(string);
     var day = date.getDate();
+
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
     var format = year + "-" + month + "-" + day;
