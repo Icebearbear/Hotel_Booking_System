@@ -134,20 +134,22 @@ function BookingHistory() {
             </div>
           ))}
 
-          <Modal show={removeBook} onHide={onStop}>
+          <Modal show={removeBook} onHide={onStop} centered>
             <Modal.Header closeButton>
               <Modal.Title>Booking Cancellation</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {`Are you sure you want to cancel this booking ?`} <br />
-              {`Hotel doc id: ${selBook}`}
+              <p>
+                {`Are you sure you want to cancel this booking ?`} <br />
+                {`Hotel doc id: ${selBook}`}
+              </p>
             </Modal.Body>
             <Modal.Footer>
+              <Button variant="secondary" onClick={onStop}>
+                No
+              </Button>
               <Button variant="info" onClick={onCont}>
                 Yes
-              </Button>
-              <Button variant="warning" onClick={onStop}>
-                No
               </Button>
             </Modal.Footer>
           </Modal>

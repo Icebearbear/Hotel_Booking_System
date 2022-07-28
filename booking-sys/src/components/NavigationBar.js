@@ -10,9 +10,12 @@ const NavigationBar = () => {
     try {
       await axios.get("http://localhost:3001/getSession").then((res) => {
         setLogin(res.data.login);
-        localStorage.setItem("LOGIN", true);
-        if (login) {
+        // console.log("navaaaaa", res.data.login);
+        if (login == true) {
           setUid(res.data.uid);
+          localStorage.setItem("LOGIN", true); // read by other pages to handle user session
+        } else {
+          localStorage.setItem("LOGIN", false); // read by other pages to handle user session
         }
       });
     } catch (error) {
@@ -24,7 +27,7 @@ const NavigationBar = () => {
     console.log("VAVBAR LOGIN ", login);
     console.log("VAVBAR UID ", uid);
     getUser();
-  }, [setLogin, setUid]);
+  }, [login, uid]);
 
   return (
     <Navbar bg="dark" id="nav-bar">

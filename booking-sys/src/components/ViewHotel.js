@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Container, Card, CardGroup, Col, Row, Button } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ImageSlider from "./ImageSlider";
+import { Modal } from "react-bootstrap";
 // import Map from "../MapApp.js";
 
 function ViewHotel() {
   // get data passed from SearchHotelResult page
   //const hotelId = "diH7";
+  const navigate = useNavigate();
   const hotelId = localStorage.getItem("HOTEL_ID");
 
   // get data passed from SearchHotel page
@@ -48,6 +50,8 @@ function ViewHotel() {
   const [longitude, setLongitude] = useState("");
 
   const [roomsDetails, setRoomsDetails] = useState({});
+  const [warning, setWarning] = useState(false);
+  const [login, setLogin] = useState("false");
 
   const getHotelData = () => {
     try {
@@ -101,7 +105,29 @@ function ViewHotel() {
     return roomImgUrl;
   };
 
+  const onClose = () => {
+    setWarning(false);
+  };
+
+  const getLogin = () => {
+    const lin = localStorage.getItem("LOGIN");
+    console.log("linn", lin);
+    setLogin(lin);
+  };
   function onClick(event, key) {
+    getLogin();
+    console.log("LOGINNNN ", login);
+    if (login == "false") {
+      setWarning(true);
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+      setWarning(false);
+      goNextPage(event, key);
+    }
+  }
+
+  const goNextPage = (event, key) => {
     const surcharge = roomsDetails[
       key
     ].roomAdditionalInfo.displayFields.surcharges.map((fee) => fee.amount);
@@ -120,12 +146,13 @@ function ViewHotel() {
     };
     console.log(passData);
     localStorage.setItem("BOOKING_DATA", JSON.stringify(passData));
-  }
+  };
 
   useEffect(() => {
+    getLogin();
     getHotelData();
     getHotelIdPrices();
-  }, [setLongitude, setImageData]);
+  }, [setLongitude, setImageData, setLogin]);
 
   const containerStyle = {
     width: "500px",
@@ -265,7 +292,17 @@ function ViewHotel() {
         </div>
       </Container>
 
-      <Container>{/* <Map /> */}</Container>
+      <Modal show={warning} onHide={onClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Booking Cancellation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Login is required to book hotel</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onClose}>
+            Back
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

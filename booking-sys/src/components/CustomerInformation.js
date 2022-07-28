@@ -25,10 +25,6 @@ function CustomerInformation() {
   const [extraReq, setExtraReq] = useState("");
 
   const uid = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
-  // const [loginWarning, setLoginWarning] = useState(false);
-  // const [login, setLogin] = useState(false);
-
-  // setLogin(localStorage.getItem("LOGIN")); // get data from localStorage FOR LOGIN
 
   // for input fields validation
   const [validated, setValidated] = useState(false); //for input field validation
@@ -106,16 +102,6 @@ function CustomerInformation() {
     }
   };
 
-  // const getUser = async () => {
-  //   try {
-  //     await axios.get("http://localhost:3001/getSession").then((res) => {
-  //       setLogin(res.data.login);
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const onSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -128,9 +114,6 @@ function CustomerInformation() {
     }
     setValidated(true);
 
-    // if (!login) {
-    //   setLoginWarning(true);
-    // }
     if (noInput === false) {
       console.log(infoObject);
       axios
@@ -404,5 +387,4 @@ function CustomerInformation() {
   );
 }
 
-const SpecialRequest = () => {};
 export default CustomerInformation;

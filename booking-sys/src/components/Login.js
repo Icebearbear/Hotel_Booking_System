@@ -17,7 +17,6 @@ function Login() {
   const [validated, setValidated] = useState(false); //for input field validation
 
   const navigate = useNavigate();
-
   const handleClose = () => setError(false);
   const updateEmail = (errMsg) => {
     setEmail("");
@@ -52,6 +51,7 @@ function Login() {
         if (res.status === 200) {
           localStorage.setItem("USER_ID", res.data.userId); // store data from localStorage temporarily
           localStorage.setItem("USER_EMAIL", res.data.email); // store data from localStorage temporarily
+          localStorage.setItem("LOGIN", true);
           // document.getElementById("nav-bar").style.display = "none";
           navigate(-1);
         }
