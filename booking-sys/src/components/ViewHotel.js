@@ -52,6 +52,7 @@ function ViewHotel() {
   const [roomFlag, setRoomFlag] = useState("");
   const [CheapestRoomPrice, setCheapestRoomPrice] = useState("");
 
+  // FUNCTIONS FOR HOTEL DISPLAY
   const getHotelData = () => {
     try {
       axios
@@ -83,11 +84,11 @@ function ViewHotel() {
 
   const starRating = (rating) => {
     const stars = []
-    for (let i = 0; i < 5; i++){
+    for (let i = 0; i < 5; i++) {
       if (i < rating) {
         const star = <a href="https://www.freeiconspng.com/img/33907" title="Image from freeiconspng.com"><Card.Img style={{ height: "25px", width: "25px" }} src="https://www.freeiconspng.com/uploads/yellow-christmas-star-png-18.png" alt="star png" /></a>;
         stars.push(star);
-      }  
+      }
       // else {
       //   const star = <a href="https://www.freeiconspng.com/img/33907" title="Image from freeiconspng.com"><Card.Img style={{ height: "25px", width: "25px", filter: "0%" }} src="https://www.freeiconspng.com/uploads/yellow-christmas-star-png-18.png" alt="star png" /></a>;
       //   stars.push(star);
@@ -109,7 +110,6 @@ function ViewHotel() {
   }
   // convert true into yes and false into no for UI purposes
   const convertAmenities = (bool) => {
-
     if (bool === true) {
       return <a href="https://www.freeiconspng.com/img/14141" title="Image from freeiconspng.com">
         <Card.Img style={{ height: "20px", width: "20px" }} src="https://www.freeiconspng.com/uploads/green-tick-icon-0.png" alt="green tick icon" /></a>;
@@ -131,6 +131,7 @@ function ViewHotel() {
 
   }
 
+  // FUNCTIONS FOR ROOMS DISPLAY
   const getHotelIdPrices = () => {
     axios
       .get("http://localhost:3001/hotelidprices", {
@@ -147,6 +148,10 @@ function ViewHotel() {
 
   const roomImg = (roomNo) => {
     var roomImgUrl = roomsDetails[roomNo].images.map(imgurl => imgurl.url)  // array containing room images
+    // console.log("roomimgs"+ roomNo + "   " + typeof roomImgUrl[0])
+    if (roomImgUrl[0] == undefined) {
+      roomImgUrl = ["https://cdn.pixabay.com/photo/2014/08/19/19/39/bedroom-421848_960_720.jpg"]  // set placeholder img
+    }
     return roomImgUrl;
   }
 
@@ -183,12 +188,12 @@ function ViewHotel() {
 
   return (
     <>
-      <head>
+      {/* <head>
         <link rel="stylesheet" href="node_modules/react-star-rating/dist/css/react-star-rating.min.css" />
-      </head>
+      </head> */}
       <NavigationBar />
       <div class="image d-flex flex-column justify-content-center align-items-center">
-        <Card style={{ width: "70rem", flex: 1 }}>
+        <Card style={{ width: "70rem", height: "25rem" }}>
           <Row>
             {/* IMAGE SLIDER COL */}
             <Col>
@@ -200,30 +205,36 @@ function ViewHotel() {
             <Col>
               <Row>
                 <Card.Text>
-                  <Row><h2 class="card-title">{hotelName}, {hotelId}</h2></Row>
+                  <Row><h2 class="card-title">{hotelName} </h2></Row>
                   <Row>
                     <Col>
-                      <address>{address}</address> <br />
-                      No. of reviews: {reviews.length} <br />
+                      {address} <br />
+                      <br /> <br /> <br />
                       <a href="#location">Show on map</a>
                     </Col>
-                    <Col style={{textAlign: 'right'}}>
+                    <Col style={{ textAlign: 'right' }}>
                       {starRating(rating)}
-                      <h5>{"Hotel rating: " + rating + "/5 stars"}</h5> <br /> <br />
+                      {/* <h5>{"Hotel rating: " + rating + "/5 stars"}</h5>*/}
+                      <br /> <br /> <br />
+                      {reviews.length} reviews <br />
                       <a href="#reviews">View reviews</a>
                     </Col>
                   </Row>
-                  Select a room starting from ${CheapestRoomPrice}. <br /> <br />
+                  <br /><br /><br /> <br /><br />
+                  Select a room starting from ${CheapestRoomPrice}.
                 </Card.Text>
-                <Button
-                  variant="primary"
-                  className="float-right"
-                >
-                  <a href="#rooms" style={{ color: "white", textDecoration: "none", flex: 1 }}>View room options</a>
-                </Button>
               </Row>
             </Col>
           </Row>
+          <div style={{ display: "flex" }}>
+            <Button
+              variant="primary"
+              className="float-right"
+              style={{ marginLeft: "auto" }}
+            >
+              <a href="#rooms" style={{ color: "white", textDecoration: "none", flex: 1 }}>View room options</a>
+            </Button>
+          </div>
         </Card>
       </div>
 

@@ -5,7 +5,7 @@ const ImageSlider = (props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const data = props.slides;
   const sliderStyle = {
-    height: "100%",
+    height: "125%",
     position: "relative",
   };
   const slideStyle = {
