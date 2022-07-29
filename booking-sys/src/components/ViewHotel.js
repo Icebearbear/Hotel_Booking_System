@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Container, Card, CardGroup, Col, Row, Button, Nav } from "react-bootstrap";
+import { Container, Card, CardGroup, Col, Row, Button, ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
-// import { HashLink } from "react-router-hash-link";
 import axios from "axios";
 import ImageSlider from "./ImageSlider";
 import NavigationBar from "./NavigationBar";
@@ -82,6 +81,20 @@ function ViewHotel() {
     }
   };
 
+  const starRating = (rating) => {
+    const stars = []
+    for (let i = 0; i < 5; i++){
+      if (i < rating) {
+        const star = <a href="https://www.freeiconspng.com/img/33907" title="Image from freeiconspng.com"><Card.Img style={{ height: "25px", width: "25px" }} src="https://www.freeiconspng.com/uploads/yellow-christmas-star-png-18.png" alt="star png" /></a>;
+        stars.push(star);
+      }  
+      // else {
+      //   const star = <a href="https://www.freeiconspng.com/img/33907" title="Image from freeiconspng.com"><Card.Img style={{ height: "25px", width: "25px", filter: "0%" }} src="https://www.freeiconspng.com/uploads/yellow-christmas-star-png-18.png" alt="star png" /></a>;
+      //   stars.push(star);
+      // }
+    }
+    return stars;
+  }
   // check if there are amenities data given
   const checkAmenities = () => {
     if (Object.keys(amenities).length === 0) {
@@ -96,11 +109,27 @@ function ViewHotel() {
   }
   // convert true into yes and false into no for UI purposes
   const convertAmenities = (bool) => {
+
     if (bool === true) {
-      return "Yes";
+      return <a href="https://www.freeiconspng.com/img/14141" title="Image from freeiconspng.com">
+        <Card.Img style={{ height: "20px", width: "20px" }} src="https://www.freeiconspng.com/uploads/green-tick-icon-0.png" alt="green tick icon" /></a>;
     }
-    return "No";
+    return <a href="https://www.freeiconspng.com/img/4622" title="Image from freeiconspng.com">
+      <Card.Img style={{ height: "20px", width: "20px" }} src="https://www.freeiconspng.com/uploads/delete-error-exit-remove-stop-x-cross-icon--28.png" alt="red cross icon" /></a>;
   };
+  // the given data sucks so this is to make fake reviews
+  const convertReviews = (key, score) => {
+    if (score >= 65) {
+      return ["Very Good", `The ${reviews[key]["name"]} is great!`]
+    }
+    else if (score >= 35) {
+      return ["Average", `The ${reviews[key]["name"]} is so-so.`]
+    }
+    else {
+      return ["Bad", `The ${reviews[key]["name"]} sucks.`]
+    }
+
+  }
 
   const getHotelIdPrices = () => {
     axios
@@ -121,6 +150,7 @@ function ViewHotel() {
     return roomImgUrl;
   }
 
+  // when book hotel button clicked
   function onClick(event, key) {
     const surcharge = roomsDetails[key].roomAdditionalInfo.displayFields.surcharges.map(fee => fee.amount);
     const passData = {
@@ -153,6 +183,9 @@ function ViewHotel() {
 
   return (
     <>
+      <head>
+        <link rel="stylesheet" href="node_modules/react-star-rating/dist/css/react-star-rating.min.css" />
+      </head>
       <NavigationBar />
       <div class="image d-flex flex-column justify-content-center align-items-center">
         <Card style={{ width: "70rem", flex: 1 }}>
@@ -174,19 +207,20 @@ function ViewHotel() {
                       No. of reviews: {reviews.length} <br />
                       <a href="#location">Show on map</a>
                     </Col>
-                    <Col>
+                    <Col style={{textAlign: 'right'}}>
+                      {starRating(rating)}
                       <h5>{"Hotel rating: " + rating + "/5 stars"}</h5> <br /> <br />
                       <a href="#reviews">View reviews</a>
                     </Col>
                   </Row>
-                  Select a room starting from ${CheapestRoomPrice}. <br />
+                  Select a room starting from ${CheapestRoomPrice}. <br /> <br />
                 </Card.Text>
                 <Button
-                    variant="primary"
-                    className="float-right"
-                  >
-                    <a href="#rooms" style={{ color: "white", textDecoration: "none", flex: 1 }}>View room options</a>
-                  </Button>
+                  variant="primary"
+                  className="float-right"
+                >
+                  <a href="#rooms" style={{ color: "white", textDecoration: "none", flex: 1 }}>View room options</a>
+                </Button>
               </Row>
             </Col>
           </Row>
@@ -216,7 +250,7 @@ function ViewHotel() {
                     <Card.Text>{checkAmenities()}</Card.Text>
                     {Object.entries(amenities).map(([key, value]) => (
                       <Card.Text>
-                        {key + ": " + convertAmenities(value)}
+                        {key + ": "}{convertAmenities(value)}
                       </Card.Text>
                     ))}
                   </Card.Text>
@@ -233,11 +267,24 @@ function ViewHotel() {
               <Card.Title>Hotel Reviews</Card.Title>
               <Card.Text class="text-justify">
                 <Card.Text>{checkReviews()}</Card.Text>
-                {Object.entries(reviews).map(([key, value]) => (
-                  <Card.Text>
-                    {reviews[key]["name"] + ": " + reviews[key]["score"]}
-                  </Card.Text>
-                ))}
+                <ListGroup>
+                  {Object.entries(reviews).map(([key, value]) => (
+                    <Card.Text>
+                      <ListGroup.Item>
+                        <Row>
+                          <Col style={{ flexDirection: "row", flex: 1 }}>
+                            Rating: <b> {convertReviews(key, reviews[key]["score"])[0]} </b> <br />
+                            <h5 style={{ color: "green" }}> {reviews[key]["score"] + "/100"} </h5>
+                          </Col>
+                          <Col style={{ flexDirection: "row", flex: 2 }}>
+                            {convertReviews(key, reviews[key]["score"])[1]}
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                    </Card.Text>
+                  ))}
+                </ListGroup>
+
               </Card.Text>
             </Card.Body>
           </Card>

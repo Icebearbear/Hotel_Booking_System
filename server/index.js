@@ -86,7 +86,7 @@ app.get("/viewhotel", (req, res) => {
     axios
       .get(`https://hotelapi.loyalty.dev/api/hotels/${hotelId}`)
       .then((hotelres) => {
-        console.log("From API: " + hotelId);
+        console.log("From API: " + `https://hotelapi.loyalty.dev/api/hotels/${hotelId}`);
         const imgDet = hotelres.data.image_details;
         const ids = hotelres.data.hires_image_index;
 
