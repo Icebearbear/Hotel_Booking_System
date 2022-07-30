@@ -25,9 +25,9 @@
 } */
 .ol-map {
     min-width: 600px;
-    min-height: 500px;
-    margin: 50px;
-    height: 500px;
+    min-height: 450px;
+    margin: 20px;
+    height: 450px;
     width: "100%";
 }
 

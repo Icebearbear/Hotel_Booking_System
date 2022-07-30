@@ -5,12 +5,12 @@ import axios from "axios";
 import ImageSlider from "./ImageSlider";
 import NavigationBar from "./NavigationBar";
 
+// map imports
 import MapOl from "./MapComponents/MapOl";
 import "./MapComponents/MapOl.css";
 import Layers from "./MapComponents/Layers";
 import TileLayer from "./MapComponents/TileLayer";
 import VectorLayer from "./MapComponents/VectorLayer";
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import osm from "./MapComponents/osm";
 import vector from "./MapComponents/vector";
 import { fromLonLat, get } from 'ol/proj';
@@ -19,8 +19,10 @@ import Controls from "./MapComponents/Controls";
 import FullScreenControl from "./MapComponents/FullScreenControl";
 import mapConfig from "./MapComponents/config.json";
 
-// components
-// import MapWrapper from './MapWrapper'
+import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from 'ol/style';
+import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
+import MarkerStyle from "./MapComponents/MarkerStyle";
 
 function ViewHotel() {
   // get data passed from SearchHotelResult page
@@ -61,7 +63,7 @@ function ViewHotel() {
 
   const [imageData, setImageData] = useState([]);
 
-  const [latitude, setLatitude] = useState("");
+  // const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
   const [roomsDetails, setRoomsDetails] = useState({});
@@ -88,8 +90,20 @@ function ViewHotel() {
 
           setReviews(hotelData["amenities_ratings"]);
 
-          setLatitude(hotelData["latitude"]);
-          setLongitude(hotelData["longitude"]);
+          setCenter([hotelData["longitude"], hotelData["latitude"]]);
+          setMarkerLng(hotelData["longitude"]);
+          setMarkerLat(hotelData["latitude"]);
+
+          const markers = {
+            "hotelmarker": [
+              hotelData["longitude"],
+              hotelData["latitude"]
+            ],
+          };
+          console.log(markers.hotelmarker[0] + " " + markers.hotelmarker[1]);
+          setFeatures(addMarkers([["100.0", "1.0"]]));
+          // setFeatures(addMarkers([[hotelData["longitude"], hotelData["latitude"]]]));
+
           setImageData(imgUrl);
         })
         .catch((err) => console.log("hoteldata " + err.message));
@@ -159,13 +173,37 @@ function ViewHotel() {
     }),
   };
 
+  const [markerLng, setMarkerLng] = useState("103.0");
+  const [markerLat, setMarkerLat] = useState("1.0");
+
+  function addMarkers(lonLatArray) {
+    var iconStyle = new Style({
+      image: new Icon({
+        anchorXUnits: "fraction",
+        anchorYUnits: "pixels",
+        src: mapConfig.markerImage32,
+      }),
+    });
+    let features = lonLatArray.map((item) => {
+      let feature = new Feature({
+        geometry: new Point(fromLonLat(item)),
+      });
+      feature.setStyle(iconStyle);
+      return feature;
+    });
+    return features;
+  }
+
   const geojsonObject = mapConfig.geojsonObject;
   const geojsonObject2 = mapConfig.geojsonObject2;
+  const markersLonLat = [mapConfig.kansasCityLonLat, mapConfig.blueSpringsLonLat];
 
-  const [center, setCenter] = useState([-94.9065, 38.9884]);
-  const [zoom, setZoom] = useState(9);
-  const [showLayer1, setShowLayer1] = useState(true);
-  const [showLayer2, setShowLayer2] = useState(true);
+  // long, lat, idk why its the other way round but ok
+  const [center, setCenter] = useState(["0.0", "0.0"]);
+  const [zoom, setZoom] = useState(12);
+  // const [showLayer1, setShowLayer1] = useState(true);
+  // const [showLayer2, setShowLayer2] = useState(true);
+  const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]])); 
 
   // FUNCTIONS FOR ROOMS DISPLAY
   const getHotelIdPrices = () => {
@@ -337,7 +375,7 @@ function ViewHotel() {
 
         {/* Map */}
         <div id="reactmap" class="d-flex flex-column justify-content-center align-items-center">
-          <Card id="location" style={{ width: "70rem", height: "30rem" }}>
+          <Card id="location" style={{ width: "70rem", height: "35rem" }}>
             <Card.Body>
               <Card.Title>Hotel Location</Card.Title>
               <div>
@@ -347,24 +385,25 @@ function ViewHotel() {
                       source={osm()}
                       zIndex={0}
                     />
-                    {showLayer1 && (
+                    {/* {showLayer1 && (
                       <VectorLayer
                         source={vector({ features: new GeoJSON().readFeatures(geojsonObject, { featureProjection: get('EPSG:3857') }) })}
                         style={styles.MultiPolygon}
                       />
-                    )}
-                    {showLayer2 && (
+                    )} */}
+                    {/* {showLayer2 && (
                       <VectorLayer
                         source={vector({ features: new GeoJSON().readFeatures(geojsonObject2, { featureProjection: get('EPSG:3857') }) })}
                         style={styles.MultiPolygon}
                       />
-                    )}
+                    )} */}
+                     <VectorLayer source={vector({ features })} />
                   </Layers>
                   <Controls>
                     <FullScreenControl />
                   </Controls>
                 </MapOl>
-                <div>
+                {/* <div>
                   <input
                     type="checkbox"
                     checked={showLayer1}
@@ -376,7 +415,7 @@ function ViewHotel() {
                     type="checkbox"
                     checked={showLayer2}
                     onChange={event => setShowLayer2(event.target.checked)}
-                  /> Wyandotte County</div>
+                  /> Wyandotte County</div> */}
               </div>
             </Card.Body>
           </Card>
