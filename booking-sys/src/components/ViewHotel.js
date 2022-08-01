@@ -14,15 +14,19 @@ import VectorLayer from "./MapComponents/VectorLayer";
 import osm from "./MapComponents/osm";
 import vector from "./MapComponents/vector";
 import { fromLonLat, get } from 'ol/proj';
-import GeoJSON from 'ol/format/GeoJSON';
+// import GeoJSON from 'ol/format/GeoJSON';
 import Controls from "./MapComponents/Controls";
 import FullScreenControl from "./MapComponents/FullScreenControl";
-import mapConfig from "./MapComponents/config.json";
+// import mapConfig from "./MapComponents/config.json";
 
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from 'ol/style';
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import { Vector as VectorS } from "ol/source";
+import { Vector as VectorL } from "ol/layer";
 import MarkerStyle from "./MapComponents/MarkerStyle";
+
+import Marker from 'ol-marker-feature';
 
 function ViewHotel() {
   // get data passed from SearchHotelResult page
@@ -91,38 +95,50 @@ function ViewHotel() {
           setReviews(hotelData["amenities_ratings"]);
 
           setCenter([hotelData["longitude"], hotelData["latitude"]]);
-          setMarkerLng(hotelData["longitude"]);
-          setMarkerLat(hotelData["latitude"]);
+          // setMarkerLng(hotelData["longitude"]);
+          // setMarkerLat(hotelData["latitude"]);
 
-          const markers = {
-            "hotelmarker": [
-              hotelData["longitude"],
-              hotelData["latitude"]
-            ],
-          };
-          console.log(markers.hotelmarker[0] + " " + markers.hotelmarker[1]);
-          setFeatures(addMarkers([["100.0", "1.0"]]));
+          // const markers = {
+          //   "hotelmarker": [
+          //     hotelData["longitude"],
+          //     hotelData["latitude"]
+          //   ],
+          // };
+          // console.log(markers.hotelmarker[0] + " " + markers.hotelmarker[1]);
+
+          var newFeat = addMarkers([[hotelData["longitude"], hotelData["latitude"]], [0.0, 0.0]]);
+          setFeatures(newFeat);
+          console.log("new feat: ", newFeat);
           // setFeatures(addMarkers([[hotelData["longitude"], hotelData["latitude"]]]));
-
           setImageData(imgUrl);
         })
-        .catch((err) => console.log("hoteldata " + err.message));
+        .catch((err) => {
+          console.log(err.message);
+        });
+
     } catch (err) {
-      console.log(err);
+      console.log(err)
     }
   };
 
   const starRating = (rating) => {
     const stars = []
-    for (let i = 0; i < 5; i++) {
-      if (i < rating) {
+    for (let i = 1; i <= 10; i++) {
+      if (stars.length == 5) {
+        break;
+      }
+      if (i <= rating * 2 && i % 2 == 0) {
         const star = <a href="https://www.freeiconspng.com/img/33907" title="Image from freeiconspng.com"><Card.Img style={{ height: "25px", width: "25px" }} src="https://www.freeiconspng.com/uploads/yellow-christmas-star-png-18.png" alt="star png" /></a>;
         stars.push(star);
       }
-      // else {
-      //   const star = <a href="https://www.freeiconspng.com/img/33907" title="Image from freeiconspng.com"><Card.Img style={{ height: "25px", width: "25px", filter: "0%" }} src="https://www.freeiconspng.com/uploads/yellow-christmas-star-png-18.png" alt="star png" /></a>;
-      //   stars.push(star);
-      // }
+      else if (i % (rating * 2) == 0) {
+        const star = <Card.Img style={{ height: "25px", width: "25px" }} src={require("./StarRatingParts/halfgreystar.png")} alt="star png" />;
+        stars.push(star);
+      }
+      else if ((i > rating * 2 && i % 2 == 0)) {
+        const star = <Card.Img style={{ height: "25px", width: "25px" }} src={require("./StarRatingParts/greystar.png")} alt="star png" />;
+        stars.push(star);
+      }
     }
     return stars;
   }
@@ -173,17 +189,18 @@ function ViewHotel() {
     }),
   };
 
-  const [markerLng, setMarkerLng] = useState("103.0");
-  const [markerLat, setMarkerLat] = useState("1.0");
+  // const [markerLng, setMarkerLng] = useState("106.0");
+  // const [markerLat, setMarkerLat] = useState("1.0");
 
   function addMarkers(lonLatArray) {
     var iconStyle = new Style({
       image: new Icon({
         anchorXUnits: "fraction",
         anchorYUnits: "pixels",
-        src: mapConfig.markerImage32,
+        src: "https://cdn2.iconfinder.com/data/icons/social-media-and-payment/64/-47-32.png",
       }),
     });
+    // console.log(lonLatArray);
     let features = lonLatArray.map((item) => {
       let feature = new Feature({
         geometry: new Point(fromLonLat(item)),
@@ -193,17 +210,23 @@ function ViewHotel() {
     });
     return features;
   }
+  const initfeat = addMarkers([[103.0, 1.0]]);
 
-  const geojsonObject = mapConfig.geojsonObject;
-  const geojsonObject2 = mapConfig.geojsonObject2;
-  const markersLonLat = [mapConfig.kansasCityLonLat, mapConfig.blueSpringsLonLat];
+  // const geojsonObject = mapConfig.geojsonObject;
+  // const geojsonObject2 = mapConfig.geojsonObject2;
+  // const markersLonLat = [mapConfig.kansasCityLonLat, mapConfig.blueSpringsLonLat];
 
   // long, lat, idk why its the other way round but ok
   const [center, setCenter] = useState(["0.0", "0.0"]);
   const [zoom, setZoom] = useState(12);
   // const [showLayer1, setShowLayer1] = useState(true);
   // const [showLayer2, setShowLayer2] = useState(true);
-  const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]])); 
+  // const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]]));
+  const [features, setFeatures] = useState(initfeat);
+
+  // const marker = new Marker([16.351, 48.277]);
+  // marker.set('info', 'I am a marker.')
+  // marker.setMap(MapOl);
 
   // FUNCTIONS FOR ROOMS DISPLAY
   const getHotelIdPrices = () => {
@@ -268,10 +291,8 @@ function ViewHotel() {
         <Card style={{ width: "70rem", height: "25rem" }}>
           <Row>
             {/* IMAGE SLIDER COL */}
-            <Col>
-              <div style={containerStyle}>
-                <ImageSlider slides={imageData} />
-              </div>
+            <Col style={{ backgroundImage: 'url(https://instant.space/hotel-placeholder.png)', backgroundSize: "90%", backgroundRepeat: "no-repeat", backgroundPosition: "center" }}>
+              <ImageSlider slides={imageData} />
             </Col>
             {/* TEXT COL */}
             <Col>
@@ -286,27 +307,27 @@ function ViewHotel() {
                     </Col>
                     <Col style={{ textAlign: 'right' }}>
                       {starRating(rating)}
-                      {/* <h5>{"Hotel rating: " + rating + "/5 stars"}</h5>*/}
                       <br /> <br /> <br />
                       {reviews.length} reviews <br />
                       <a href="#reviews">View reviews</a>
                     </Col>
                   </Row>
-                  <br /><br /><br /> <br /><br />
+                  <br /><br /><br /> <br/>
                   Select a room starting from ${CheapestRoomPrice}.
                 </Card.Text>
               </Row>
+              <div style={{ display: "flex" }}>
+                <Button
+                  variant="primary"
+                  className="float-right"
+                  style={{ marginLeft: "auto" }}
+                >
+                  <a href="#rooms" style={{ color: "white", textDecoration: "none", flex: 1 }}>View room options</a>
+                </Button>
+              </div>
             </Col>
           </Row>
-          <div style={{ display: "flex" }}>
-            <Button
-              variant="primary"
-              className="float-right"
-              style={{ marginLeft: "auto" }}
-            >
-              <a href="#rooms" style={{ color: "white", textDecoration: "none", flex: 1 }}>View room options</a>
-            </Button>
-          </div>
+
         </Card>
       </div>
 
@@ -397,7 +418,7 @@ function ViewHotel() {
                         style={styles.MultiPolygon}
                       />
                     )} */}
-                     <VectorLayer source={vector({ features })} />
+                    <VectorLayer source={vector({ features })} />
                   </Layers>
                   <Controls>
                     <FullScreenControl />
