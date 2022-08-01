@@ -5,7 +5,7 @@ import clsx from "clsx";
 import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-import CardHeader from "react-bootstrap/esm/CardHeader";
+import CardHeader from "react-bootstrap/CardHeader";
 import { Component, lazy, Suspense } from "react";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 import useLazyLoad from "./useLazyLoad";

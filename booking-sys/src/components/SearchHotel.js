@@ -135,7 +135,7 @@ function SearchHotel() {
   };
 
   return (
-    <div className="SearchHotel">
+    <div className="SearchHotel" data-testid="search-page">
       <div className="container mb-4 p-3 d-flex justify-content-around">
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
@@ -188,7 +188,7 @@ function SearchHotel() {
                   <Form.Label>Adults</Form.Label>
                   <Form.Select onChange={(e) => selectAdults(e.target.value)}>
                     <option value="1">1</option>
-                    <option value="2" selected>
+                    <option value="2" defaultValue={"2"}>
                       2
                     </option>
                     <option value="3">3</option>
@@ -248,14 +248,15 @@ function SearchHotel() {
             <DatePicker selected={selectedDate2} onChange={date => selectDateStart2(date)}
             dateFormat='dd/MMM/yy' minDate={new Date()} isClearable showYearDropdown scrollableYearDropdown />
           </div> */}
-              <Button
-                onClick={onSubmit}
-                variant="primary"
-                className="float-right"
-              >
-                Search hotel
-              </Button>
-
+              <div>
+                <Button
+                  onClick={onSubmit}
+                  variant="primary"
+                  className="float-right"
+                >
+                  Search hotel
+                </Button>
+              </div>
               {/* <Link to="/userprofile">
             <Button variant="primary" type="submit" className="float-right">
               View User Profile

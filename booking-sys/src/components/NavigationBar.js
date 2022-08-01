@@ -42,11 +42,6 @@ const NavigationBar = () => {
           </Nav.Link>
         )}
         {"  "}
-
-        {/* <Nav.Link href="/login">
-          <Button variant="info">Login/Register</Button>
-        </Nav.Link>
-        {"  "} */}
       </Navbar.Collapse>
     </Navbar>
   );

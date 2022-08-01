@@ -17,34 +17,30 @@ import NavigationBar from "./components/NavigationBar";
 import { Outlet } from "react-router-dom";
 const App = () => {
   return (
-    <div>
-      {/* <NavigationBar className="nav-bar-items" /> */}
-      <div className="wrapper">
-        <BrowserRouter>
-          <Routes>
-            <Route element={<WitNavBar />}>
-              <Route path="/" element={<SearchHotel />} />
-              <Route path="/editprofile" element={<EditProfile />} />
-              <Route path="/custinfo" element={<CustomerInformation />} />
-              <Route path="/payinfo" element={<PaymentInformation />} />
-              <Route
-                path="/searchhotelresult"
-                element={<SearchHotelResult />}
-              />
-              <Route path="/searchhotel" element={<SearchHotel />} />
-              <Route path="/viewhotel" element={<ViewHotel />} />
-              <Route path="/userspage" element={<UsersPage />} />
-            </Route>
-            <Route element={<WithoutNavBar />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/registration" element={<Register />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/cancel" element={<Cancel />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </div>
+    // <div>
+    <div className="wrapper">
+      <BrowserRouter>
+        <Routes>
+          <Route element={<WitNavBar />}>
+            <Route path="/" element={<SearchHotel />} />
+            <Route path="/editprofile" element={<EditProfile />} />
+            <Route path="/custinfo" element={<CustomerInformation />} />
+            <Route path="/payinfo" element={<PaymentInformation />} />
+            <Route path="/searchhotelresult" element={<SearchHotelResult />} />
+            <Route path="/searchhotel" element={<SearchHotel />} />
+            <Route path="/viewhotel" element={<ViewHotel />} />
+            <Route path="/userspage" element={<UsersPage />} />
+          </Route>
+          <Route element={<WithoutNavBar />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/registration" element={<Register />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/cancel" element={<Cancel />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </div>
+    // </div>
   );
 };
 

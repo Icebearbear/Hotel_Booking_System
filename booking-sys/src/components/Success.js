@@ -57,7 +57,10 @@ function Success() {
   };
 
   return (
-    <div className="container mb-4 p-3 d-flex justify-content-center">
+    <div
+      className="container mb-4 p-3 d-flex justify-content-center"
+      data-testid="success-page"
+    >
       <Card style={{ width: "50rem", height: "30rem" }}>
         <Card.Body>
           <Alert variant="success" dismissible>
