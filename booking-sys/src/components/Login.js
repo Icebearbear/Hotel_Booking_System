@@ -15,9 +15,10 @@ function Login() {
   const [emailFeedback, setEmailFb] = useState("Please input a valid email"); // for input field validation feedback
   const [pwdFeedback, setPwdFb] = useState("Please input a password"); // for input field validation feedback
   const [validated, setValidated] = useState(false); //for input field validation
+  const [validity, setValidity] = useState(false); //for input field validation
 
+  // console.log("LOGINNN");
   const navigate = useNavigate();
-
   const handleClose = () => setError(false);
   const updateEmail = (errMsg) => {
     setEmail("");
@@ -31,13 +32,14 @@ function Login() {
     setError(true);
     setErrorMsg(errMsg);
   };
-  
+
   const onSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
       console.log("stuck");
+      setValidity(form.checkValidity());
     }
     setValidated(true);
 
@@ -52,7 +54,11 @@ function Login() {
         if (res.status === 200) {
           localStorage.setItem("USER_ID", res.data.userId); // store data from localStorage temporarily
           localStorage.setItem("USER_EMAIL", res.data.email); // store data from localStorage temporarily
-          navigate("/searchhotel");
+          localStorage.setItem("LOGIN", true);
+          console.log("ONSUBMIT222");
+
+          // document.getElementById("nav-bar").style.display = "none";
+          navigate(-1);
         }
         if (res.status === 500) {
           updateError(res);
@@ -62,13 +68,22 @@ function Login() {
         const errM = error.response.data.code.split("/")[1].split("-");
         var errMsg = "";
         errM.forEach((x) => (errMsg = errMsg + " " + x));
-        errMsg.includes("email") ? updateEmail(errMsg) : updatePwd(errMsg);
+        if (errMsg.includes("email")) {
+          updateEmail(errMsg);
+        }
+        if (errMsg.includes("password")) {
+          updatePwd(errMsg);
+        } else {
+          updateEmail(errMsg);
+          updatePwd("");
+        }
+
         updateError(errMsg);
       });
   };
 
   return (
-    <div className="wrapper">
+    <div className="wrapper" data-testid="login-page">
       <div className="container mb-4 p-3 d-flex justify-content-center">
         <Card className="card-login">
           <Card.Body>
@@ -84,7 +99,12 @@ function Login() {
                     placeholder="Enter email"
                     required
                   />
-                  <Form.Control.Feedback type="invalid">
+                  <Form.Control.Feedback
+                    type="invalid"
+                    role="alert"
+                    data-validity={validity}
+                    data-testid="fb-email"
+                  >
                     {emailFeedback}
                   </Form.Control.Feedback>
                 </InputGroup>
@@ -99,7 +119,12 @@ function Login() {
                   placeholder="Password"
                   required
                 />
-                <Form.Control.Feedback type="invalid">
+                <Form.Control.Feedback
+                  type="invalid"
+                  role="alert"
+                  data-validity={validity}
+                  data-testid="fb-pwd"
+                >
                   {pwdFeedback}
                 </Form.Control.Feedback>
               </Form.Group>
@@ -107,14 +132,15 @@ function Login() {
                 <Form.Check type="checkbox" label="Keep me signed in" />
               </Form.Group>
 
-              <Button
-                onClick={onSubmit}
-                variant="primary"
-                className="float-right"
-              >
-                Submit
-              </Button>
-
+              <div>
+                <Button
+                  onClick={onSubmit}
+                  variant="primary"
+                  className="float-right"
+                >
+                  Submit
+                </Button>
+              </div>
               <div className="reg-link">
                 <Link className="link" to="/registration">
                   <li>Register Now</li>
@@ -124,7 +150,7 @@ function Login() {
           </Card.Body>
         </Card>
 
-        <Modal show={error} onHide={handleClose}>
+        {/* <Modal show={error} onHide={handleClose}>
           <Modal.Header closeButton>
             <Modal.Title>Error!</Modal.Title>
           </Modal.Header>
@@ -136,7 +162,7 @@ function Login() {
               Close
             </Button>
           </Modal.Footer>
-        </Modal>
+        </Modal> */}
       </div>
     </div>
   );

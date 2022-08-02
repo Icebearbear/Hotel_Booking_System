@@ -43,7 +43,7 @@ const infoObject = {
 };
 
 describe("POST /getBook", () => {
-  const current_total = 13;
+  const current_total = 12;
   var userDetails = {
     uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
   };

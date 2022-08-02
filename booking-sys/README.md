@@ -10,6 +10,7 @@ Only client installation is inside /booking-sys, while the rest are installed ou
 npm install react-bootstrap bootstrap
 npm install axios
 npm install react-router-dom@6
+npm install react-icons --save
 ```
 
 ### Node (server)
@@ -36,6 +37,12 @@ npm install --save stripe
 
 ```
 npm install dotenv --save
+```
+
+### nodemail (sending booking/payment confirmation email)
+
+```
+npm install nodemailer
 ```
 
 ### Nodemon (to automatically restarting the node application when file changes in the directory are detected)
@@ -190,6 +197,13 @@ mkdir server
 3.  read with process.env.VARIABLE_NAME
 4.  this way, the sensitive data in .env will be protected when shared to public
 
+### .env in HOTEL_BOOKING_SYSTEM
+
+- PRIVATE_KEY="" --> google map api
+- SKIP_PREFLIGHT_CHECK=TRUE
+- FROM_EMAIL="" --> system's email account
+- PASSWORD="" --> system's password for email account
+
 ## Stripe
 
 1.  Stripe is used for checkout page for bank details verification purpose
@@ -214,6 +228,15 @@ Testing Stripe in checkout page:
 - SEARCH_DATA ={"destination_id":"","checkin":"","checkout":"","lang":"","currency":"","rooms":"", "adults":"","childs":"","guests":,"partner_id":""} - pass data from feature 1 to feature 2.
 - BOOKING_DATA = passData in ViewHotel, to pass to custinfo
 - HOTEL_BOOKING_INFO = infoObject in CustometInformation page - to keep data before checkout and use it after checkout is successful
+- LOGIN = user session set in NavBar
+
+### Testing (Jest UI)
+
+#### Snapshot
+
+Snapshot tests are a very useful tool whenever you want to make sure your UI does not change unexpectedly.
+
+A typical snapshot test case renders a UI component, takes a snapshot, then compares it to a reference snapshot file stored alongside the test. The test will fail if the two snapshots do not match: either the change is unexpected, or the reference snapshot needs to be updated to the new version of the UI component.
 
 ## Error
 

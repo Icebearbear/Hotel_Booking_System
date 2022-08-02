@@ -3,6 +3,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 const cors = require("cors");
 const axios = require("axios");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
 app.use(cors({ origin: "*" }));
 
@@ -45,13 +46,16 @@ app.get("/api", (req, res) => {
 const stripe = require("stripe")(`${process.env.PRIVATE_KEY}`);
 // check out page served by Stripe for payment
 app.post("/create-checkout-session", async (req, res) => {
-  const hotel = req.body.hotelName;
-  const price = req.body.price;
-  const noNight = req.body.noNight;
-  console.log(hotel, price, noNight);
+  const { hotelName, price, noNight, email } = req.body;
+  // const hotel = req.body.hotelName;
+  // const price = req.body.price;
+  // const noNight = req.body.noNight;
+  // const cus_email = req.body.email;
+  console.log(hotelName, price, noNight);
   // price set by Stripe is in cents. So convert to cents to show the correct on Stripe checkout page (price*50)
   try {
     const session = await stripe.checkout.sessions.create({
+      customer_email: email,
       payment_method_types: ["card"],
       mode: "payment",
       line_items: [
@@ -59,7 +63,7 @@ app.post("/create-checkout-session", async (req, res) => {
           price_data: {
             currency: "sgd",
             product_data: {
-              name: hotel,
+              name: hotelName,
             },
             unit_amount: Math.floor(price * 50),
           },
@@ -69,7 +73,7 @@ app.post("/create-checkout-session", async (req, res) => {
       success_url: "http://localhost:3000/success", // served upon success
       cancel_url: "http://localhost:3000/cancel", // served upon cancelled
     });
-
+    console.log(session);
     res
       .status(200)
       .json({ url: session.url, paymentID: session.payment_intent });
@@ -86,23 +90,24 @@ app.get("/viewhotel", (req, res) => {
     axios
       .get(`https://hotelapi.loyalty.dev/api/hotels/${hotelId}`)
       .then((hotelres) => {
-        console.log("From API: " + `https://hotelapi.loyalty.dev/api/hotels/${hotelId}`);
+        console.log(
+          "From API: " + `https://hotelapi.loyalty.dev/api/hotels/${hotelId}`
+        );
         const imgDet = hotelres.data.image_details;
         const ids = hotelres.data.hires_image_index;
 
         const imgUrl = [];
-        if (typeof ids !== 'undefined') {
+        if (typeof ids !== "undefined") {
           const imgId = ids.split(",");
           imgId.forEach(
             (imageI) =>
-              (imgUrl[`${imageI}`] = imgDet["prefix"] + imageI + imgDet["suffix"])
+              (imgUrl[`${imageI}`] =
+                imgDet["prefix"] + imageI + imgDet["suffix"])
           );
-        }
-        else{
+        } else {
           for (let i = 0; i < hotelres.data.number_of_images; i++) {
-            imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"]
+            imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
           }
-            
         }
 
         res.status(200).json({
@@ -130,6 +135,7 @@ app.get("/hotelnprices", (req, res) => {
   // var end = +(checkout.replace(/-/g,""));
   var guests = searchData.guests;
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
+  console.log(urlPrice);
   const requestPrice = axios.get(urlPrice);
   const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
     params: { destination_id: destination_id },
@@ -184,50 +190,50 @@ app.get("/hotelidprices", (req, res) => {
   var url = `https://hotelapi.loyalty.dev/api/hotels/${hotel_id}/price?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1`;
   console.log("get from: " + url);
 
-//   try{
-//   return new Promise((resolve, reject) => {
-//     const request = (retries) => {
-//       axios
-//       .get(url)
-//       .then((roomres) => {
-//         console.log("got hotel rooms, completed: " + roomres.data.completed)
-//         if (roomres.data.completed === false && retries > 0) {
-//           console.log("false");
-//           request(--retries);
-//         }
-//         else {
-//           console.log(roomres.data);
-//           res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
-//           return resolve(roomres.data);
-//         }
-//       })
-//       .catch((error) => {
-//         console.log(error.message);
-//         res.status(error.response.status).send(error.message);
-//         reject(error);
-//       });
-//     }
-//     request(5);
-//   }) 
-// }
-//   catch (err) {
-//     res.status(500).send(err);
-//   }
-    axios
-      .get(url)
-      .then((roomres) => {
-        console.log("got hotel rooms, completed: " + roomres.data.completed)
-        // if (roomres.data.completed === false) {
-        //   console.log("die");
-        // }
-        // else {
-          res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
-        // }
-      })
-      .catch((error) => {
-        console.log(error.message);
-        res.status(error.response.status).send(error.message);
-      });
+  //   try{
+  //   return new Promise((resolve, reject) => {
+  //     const request = (retries) => {
+  //       axios
+  //       .get(url)
+  //       .then((roomres) => {
+  //         console.log("got hotel rooms, completed: " + roomres.data.completed)
+  //         if (roomres.data.completed === false && retries > 0) {
+  //           console.log("false");
+  //           request(--retries);
+  //         }
+  //         else {
+  //           console.log(roomres.data);
+  //           res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+  //           return resolve(roomres.data);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log(error.message);
+  //         res.status(error.response.status).send(error.message);
+  //         reject(error);
+  //       });
+  //     }
+  //     request(5);
+  //   })
+  // }
+  //   catch (err) {
+  //     res.status(500).send(err);
+  //   }
+  axios
+    .get(url)
+    .then((roomres) => {
+      console.log("got hotel rooms, completed: " + roomres.data.completed);
+      // if (roomres.data.completed === false) {
+      //   console.log("die");
+      // }
+      // else {
+      res.status(200).send(roomres.data); //returned data is in roomprices.data and send it to react frontend
+      // }
+    })
+    .catch((error) => {
+      console.log(error.message);
+      res.status(error.response.status).send(error.message);
+    });
 });
 
 //get hotel prices. need to match with the hotelID from /hotels route
@@ -321,22 +327,21 @@ app.get("/getBook", async (req, res) => {
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
     if (docSnapshot.docs.length == 0) {
-      res.send(404);
+      res.sendStatus(404);
     } else {
       const d = docSnapshot.docs.map((doc) => {
         finalData.push([doc.id, doc.data()]);
       });
-      // console.log("lalalal", finalData);
+      console.log("lalalal", finalData);
       res.status(200).json({ finalData: finalData });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).send(err);
+    res.status(500).send(err.message);
   }
 });
 // book hotel
 app.post("/bookhotel", async (req, res) => {
-  console.log("bookhotel");
   try {
     const hotelBookRef = collection(db, "booking");
     const docRef = await addDoc(hotelBookRef, req.body);
@@ -347,13 +352,66 @@ app.post("/bookhotel", async (req, res) => {
         res.status(500).send("Login required");
       }
     });
-    console.log("lala");
-
     console.log("booked");
   } catch (err) {
     // console.log(err);
     res.status(500).send(err);
   }
+});
+
+app.post("/mail", async (req, res) => {
+  const frommail = `${process.env.FROM_EMAIL}`;
+  const password = `${process.env.PASSWORD}`;
+  const guestInfo = req.body.guestInformation;
+  const tomail = guestInfo.email;
+  const hotelName = req.body.hotelName;
+  const bookingDets = req.body.bookingInfo;
+  const paymentId = req.body.payeeInformation.paymentID;
+  console.log(frommail, password, tomail);
+  var mailMessage = {
+    from: frommail,
+    to: tomail,
+    subject: "Booking confirmation for Hotel " + hotelName,
+    text:
+      "Dear Ms " +
+      guestInfo.firstName +
+      "Booking and payment confirmation for Hotel :" +
+      hotelName +
+      "with booking details as follow: " +
+      bookingDets +
+      "with payment id: " +
+      paymentId,
+  };
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: frommail,
+      pass: password,
+    },
+  });
+  transporter.sendMail(mailMessage, function (error, info) {
+    if (error) {
+      console.log("MAILLL ERROR ", error);
+      res.status(500).json({
+        msg: "fail",
+      });
+    } else {
+      res.status(200).json({
+        msg: "success",
+      });
+    }
+  });
+});
+// get current session of loged in user
+app.get("/getSession", (req, res) => {
+  var data = { login: false, uid: null };
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      data = { login: true, uid: user.id };
+      // res.status(200).json({ login: true, uid: user.id });
+    }
+    res.status(200).json(data);
+  });
 });
 
 // get user info (not fully working)
@@ -471,10 +529,10 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/favicon.ico", (req, res) => {
-  // Use actual relative path to your .ico file here
-  res.sendFile(path.resolve(__dirname, "../favicon.ico"));
-});
+// app.get("/favicon.ico", (req, res) => {
+//   // Use actual relative path to your .ico file here
+//   res.sendFile(path.resolve(__dirname, "../favicon.ico"));
+// });
 
 // serve at port
 if (process.env.NODE_ENV !== "test") {

@@ -1,8 +1,7 @@
 import "./App.css";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import UserProfile from "./components/UserProfile";
 import EditProfile from "./components/EditProfile";
 import CustomerInformation from "./components/CustomerInformation";
 import PaymentInformation from "./components/PaymentInformation";
@@ -12,30 +11,50 @@ import SearchHotel from "./components/SearchHotel";
 import ViewHotel from "./components/ViewHotel";
 import Success from "./components/Success";
 import Cancel from "./components/Cancel";
-import BookingHistory from "./components/BookingHistory";
 import "./App.css";
 import UsersPage from "./components/UsersPage";
-function App() {
+import NavigationBar from "./components/NavigationBar";
+import { Outlet } from "react-router-dom";
+const App = () => {
   return (
+    // <div>
     <div className="wrapper">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registration" element={<Register />} />
-          <Route path="/editprofile" element={<EditProfile />} />
-          <Route path="/custinfo" element={<CustomerInformation />} />
-          <Route path="/payinfo" element={<PaymentInformation />} />
-          <Route path="/searchhotelresult" element={<SearchHotelResult />} />
-          <Route path="/searchhotel" element={<SearchHotel />} />
-          <Route path="/viewhotel" element={<ViewHotel />} />
-          <Route path="/success" element={<Success />} />
-          <Route path="/cancel" element={<Cancel />} />
-          <Route path="/userspage" element={<UsersPage />} />
+          <Route element={<WitNavBar />}>
+            <Route path="/" element={<SearchHotel />} />
+            <Route path="/editprofile" element={<EditProfile />} />
+            <Route path="/custinfo" element={<CustomerInformation />} />
+            <Route path="/payinfo" element={<PaymentInformation />} />
+            <Route path="/searchhotelresult" element={<SearchHotelResult />} />
+            <Route path="/searchhotel" element={<SearchHotel />} />
+            <Route path="/viewhotel" element={<ViewHotel />} />
+            <Route path="/userspage" element={<UsersPage />} />
+          </Route>
+          <Route element={<WithoutNavBar />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/registration" element={<Register />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/cancel" element={<Cancel />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>
+    // </div>
   );
-}
+};
+
+const WithoutNavBar = () => {
+  return <Outlet />;
+};
+
+const WitNavBar = () => {
+  return (
+    <div>
+      <NavigationBar />
+      <Outlet />
+    </div>
+  );
+};
 
 export default App;

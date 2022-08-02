@@ -46,12 +46,16 @@ function SearchHotel() {
   };
   // prompt user these data and pass to SearchHotelResult to search for hotels
   const passData = {
-    UID: uid,
-    startDate: selectedDate,
-    endDate: selectedDate2,
+    destination_id: uid,
+    checkin: selectedDate,
+    checkout: selectedDate2,
+    lang: "en_US",
+    currency: "SGD",
     rooms: nrooms,
     adults: nadults,
     childs: nchildren,
+    guests: null,
+    partner_id: "1",
   };
   const selectDest = (event, term, uid) => {
     setWordEntered(term);
@@ -90,12 +94,16 @@ function SearchHotel() {
   const selectAdults = (adult) => {
     // passData['adults'] = adult;
     setnadults(adult);
+    // setnguests(+nadults + +nchildren);
+    console.log(passData);
     // alert(passData['adults']);
   };
 
   const selectChild = (child) => {
     // passData['childs'] = child;
     setnchildren(child);
+    // setnguests(+nadults + +nchildren);
+    console.log(passData);
     // alert(passData['childs']);
   };
 
@@ -109,26 +117,26 @@ function SearchHotel() {
     }
     setValidated(true);
 
-    if (passData["UID"] == null || passData["endDate"] == null) {
+    if (passData["destination_id"] == null || passData["checkout"] == null) {
       alert("empty fields");
       return;
     }
 
-    console.log(passData["endDate"]);
-
+    // console.log(passData['endDate']);
+    passData["guests"] = +nadults + +nchildren;
+    // console.log(+nadults + +nchildren);
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
     console.log(
-      new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).endDate)
+      new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout)
     ); //must pass into new Date object to get back Date format
-    alert(JSON.parse(localStorage.getItem("SEARCH_DATA")).endDate);
+    // alert(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout);
     navigate("/searchhotelresult");
   };
 
   return (
-    <div className="SearchHotel">
-      <NavigationBar />
-      <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
+    <div className="SearchHotel" data-testid="search-page">
+      <div className="container mb-4 p-3 d-flex justify-content-around">
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
             <h1>Search Page</h1>
@@ -180,7 +188,7 @@ function SearchHotel() {
                   <Form.Label>Adults</Form.Label>
                   <Form.Select onChange={(e) => selectAdults(e.target.value)}>
                     <option value="1">1</option>
-                    <option value="2" selected>
+                    <option value="2" defaultValue={"2"}>
                       2
                     </option>
                     <option value="3">3</option>
@@ -240,14 +248,15 @@ function SearchHotel() {
             <DatePicker selected={selectedDate2} onChange={date => selectDateStart2(date)}
             dateFormat='dd/MMM/yy' minDate={new Date()} isClearable showYearDropdown scrollableYearDropdown />
           </div> */}
-              <Button
-                onClick={onSubmit}
-                variant="primary"
-                className="float-right"
-              >
-                Search hotel
-              </Button>
-
+              <div>
+                <Button
+                  onClick={onSubmit}
+                  variant="primary"
+                  className="float-right"
+                >
+                  Search hotel
+                </Button>
+              </div>
               {/* <Link to="/userprofile">
             <Button variant="primary" type="submit" className="float-right">
               View User Profile
