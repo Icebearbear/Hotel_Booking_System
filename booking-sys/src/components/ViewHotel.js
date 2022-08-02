@@ -21,7 +21,6 @@ import VectorLayer from "./MapComponents/VectorLayer";
 import osm from "./MapComponents/osm";
 import vector from "./MapComponents/vector";
 import { fromLonLat, get } from "ol/proj";
-// import GeoJSON from 'ol/format/GeoJSON';
 import Controls from "./MapComponents/Controls";
 import FullScreenControl from "./MapComponents/FullScreenControl";
 
@@ -34,7 +33,6 @@ import MarkerStyle from "./MapComponents/MarkerStyle";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
-// import Map from "../MapApp.js";
 
 function ViewHotel() {
   // get data passed from SearchHotelResult page
@@ -83,7 +81,7 @@ function ViewHotel() {
 
   const [imageData, setImageData] = useState([]);
 
-  // const [latitude, setLatitude] = useState("");
+  const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
   const [roomsDetails, setRoomsDetails] = useState({});
@@ -113,8 +111,8 @@ function ViewHotel() {
           setReviews(hotelData["amenities_ratings"]);
 
           setCenter([hotelData["longitude"], hotelData["latitude"]]);
-          // setMarkerLng(hotelData["longitude"]);
-          // setMarkerLat(hotelData["latitude"]);
+          // setLongitude(hotelData["longitude"]);
+          // setLatitude(hotelData["latitude"]);
 
           // const markers = {
           //   "hotelmarker": [
@@ -124,12 +122,11 @@ function ViewHotel() {
           // };
           // console.log(markers.hotelmarker[0] + " " + markers.hotelmarker[1]);
 
-          var newFeat = addMarkers([
-            [hotelData["longitude"], hotelData["latitude"]],
-            [0.0, 0.0],
-          ]);
-          setFeatures(newFeat);
-          console.log("new feat: ", newFeat);
+          // var newFeat = addMarkers([
+          //   [hotelData["longitude"], hotelData["latitude"]],
+          // ]);
+          // setFeatures(newFeat);
+          // console.log("new feat: ", newFeat);
           // setFeatures(addMarkers([[hotelData["longitude"], hotelData["latitude"]]]));
           setImageData(imgUrl);
         })
@@ -149,16 +146,11 @@ function ViewHotel() {
       }
       if (i <= rating * 2 && i % 2 == 0) {
         const star = (
-          <a
-            href="https://www.freeiconspng.com/img/33907"
-            title="Image from freeiconspng.com"
-          >
             <Card.Img
               style={{ height: "25px", width: "25px" }}
-              src="https://www.freeiconspng.com/uploads/yellow-christmas-star-png-18.png"
+              src={require("./StarRatingParts/yellowstar.png")}
               alt="star png"
             />
-          </a>
         );
         stars.push(star);
       } else if (i % (rating * 2) == 0) {
@@ -248,9 +240,6 @@ function ViewHotel() {
     }),
   };
 
-  // const [markerLng, setMarkerLng] = useState("106.0");
-  // const [markerLat, setMarkerLat] = useState("1.0");
-
   function addMarkers(lonLatArray) {
     var iconStyle = new Style({
       image: new Icon({
@@ -276,10 +265,6 @@ function ViewHotel() {
   const [zoom, setZoom] = useState(12);
   // const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]]));
   const [features, setFeatures] = useState(initfeat);
-
-  // const marker = new Marker([16.351, 48.277]);
-  // marker.set('info', 'I am a marker.')
-  // marker.setMap(MapOl);
 
   // FUNCTIONS FOR ROOMS DISPLAY
   const getHotelIdPrices = () => {
