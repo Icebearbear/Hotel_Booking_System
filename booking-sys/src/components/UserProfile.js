@@ -42,11 +42,7 @@ function UserProfile() {
     axios
       .post("http://localhost:3001/logout")
       .then((res) => {
-        // localStorage.setItem(
-        //   "SESSION",
-        //   JSON.stringify({ login: false, uid: null })
-        // );
-        navigate(-1);
+        navigate("/searchhotel");
         console.log(res);
       })
       .catch((error) => {

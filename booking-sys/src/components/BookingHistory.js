@@ -14,7 +14,8 @@ function BookingHistory() {
   const [removeBook, setRemove] = useState(false);
   const [selBook, setSelBook] = useState(""); // contains the docId of the selected booking
   const [empty, setEmpty] = useState(false);
-  useEffect(() => {
+
+  const getBooking = () => {
     axios
       .get(
         "http://localhost:3001/getBook",
@@ -27,7 +28,7 @@ function BookingHistory() {
       )
       .then((res) => {
         // console.log(res.data.finalData.length);
-        // console.log("BOOK HISTORY ", res.data.finalData);
+        console.log("BOOK HISTORY ", res.data.finalData);
         setBook(res.data.finalData);
         return;
       })
@@ -37,6 +38,10 @@ function BookingHistory() {
           setEmpty(true);
         }
       });
+  };
+
+  useEffect(() => {
+    getBooking();
   }, [setBook, setEmpty]);
 
   const onSubmit = (valuePass) => {
@@ -79,12 +84,14 @@ function BookingHistory() {
       ) : (
         <div>
           {bookObj.map((value, index) => (
-            <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
+            <div
+              className="container mt-4 mb-4 p-3 d-flex justify-content-around"
+              data-testid="booking-card"
+            >
               <Card key={index[1]} style={{ width: "50rem", height: "20rem" }}>
                 <Card.Body>
-                  <p>{value[1].uid}</p>
                   <h5>
-                    <strong>{value[1].hotelID}</strong>
+                    <strong>{value[1].hotelName}</strong>
                   </h5>
                   <></>
                   <h5>

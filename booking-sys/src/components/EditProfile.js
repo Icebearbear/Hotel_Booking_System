@@ -75,7 +75,10 @@ function EditProfile() {
     }
   };
   return (
-    <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+    <div
+      class="container mt-4 mb-4 p-3 d-flex justify-content-center"
+      data-testid="edit-profile-page"
+    >
       <div class="card p-4">
         <div class="image d-flex flex-column justify-content-center align-items-center">
           <div>

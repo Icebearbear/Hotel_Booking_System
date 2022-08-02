@@ -1,14 +1,23 @@
-import { screen, render, waitFor } from "@testing-library/react";
+import { screen, render, waitFor, queryByTestId } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter, BrowserRouter } from "react-router-dom";
 import user from "@testing-library/user-event";
 import App from "../App";
 import NavigationBar from "../components/NavigationBar";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
+import { within } from "@testing-library/react";
 
 const loginReg = () => {
   return screen.getByRole("button", {
     name: /login\/register/i,
+  });
+};
+
+const userProf = () => {
+  return screen.getByRole("button", {
+    name: /user\/profile/i,
   });
 };
 const getEmail = () => {
@@ -27,20 +36,19 @@ const loginButton = () => {
   });
 };
 
-describe("app", async () => {
-  beforeEach(() => {
-    render(<App />);
-  });
-  it("render app", async () => {
-    await userEvent.click(loginReg());
-    expect(screen.findByTestId("login-page")).toBeTruthy();
-  });
+// describe("app", async () => {
+//   it("render app", async () => {
+//     render(<App />);
+//     await userEvent.click(loginReg());
+//     expect(screen.findByTestId("login-page")).toBeTruthy();
+//   });
 
-  it("test login localStorage", () => {
-    window.localStorage.clear();
-    window.localStorage.setItem("LOGIN", "true");
-    expect(localStorage.getItem("LOGIN")).toEqual("true");
-  });
-
-  it("loged in shows user profile button", () => {});
-});
+//   it("not loged in shows login register button", async () => {
+//     const { queryByTestId } = render(<App />);
+//     var mock = new MockAdapter(axios);
+//     const data = { login: false, uid: null };
+//     mock.onGet("http://localhost:3001/getSession").reply(200, data);
+//     const { getByText } = within(queryByTestId("userprofile"));
+//     expect(getByText("Login/Register")).toBeInTheDocument();
+//   });
+// });

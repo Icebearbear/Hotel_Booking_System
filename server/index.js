@@ -309,7 +309,7 @@ app.get("/getBook", async (req, res) => {
       const d = docSnapshot.docs.map((doc) => {
         finalData.push([doc.id, doc.data()]);
       });
-      // console.log("lalalal", finalData);
+      console.log("lalalal", finalData);
       res.status(200).json({ finalData: finalData });
     }
   } catch (err) {
