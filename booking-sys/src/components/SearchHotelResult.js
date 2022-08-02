@@ -3,13 +3,14 @@ import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 import clsx from "clsx";
 import axios from "axios";
+import { AiFillStar } from "react-icons/ai";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import CardHeader from "react-bootstrap/CardHeader";
 import { Component, lazy, Suspense } from "react";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 import useLazyLoad from "./useLazyLoad";
-import NavigationBar from "./NavigationBar";
+//import hotel_placeholder from "../data/hotel_placeholder.png";
 
 function SearchHotelResult() {
   const [hotelId, setHotels] = useState("");
@@ -22,7 +23,7 @@ function SearchHotelResult() {
   const triggerRef = useRef(null);
   /////////////////////////////
 
-  var searchData = {
+  const searchData = {
     destination_id: "WD0M",
     checkin: "2022-07-24",
     checkout: "2022-07-25",
@@ -48,6 +49,7 @@ function SearchHotelResult() {
   const dateFormat = (string) => {
     var date = new Date(string);
     var day = date.getDate();
+
     var month = date.getMonth() + 1;
     var year = date.getFullYear();
     var format = year + "-" + month + "-" + day;
@@ -57,7 +59,6 @@ function SearchHotelResult() {
   console.log(dateFormat(inputed["checkin"]));
   searchData["checkin"] = dateFormat(inputed["checkin"]);
   searchData["checkout"] = dateFormat(inputed["checkout"]);
-
   //}
   const getHotelAndPrices = async () => {
     try {
@@ -102,9 +103,8 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
-      <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
-        {/* <h3>{"showing hotels at " + searchData["destination_id"]}</h3> */}
-        <h3>Showing hotels search result</h3>
+      <div className="d-flex p-2 justify-content-around">
+        <h3>{"Total Results : " + hotelQ + " Hotels Found"}</h3>
       </div>
       <div className="grid grid-cols-3 gap-4 content-start">
         {data.map((hotels, index) => (
@@ -140,33 +140,52 @@ function HotelDisplay(props) {
     <>
       <div className="d-flex p-2 justify-content-around">
         {/* <h3>{"showing hotels at" + props.search['destination_id']}</h3> */}
-        <Card className="text-center" style={{ width: "75rem" }}>
-          <Card.Header as="h5">{info.name}</Card.Header>
+        <Card
+          className="text-center"
+          style={{ width: "60rem", height: "fit-content" }}
+        >
+          <Card.Header as="h3">{info.name}</Card.Header>
           <div className="d-flex" style={{ flexDirection: "row" }}>
             <Card.Img
-              style={{ width: "18rem" }}
+              style={{ maxWidth: "30rem", maxHeight: "20rem" }}
               src={`${info.image_details.prefix}${info.default_image_index}${info.image_details.suffix}`}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null; // prevents looping
+                currentTarget.src =
+                  "https://instant.space/hotel-placeholder.png";
+              }}
             ></Card.Img>
-            <Card.Body>
-              <h2>
-                Price <p>${info.price}</p>
-              </h2>
-              <h2>Hotel Rating</h2>
-              <div className="overflow-auto">
-                <Card.Text>{info.rating + "   stars"}</Card.Text>
-                <Card.Text>{info.name}</Card.Text>
-                <Card.Text>{info.address}</Card.Text>
-                <Button
-                  onClick={() => {
-                    localStorage.setItem("HOTEL_ID", info.id);
-                    navigate("/viewhotel");
-                  }}
-                  variant="primary"
-                  className="float-right"
-                >
-                  Select hotel
-                </Button>
-              </div>
+            <Card.Body
+              className="card_bodies"
+              style={{ width: "20rem", height: "fit-content" }}
+            >
+              <Card.Header as="h5">Price</Card.Header>
+              <Card.Body>
+                <Card.Title>${info.price}</Card.Title>
+              </Card.Body>
+              <Card.Header as="h5">Hotel Rating</Card.Header>
+              <Card.Body>
+                <Card.Title>{info.rating + "   stars"}</Card.Title>
+                {[...Array(5)].map((star, i) => {
+                  const ratingValue = i + 1;
+                  return (
+                    <AiFillStar
+                      color={ratingValue > info.rating ? "grey" : "teal"}
+                    />
+                  );
+                })}{" "}
+              </Card.Body>
+              <Card.Text>Address : {info.address}</Card.Text>
+              <Button
+                onClick={() => {
+                  localStorage.setItem("HOTEL_ID", info.id);
+                  navigate("/viewhotel");
+                }}
+                variant="primary"
+                className="float-right"
+              >
+                Select hotel
+              </Button>
             </Card.Body>
           </div>
         </Card>

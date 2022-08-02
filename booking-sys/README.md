@@ -10,6 +10,7 @@ Only client installation is inside /booking-sys, while the rest are installed ou
 npm install react-bootstrap bootstrap
 npm install axios
 npm install react-router-dom@6
+npm install react-icons --save
 ```
 
 ### Node (server)
