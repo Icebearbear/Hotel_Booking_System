@@ -128,11 +128,11 @@ function ViewHotel() {
       }
       if (i <= rating * 2 && i % 2 == 0) {
         const star = (
-            <Card.Img
-              style={{ height: "25px", width: "25px" }}
-              src={require("./StarRatingParts/yellowstar.png")}
-              alt="star png"
-            />
+          <Card.Img
+            style={{ height: "25px", width: "25px" }}
+            src={require("./StarRatingParts/yellowstar.png")}
+            alt="star png"
+          />
         );
         stars.push(star);
       } else if (i % (rating * 2) == 0) {
@@ -235,10 +235,10 @@ function ViewHotel() {
     }
     return addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
   }
- 
+
   // long, lat, idk why its the other way round but ok
   const [center, setCenter] = useState(["0.0", "0.0"]);
-  const [zoom, setZoom] = useState(12); 
+  const [zoom, setZoom] = useState(12);
   // const initfeat = addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
   const initFeat = initMarker();
   // const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]]));
@@ -269,6 +269,10 @@ function ViewHotel() {
     }
     return roomImgUrl;
   };
+
+  const refresh = () => {
+    window.location.reload();
+  }
 
   const onClose = () => {
     setWarning(false);
@@ -320,11 +324,7 @@ function ViewHotel() {
     getHotelIdPrices();
   }, [setLongitude, setImageData, setLogin]);
 
-  const containerStyle = {
-    width: "500px",
-    height: "280px",
-    margin: "0 auto",
-  };
+
 
   return (
     <>
@@ -469,7 +469,16 @@ function ViewHotel() {
         >
           <Card id="location" style={{ width: "70rem", height: "35rem" }}>
             <Card.Body>
-              <Card.Title>Hotel Location</Card.Title>
+              <Card.Title>Hotel Location
+                <Button
+                  onClick={refresh}
+                  variant="primary"
+                  className="float-right"
+                  style={{ marginLeft: "772px" }}
+                >
+                  View location
+                </Button>
+              </Card.Title>
               <div>
                 <MapOl center={fromLonLat(center)} zoom={zoom}>
                   <Layers>
@@ -489,7 +498,16 @@ function ViewHotel() {
         <div class="d-flex flex-column justify-content-center align-items-center">
           <Card id="rooms" style={{ width: "70rem", flex: 1 }}>
             <Card.Body>
-              <Card.Title>Available Rooms</Card.Title>
+              <Card.Title>Available Rooms
+                <Button
+                  onClick={refresh}
+                  variant="primary"
+                  className="float-right"
+                  style={{ marginLeft: "768px" }}
+                >
+                  View rooms
+                </Button>
+              </Card.Title>
             </Card.Body>
           </Card>
 
