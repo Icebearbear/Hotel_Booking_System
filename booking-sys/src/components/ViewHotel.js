@@ -135,7 +135,7 @@ function ViewHotel() {
           />
         );
         stars.push(star);
-      } else if (i % (rating * 2) == 0) {
+      } else if (i % (rating * 2) == 0 && i % 2 == 1) {
         const star = (
           <Card.Img
             style={{ height: "25px", width: "25px" }}
@@ -523,7 +523,13 @@ function ViewHotel() {
               }}
             >
               <Card.Img
-                style={{ height: "100%", width: "40%", borderRadius: 0 }}
+                style={{
+                  height: "100%", width: "40%", borderRadius: 0,
+                  backgroundImage: "url(https://cdn.pixabay.com/photo/2014/08/19/19/39/bedroom-421848_960_720.jpg)",
+                  backgroundSize: "100%",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center"
+                }}
                 src={`${roomImg(key)[0]}`}
               />
               <Card.Body className="d-flex flex-column">
