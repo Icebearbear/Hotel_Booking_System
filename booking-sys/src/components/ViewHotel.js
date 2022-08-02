@@ -21,12 +21,20 @@ function ViewHotel() {
   for (var i = 0; i < searchDataLocal["rooms"] - 1; i++) {
     param_guests = param_guests + "|" + guest_per_room;
   }
+  const dateFormat = (string) => {
+    var date = new Date(string);
+    var day = date.getDate();
 
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    var format = year + "-" + month + "-" + day;
+    return format;
+  };
   const searchData = {
     hotel_id: hotelId,
-    destination_id: searchDataLocal["UID"],
-    checkin: searchDataLocal["startDate"].slice(0, 10),
-    checkout: searchDataLocal["endDate"].slice(0, 10),
+    destination_id: searchDataLocal["destination_id"],
+    checkin: dateFormat(searchDataLocal["checkin"]),
+    checkout: dateFormat(searchDataLocal["checkout"]),
     lang: "en_US",
     currency: "SGD",
     country_code: "SG",
