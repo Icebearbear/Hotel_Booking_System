@@ -27,18 +27,17 @@ import FullScreenControl from "./MapComponents/FullScreenControl";
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from "ol/style";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import { Vector as VectorS } from "ol/source";
-import { Vector as VectorL } from "ol/layer";
-import MarkerStyle from "./MapComponents/MarkerStyle";
+// import MarkerStyle from "./MapComponents/MarkerStyle";
 
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 
 function ViewHotel() {
   // get data passed from SearchHotelResult page
-  //const hotelId = "diH7";
   const navigate = useNavigate();
   const hotelId = localStorage.getItem("HOTEL_ID");
+  const hotelLocation = JSON.parse(localStorage.getItem("HOTEL_LOC"));
+  console.log("LAT HOTELPAGE", hotelLocation.latitude)
 
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
@@ -79,14 +78,13 @@ function ViewHotel() {
 
   const [reviews, setReviews] = useState({});
 
-  const [imageData, setImageData] = useState([]);
-
-  const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [imageData, setImageData] = useState([]);
 
   const [roomsDetails, setRoomsDetails] = useState({});
   const [roomFlag, setRoomFlag] = useState("");
   const [CheapestRoomPrice, setCheapestRoomPrice] = useState("");
+
   const [warning, setWarning] = useState(false);
   const [login, setLogin] = useState("false");
 
@@ -111,23 +109,7 @@ function ViewHotel() {
           setReviews(hotelData["amenities_ratings"]);
 
           setCenter([hotelData["longitude"], hotelData["latitude"]]);
-          // setLongitude(hotelData["longitude"]);
-          // setLatitude(hotelData["latitude"]);
 
-          // const markers = {
-          //   "hotelmarker": [
-          //     hotelData["longitude"],
-          //     hotelData["latitude"]
-          //   ],
-          // };
-          // console.log(markers.hotelmarker[0] + " " + markers.hotelmarker[1]);
-
-          // var newFeat = addMarkers([
-          //   [hotelData["longitude"], hotelData["latitude"]],
-          // ]);
-          // setFeatures(newFeat);
-          // console.log("new feat: ", newFeat);
-          // setFeatures(addMarkers([[hotelData["longitude"], hotelData["latitude"]]]));
           setImageData(imgUrl);
         })
         .catch((err) => {
@@ -228,18 +210,6 @@ function ViewHotel() {
   };
 
   // MAAAAAAAAAAAAAAAAAPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
-  let styles = {
-    MultiPolygon: new Style({
-      stroke: new Stroke({
-        color: "blue",
-        width: 1,
-      }),
-      fill: new Fill({
-        color: "rgba(0, 0, 255, 0.1)",
-      }),
-    }),
-  };
-
   function addMarkers(lonLatArray) {
     var iconStyle = new Style({
       image: new Icon({
@@ -258,13 +228,21 @@ function ViewHotel() {
     });
     return features;
   }
-  const initfeat = addMarkers([[103.0, 1.0]]);
 
+  const initMarker = () => {
+    if (hotelLocation.latitude == "null" || hotelLocation.latitude == "undefined") {
+      return addMarkers([["0.0", "0.0"]]);
+    }
+    return addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
+  }
+ 
   // long, lat, idk why its the other way round but ok
   const [center, setCenter] = useState(["0.0", "0.0"]);
-  const [zoom, setZoom] = useState(12);
+  const [zoom, setZoom] = useState(12); 
+  // const initfeat = addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
+  const initFeat = initMarker();
   // const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]]));
-  const [features, setFeatures] = useState(initfeat);
+  const [features, setFeatures] = useState(initFeat);
 
   // FUNCTIONS FOR ROOMS DISPLAY
   const getHotelIdPrices = () => {

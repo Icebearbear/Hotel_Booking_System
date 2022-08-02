@@ -179,6 +179,26 @@ function HotelDisplay(props) {
               <Button
                 onClick={() => {
                   localStorage.setItem("HOTEL_ID", info.id);
+                  try {
+                    axios
+                      .get("http://localhost:3001/viewhotel", {
+                        params: { hotelId: info.id },
+                      })
+                      .then((hoteldt) => {
+                        const hotelData = JSON.parse(hoteldt.data.data);
+                        const hotelLocation = {
+                          latitude: hotelData["latitude"],
+                          longitude: hotelData["longitude"]
+                        }
+                        console.log("LAT PASSED", hotelLocation.latitude)
+                        localStorage.setItem("HOTEL_LOC", JSON.stringify(hotelLocation));
+                      })
+                      .catch((err) => {
+                        console.log(err.message);
+                      });
+                  } catch (err) {
+                    console.log(err);
+                  }
                   navigate("/viewhotel");
                 }}
                 variant="primary"
