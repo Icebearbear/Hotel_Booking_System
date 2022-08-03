@@ -141,14 +141,16 @@ function SearchHotel() {
           <Card.Body>
             <h1>Search Page</h1>
             <Form noValidate validated={validated}>
-              <Form.Label>Destination</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Search..."
-                value={wordEntered}
-                onChange={handleFilter}
-                required
-              />
+              <Form.Group className="mb-3" controlId="formBasicDestinations">
+                <Form.Label>Destination</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Search..."
+                  value={wordEntered}
+                  onChange={handleFilter}
+                  required
+                />
+              </Form.Group>
               {/* <h2>Destination</h2>
           <div className="searchInputs">
             <input type="text" id="field1" placeholder="Search..." value={wordEntered} onChange={handleFilter}/>
@@ -176,7 +178,10 @@ function SearchHotel() {
               <div className="d-flex p-2 justify-content-around">
                 <div>
                   <Form.Label>Rooms</Form.Label>
-                  <Form.Select onChange={(e) => selectRooms(e.target.value)}>
+                  <Form.Select
+                    data-testid="combobox-rooms"
+                    onChange={(e) => selectRooms(e.target.value)}
+                  >
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -186,7 +191,10 @@ function SearchHotel() {
 
                 <div>
                   <Form.Label>Adults</Form.Label>
-                  <Form.Select onChange={(e) => selectAdults(e.target.value)}>
+                  <Form.Select
+                    data-testid="combobox-adults"
+                    onChange={(e) => selectAdults(e.target.value)}
+                  >
                     <option value="1">1</option>
                     <option value="2" defaultValue={"2"}>
                       2
@@ -198,7 +206,10 @@ function SearchHotel() {
 
                 <div>
                   <Form.Label>Childs</Form.Label>
-                  <Form.Select onChange={(e) => selectChild(e.target.value)}>
+                  <Form.Select
+                    data-testid="combobox-child"
+                    onChange={(e) => selectChild(e.target.value)}
+                  >
                     <option value="0">0</option>
                     <option value="1">1</option>
                     <option value="2">2</option>

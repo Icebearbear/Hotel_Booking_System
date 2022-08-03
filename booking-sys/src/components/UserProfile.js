@@ -16,6 +16,7 @@ function UserProfile() {
       .get("http://localhost:3001/user", { params: { uid: userID } })
       .then((res) => {
         console.log(res);
+        console.log(res.data.data.first_name);
         /// set user account information on webpage
         setFName(res.data.data.first_name);
         setLName(res.data.data.last_name);

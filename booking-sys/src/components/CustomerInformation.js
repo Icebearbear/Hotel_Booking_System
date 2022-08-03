@@ -116,7 +116,7 @@ function CustomerInformation() {
       setNoInput(false);
     }
     setValidated(true);
-
+    console.log(validity);
     if (noInput === false) {
       console.log(infoObject);
       axios

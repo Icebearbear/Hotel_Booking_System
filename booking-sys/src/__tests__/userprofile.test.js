@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import UserProfile from "../components/UserProfile";
 const userData = {
-  email: "a2@gmail.com",
+  email: "a@gmail.com",
   first_name: "changed_first_name2",
   last_name: "changed_last_name12",
   uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",

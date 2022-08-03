@@ -102,7 +102,7 @@ function SearchHotelResult() {
 
   /// call the diplay cards and display the updated data from lazy loading
   return (
-    <>
+    <div data-testid="searchhotelresult-page">
       <div className="d-flex p-2 justify-content-around">
         <h3>{"Total Results : " + hotelQ + " Hotels Found"}</h3>
       </div>
@@ -119,7 +119,7 @@ function SearchHotelResult() {
       <div ref={triggerRef} className={clsx("trigger", { visible: loading })}>
         <LoadingPosts />
       </div>
-    </>
+    </div>
   );
 }
 
@@ -188,10 +188,13 @@ function HotelDisplay(props) {
                         const hotelData = JSON.parse(hoteldt.data.data);
                         const hotelLocation = {
                           latitude: hotelData["latitude"],
-                          longitude: hotelData["longitude"]
-                        }
-                        console.log("LAT PASSED", hotelLocation.latitude)
-                        localStorage.setItem("HOTEL_LOC", JSON.stringify(hotelLocation));
+                          longitude: hotelData["longitude"],
+                        };
+                        console.log("LAT PASSED", hotelLocation.latitude);
+                        localStorage.setItem(
+                          "HOTEL_LOC",
+                          JSON.stringify(hotelLocation)
+                        );
                       })
                       .catch((err) => {
                         console.log(err.message);

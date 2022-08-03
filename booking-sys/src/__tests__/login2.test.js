@@ -3,7 +3,6 @@ import React from "react";
 import Login from "../components/Login";
 import { MemoryRouter, MemoryRouter as Router } from "react-router-dom";
 import user from "@testing-library/user-event";
-import App from "../App";
 import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/react";
 const getEmail = () => {

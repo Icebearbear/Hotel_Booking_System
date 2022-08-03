@@ -1,13 +1,8 @@
 import { screen, render, waitFor, queryByTestId } from "@testing-library/react";
 import React from "react";
-import { MemoryRouter, BrowserRouter } from "react-router-dom";
-import user from "@testing-library/user-event";
 import App from "../App";
-import NavigationBar from "../components/NavigationBar";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
-import { within } from "@testing-library/react";
 
 const loginReg = () => {
   return screen.getByRole("button", {
@@ -17,7 +12,7 @@ const loginReg = () => {
 
 const userProf = () => {
   return screen.getByRole("button", {
-    name: /user\/profile/i,
+    name: /user profile/i,
   });
 };
 const getEmail = () => {
@@ -36,19 +31,58 @@ const loginButton = () => {
   });
 };
 
-// describe("app", async () => {
-//   it("render app", async () => {
-//     render(<App />);
-//     await userEvent.click(loginReg());
-//     expect(screen.findByTestId("login-page")).toBeTruthy();
-//   });
+describe("Test User Profile button shown when loged in", async () => {
+  beforeEach(async () => {
+    jest.mock("axios");
+    axios.get.mockImplementation((url) => {
+      switch (url) {
+        case "http://localhost:3001/getSession":
+          return Promise.resolve({ data: { login: true } });
+      }
+    });
+    await waitFor(() => {
+      render(<App />);
+    });
+  });
 
-//   it("not loged in shows login register button", async () => {
-//     const { queryByTestId } = render(<App />);
-//     var mock = new MockAdapter(axios);
-//     const data = { login: false, uid: null };
-//     mock.onGet("http://localhost:3001/getSession").reply(200, data);
-//     const { getByText } = within(queryByTestId("userprofile"));
-//     expect(getByText("Login/Register")).toBeInTheDocument();
-//   });
-// });
+  it("check userprofile button is rendered", async () => {
+    await waitFor(() => {
+      expect(screen.getByText("User Profile")).toBeTruthy();
+    });
+  });
+
+  it("check userprofile button redirect to user profile", async () => {
+    await waitFor(() => {
+      userEvent.click(userProf());
+      expect(screen.findByTestId("user-page")).toBeTruthy();
+    });
+  });
+});
+
+describe("Test Login button shown when not loged in", async () => {
+  beforeEach(async () => {
+    jest.mock("axios");
+    axios.get.mockImplementation((url) => {
+      switch (url) {
+        case "http://localhost:3001/getSession":
+          return Promise.resolve({ data: { login: false } });
+      }
+    });
+    await waitFor(() => {
+      render(<App />);
+    });
+  });
+
+  it("check login/register button is rendered", async () => {
+    await waitFor(() => {
+      expect(screen.getByText("Login/Register")).toBeTruthy();
+    });
+  });
+
+  it("check userprofile button redirect to user profile", async () => {
+    await waitFor(() => {
+      userEvent.click(loginReg());
+      expect(screen.findByTestId("login-page")).toBeTruthy();
+    });
+  });
+});

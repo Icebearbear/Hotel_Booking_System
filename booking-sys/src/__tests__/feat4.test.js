@@ -1,11 +1,10 @@
-import { screen, render, waitFor, fireEvent } from "@testing-library/react";
+import { screen, render, waitFor } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter, MemoryRouter as Router } from "react-router-dom";
-import user from "@testing-library/user-event";
-import App from "../App";
 import userEvent from "@testing-library/user-event";
-import { within } from "@testing-library/react";
 import CustomerInformation from "../components/CustomerInformation";
+import { act } from "react-dom/test-utils";
+import axios from "axios";
 
 const getFirstName = () => {
   return screen.getByRole("textbox", {
@@ -210,21 +209,154 @@ describe("customer info", () => {
     expect(checkboxAirportTransfer().checked).toEqual(false);
     expect(checkboxBabyCot().checked).toEqual(false);
 
-    userEvent.click(radioSmoking());
-    userEvent.click(radioLargeb());
-    userEvent.click(checkBoxHighFloor());
-    fireEvent.click(checkboxQuiteRoom());
-    userEvent.click(checkboxAirportTransfer());
-    userEvent.click(checkboxBabyCot());
-
-    await waitFor(() => {
-      expect(radioSmoking().checked).toEqual(true);
-      expect(radioLargeb().checked).toEqual(true);
-      //   // expect(await checkBoxHighFloor().checked).toEqual(true);
-      //   expect(checkboxQuiteRoom().checked).toEqual(true);
-      //   expect(checkboxAirportTransfer().checked).toEqual(true);
-      //   expect(checkboxBabyCot().checked).toEqual(true);
+    act(() => {
+      userEvent.click(radioSmoking());
+      userEvent.click(radioLargeb());
+      userEvent.click(checkBoxHighFloor());
+      userEvent.click(checkboxQuiteRoom());
+      userEvent.click(checkboxAirportTransfer());
+      userEvent.click(checkboxBabyCot());
     });
+    expect(radioSmoking().checked).toEqual(true);
+    expect(radioLargeb().checked).toEqual(true);
+    //   expect(checkBoxHighFloor().checked).toEqual(true);
+    // expect(checkboxQuiteRoom().checked).toEqual(true);
+    //   expect(checkboxAirportTransfer().checked).toEqual(true);
+    //   expect(checkboxBabyCot().checked).toEqual(true);
+  });
+
+  it("user typed email is shown", async () => {
+    userEvent.type(getEmail(), "a@gmail.com");
+    expect(await getEmail()).toHaveValue("a@gmail.com");
+  });
+
+  it("user typed first name is shown", async () => {
+    userEvent.type(getFirstName(), "Icebear");
+    expect(await getFirstName()).toHaveValue("Icebear");
+  });
+
+  it("user typed last name is shown", async () => {
+    userEvent.type(getLastName(), "Back");
+    expect(await getLastName()).toHaveValue("Back");
+  });
+});
+
+describe("customer info error tests when some inputs are not given", () => {
+  beforeAll(async () => {
+    jest.mock("axios");
+    axios.post.mockImplementation((url) => {
+      switch (url) {
+        case "http://localhost:3001/create-checkout-session":
+          return Promise.resolve({
+            data: { url: "http://localhost:3000/success" },
+          }); // served upon success
+      }
+    });
+
+    window.localStorage.clear();
+    window.localStorage.setItem(lStorageKey, JSON.stringify(bookData));
+    expect(localStorage.getItem(lStorageKey)).toEqual(JSON.stringify(bookData));
+
+    const { container } = render(
+      <MemoryRouter>
+        <CustomerInformation />
+      </MemoryRouter>
+    );
+    await userEvent.click(proceedButton());
+    let validationCheck;
+    await waitFor(() => {
+      validationCheck = container.querySelector('[data-validity="false"]');
+    });
+    expect(validationCheck).toBeTruthy();
+  });
+
+  it("error messages shown", async () => {
+    await waitFor(() => {
+      userEvent.type(getEmail(), "Icebear");
+      userEvent.type(getFirstName(), "Bear");
+      userEvent.click(proceedButton());
+      expect(
+        screen.getByText("Please input valid last name")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Please input valid email address")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Please input valid country")
+      ).toBeInTheDocument();
+    });
+  });
+});
+
+describe("valid inputs and successful payment", () => {
+  beforeEach(async () => {
+    jest.mock("axios");
+    axios.post.mockImplementation((url) => {
+      switch (url) {
+        case "http://localhost:3001/create-checkout-session":
+          return Promise.resolve({
+            data: { url: "http://localhost:3000/success" },
+          }); // served upon failure
+      }
+    });
+
+    window.localStorage.clear();
+    window.localStorage.setItem(lStorageKey, JSON.stringify(bookData));
+    expect(localStorage.getItem(lStorageKey)).toEqual(JSON.stringify(bookData));
+
+    const { container } = render(
+      <MemoryRouter>
+        <CustomerInformation />
+      </MemoryRouter>
+    );
+  });
+
+  it("go to next page upon giving correct inputs and click button", async () => {
+    await waitFor(() => {
+      userEvent.type(getEmail(), "a@gmail.com");
+      userEvent.type(getFirstName(), "Bear");
+      userEvent.type(getLastName(), "Icebear");
+      userEvent.type(getPhoneNo(), "123456");
+      userEvent.type(getCountryOrigin(), "sg");
+    });
+    userEvent.click(proceedButton());
+    expect(screen.findByTestId("success-page")).toBeTruthy();
+  });
+});
+
+describe("valid inputs and successful payment", () => {
+  beforeEach(async () => {
+    jest.mock("axios");
+    axios.post.mockImplementation((url) => {
+      switch (url) {
+        case "http://localhost:3001/create-checkout-session":
+          return Promise.resolve({
+            data: { url: "http://localhost:3000/cancel" },
+          }); // served upon success
+      }
+    });
+
+    window.localStorage.clear();
+    window.localStorage.setItem(lStorageKey, JSON.stringify(bookData));
+    expect(localStorage.getItem(lStorageKey)).toEqual(JSON.stringify(bookData));
+
+    const { container } = render(
+      <MemoryRouter>
+        <CustomerInformation />
+      </MemoryRouter>
+    );
+  });
+
+  it("go to next page upon giving correct inputs and click button", async () => {
+    await waitFor(() => {
+      userEvent.type(getEmail(), "a@gmail.com");
+      userEvent.type(getFirstName(), "Bear");
+      userEvent.type(getLastName(), "Icebear");
+      userEvent.type(getPhoneNo(), "123456");
+      userEvent.type(getCountryOrigin(), "sg");
+    });
+    userEvent.click(proceedButton());
+    expect(screen.findByTestId("cancel-page")).toBeTruthy();
   });
 });
 
@@ -258,62 +390,5 @@ describe("customer info error tests when all inputs are not given", () => {
       screen.getByText("Please input valid email address")
     ).toBeInTheDocument();
     expect(screen.getByText("Please input valid country")).toBeInTheDocument();
-  });
-});
-
-// describe("customer info error tests when some inputs are not given", () => {
-//   beforeAll(async () => {
-//     window.localStorage.clear();
-//     window.localStorage.setItem(lStorageKey, JSON.stringify(bookData));
-//     expect(localStorage.getItem(lStorageKey)).toEqual(JSON.stringify(bookData));
-
-//     const { container } = render(
-//       <MemoryRouter>
-//         <CustomerInformation />
-//       </MemoryRouter>
-//     );
-//     userEvent.type(getEmail(), "Icebear");
-//     userEvent.type(getFirstName(), "Bear");
-//     await userEvent.click(proceedButton());
-//     let validationCheck;
-//     await waitFor(() => {
-//       validationCheck = container.querySelector('[data-validity="false"]');
-//     });
-//     expect(validationCheck).toBeTruthy();
-//   });
-
-//   it("error messages shown", async () => {
-//     const { getByText } = within(await screen.getByTestId("fb-fname"));
-//     expect(getByText("Please input valid first name")).not.toBeVisible();
-
-//     expect(screen.getByText("Please input valid first name")).toBeTruthy();
-//     expect(
-//       screen.getByText("Please input valid email address")
-//     ).toBeInTheDocument();
-//     expect(screen.getByText("Please input valid country")).toBeInTheDocument();
-//   });
-// });
-
-describe("valid inputs and move to next page", () => {
-  beforeAll(() => {
-    window.localStorage.clear();
-    window.localStorage.setItem(lStorageKey, JSON.stringify(bookData));
-    expect(localStorage.getItem(lStorageKey)).toEqual(JSON.stringify(bookData));
-
-    const { container } = render(
-      <MemoryRouter>
-        <CustomerInformation />
-      </MemoryRouter>
-    );
-  });
-  it("go to next page upon giving correct inputs and click button", async () => {
-    userEvent.type(getEmail(), "a@gmail.com");
-    userEvent.type(getFirstName(), "Bear");
-    userEvent.type(getLastName(), "Icebear");
-    userEvent.type(getPhoneNo(), 123456);
-    userEvent.type(getCountryOrigin(), "sg");
-    await userEvent.click(proceedButton());
-
-    expect(screen.findByTestId("success-page")).toBeTruthy();
   });
 });
