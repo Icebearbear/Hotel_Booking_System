@@ -15,18 +15,26 @@ function ViewHotel() {
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
-  var no_of_guest = +searchDataLocal["adults"] + +searchDataLocal["childs"];
+  var no_of_guest = searchDataLocal['guests'];
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal["rooms"]);
   var param_guests = "" + guest_per_room;
   for (var i = 0; i < searchDataLocal["rooms"] - 1; i++) {
     param_guests = param_guests + "|" + guest_per_room;
   }
+  const dateFormat = (string) => {
+    var date = new Date(string);
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    var format = year + "-" + month + "-" + day;
+    return format;
+  };
 
-  const searchData = {
+  var searchData = {
     hotel_id: hotelId,
-    destination_id: searchDataLocal["UID"],
-    checkin: searchDataLocal["startDate"].slice(0, 10),
-    checkout: searchDataLocal["endDate"].slice(0, 10),
+    destination_id: searchDataLocal["destination_id"],
+    checkin: dateFormat(searchDataLocal["checkin"]),
+    checkout: dateFormat(searchDataLocal["checkout"]),
     lang: "en_US",
     currency: "SGD",
     country_code: "SG",

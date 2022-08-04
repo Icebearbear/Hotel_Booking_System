@@ -1,22 +1,24 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import ListGroup from "react-bootstrap/ListGroup";
 import Dropdown from "react-bootstrap/Dropdown";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import JSONDATA from "../data/destinations.json";
 // import "./SearchHotel.css";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import NavigationBar from "./NavigationBar";
+import { useLocation } from "react-router-dom";
+import debounce from "lodash/debounce";
+import FuzzySearch from "fz-search";
+
 //import SearchIcon from "@material-ui/icons/Search"
 // adding calender
 // npm install react-datepicker --save
 
-function SearchHotel() {
-  //const [searchTerm, setSearchTerm] = useState("");
+function SearchHotel(props) {
+  // console.log(props.data);
   const [uid, setUid] = useState(null);
   const [searchTerm, setSearchTerm] = useState([]);
   const [wordEntered, setWordEntered] = useState("");
@@ -25,27 +27,49 @@ function SearchHotel() {
   const [nrooms, setnrooms] = useState("1");
   const [nadults, setnadults] = useState("2");
   const [nchildren, setnchildren] = useState("0");
-  const [validated, setValidated] = useState(false); //for input field validation
+  const [validated, setValidated] = useState(false); 
+  const [selectedItem, setSelectedItem] = useState("")//for input field validation
   // Destination ID to pass on
-  //const [destID, setDestID] = useState("");
+  // const [destID, setDestID] = useState("");
+  // if (props.data!=undefined){
+  //   setWordEntered(props.data["name"])
+  //   setSelectedDate(props.data["checkin"])
+  //   setSelectedDate2(props.data["checkout"])
+  //   setnrooms(props.data["rooms"])
+  //   setnadults(props.data["adults"])
+  //   setnchildren(props.data["children"])
+  //   setUid(props.data["destination_id"])
+  // }
+
+  const debouncedSearch = useRef(debounce(async (searcher, searchWord) => {
+    const newFilter = searcher.search(searchWord);
+      console.log(newFilter);
+      if (searchWord === "") {
+        setSearchTerm([]);
+      } else {
+        setSearchTerm(newFilter);
+      }
+  }, 700)).current;
 
   const handleFilter = (event) => {
     const searchWord = event.target.value;
     setWordEntered(searchWord);
-    const newFilter = JSONDATA.filter((value) => {
-      if (value.term == undefined) {
-        return null;
-      }
-      return value.term.toLowerCase().includes(searchWord.toLowerCase());
-    });
-    if (searchWord === "") {
-      setSearchTerm([]);
-    } else {
-      setSearchTerm(newFilter);
-    }
+    const searcher = new FuzzySearch({source: JSONDATA, keys:["term"], token_query_min_length: 0});
+    debouncedSearch(searcher, searchWord);
+
+  
+
+    // const newFilter = JSONDATA.filter((value) => {
+    //   if (value.term == undefined) {
+    //     return null;
+    //   }
+    //   return value.term.toLowerCase().includes(searchWord.toLowerCase());
+    // });
+    
   };
   // prompt user these data and pass to SearchHotelResult to search for hotels
   const passData = {
+    name: wordEntered,
     destination_id: uid,
     checkin: selectedDate,
     checkout: selectedDate2,
@@ -57,6 +81,8 @@ function SearchHotel() {
     guests: null,
     partner_id: "1",
   };
+
+
   const selectDest = (event, term, uid) => {
     setWordEntered(term);
     setSearchTerm([]);
@@ -106,7 +132,9 @@ function SearchHotel() {
     console.log(passData);
     // alert(passData['childs']);
   };
-
+  const location = useLocation();
+  // console.log(location);
+  // console.log(location.pathname);
   const navigate = useNavigate();
   const onSubmit = (event) => {
     const form = event.currentTarget;
@@ -124,14 +152,15 @@ function SearchHotel() {
 
     // console.log(passData['endDate']);
     passData["guests"] = +nadults + +nchildren;
-    // console.log(+nadults + +nchildren);
+    console.log("data stored");
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
-    console.log(
-      new Date(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout)
-    ); //must pass into new Date object to get back Date format
-    // alert(JSON.parse(localStorage.getItem("SEARCH_DATA")).checkout);
-    navigate("/searchhotelresult");
+    if (location.pathname != "/searchhotelresult"){
+      navigate("/searchhotelresult");
+    }else{
+      window.location.reload();
+    }
+    
   };
 
   return (
@@ -157,14 +186,14 @@ function SearchHotel() {
                 <div className="dataResults">
                   <Dropdown.Menu show>
                     {searchTerm.slice(0, 10).map((value, key) => {
+                      console.log(value.term);
                       return (
                         <Dropdown.Item
-                          action
                           onClick={(event) =>
                             selectDest(event, value.term, value.uid)
                           }
                         >
-                          {value.term}{" "}
+                          {value.term}
                         </Dropdown.Item>
                       );
                     })}
@@ -186,11 +215,9 @@ function SearchHotel() {
 
                 <div>
                   <Form.Label>Adults</Form.Label>
-                  <Form.Select onChange={(e) => selectAdults(e.target.value)}>
+                  <Form.Select defaultValue={"2"} onChange={(e) => selectAdults(e.target.value)}>
                     <option value="1">1</option>
-                    <option value="2" selected>
-                      2
-                    </option>
+                    <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                   </Form.Select>

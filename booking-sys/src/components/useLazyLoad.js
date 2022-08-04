@@ -13,22 +13,36 @@ const reducer = (state, action) => {
       };
     }
     case "onGrabData": {
+      if (state.loaded>=action.payload.load){
+        return {
+          ...state,
+          loading: false
+        };
+      }
+      // console.log(action.payload.load); // data amount that grabdata has sent
+      // console.log(state.data);// amount of data appended to data
+      // console.log(action.payload.data);
+      // console.log(action.payload.data.length);
       return {
         ...state,
         loading: false,
+        loaded: action.payload.load,
         data: [...state.data, ...action.payload.data],
         currentPage: state.currentPage + 1
       };
     }
     default:
-      return state;
+      return {
+        ...state, loading:false};
   }
 };
 
 const useLazyLoad = ({ triggerRef, onGrabData, options }) => {
+  console.log(triggerRef)
   const [state, dispatch] = useReducer(reducer, {
     loading: false,
     currentPage: 1,
+    loaded:0,
     data: []
   });
 
@@ -42,8 +56,10 @@ const useLazyLoad = ({ triggerRef, onGrabData, options }) => {
       intersectionRect.bottom - boundingRect.bottom <= INTERSECTION_THRESHOLD
     ) {
       dispatch({ type: "set", payload: { loading: true } });
-      const data = await onGrabData(state.currentPage);
-      dispatch({ type: "onGrabData", payload: { data } });
+      const [data, loaded] = await onGrabData(state.currentPage, state.loaded);
+      console.log(loaded);
+      console.log(data.length);
+      dispatch({ type: "onGrabData", payload: { data , load: loaded}});
     }
   };
   const handleEntry = debounce(_handleEntry, LOAD_DELAY_MS);
@@ -56,7 +72,7 @@ const useLazyLoad = ({ triggerRef, onGrabData, options }) => {
   );
 
   useEffect(() => {
-    if (triggerRef.current) {
+    if (triggerRef.current != null) {
       const container = triggerRef.current;
       const observer = new IntersectionObserver(onIntersect, options);
 
