@@ -30,6 +30,7 @@ const {
   updateDoc,
   doc,
   deleteDoc,
+  connectFirestoreEmulator,
 } = require("firebase/firestore");
 
 const fc = require("./firebase_config");
@@ -154,6 +155,7 @@ app.get("/hotelnprices", (req, res) => {
           completed = responses[0].data.completed;
           // setTimeout(()=>{console.log(completed)},5000);
           hotelPrices = responses[0].data.hotels;
+          console.log(completed)
           console.log(Object.keys(hotelPrices).length)
           hotelDetails = responses[1].data;
           hotelPrices.map((value) => {
@@ -191,12 +193,13 @@ app.get("/hotelnprices", (req, res) => {
           res.status(200).json({
             finalData: JSON.stringify(fhotels),
             nulls: JSON.stringify(nulls),
-            dataLen: Object.keys(hotelPrices).length
+            dataLen: Object.keys(hotelPrices).length,
+            complete: completed
         });
       })
     ).catch((errors) => {
-      //console.log(errors.response.status);
-      console.log("ERRORR", errors.message);
+      console.log("Error", errors.response.status);
+      // console.log("ERRORR", errors);
       // res.status(errors.response.status).send(errors.message);
       // react on errors.
     });
