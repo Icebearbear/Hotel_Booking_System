@@ -13,6 +13,13 @@ const reducer = (state, action) => {
       };
     }
     case "onGrabData": {
+      if (action.payload.load == 0){
+        return {
+          ...state,
+          loading: false,
+          currentPage: state.currentPage + 1
+        };
+      }
       if (state.loaded>=action.payload.load){
         return {
           ...state,

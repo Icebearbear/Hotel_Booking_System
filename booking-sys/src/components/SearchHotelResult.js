@@ -67,9 +67,9 @@ function SearchHotelResult() {
           params: { data: searchData },
         })
         .then((res) => {
-          if(res.data.dataLen == 0){
+          if(res.data.dataLen == 0 && res.data.complete ==false){
             console.log(res.data.dataLen)
-            getHotelAndPrices();
+            setTimeout(getHotelAndPrices(),400);
           }
           else{
           setFinalHotels(JSON.parse(res.data.finalData));
@@ -79,7 +79,7 @@ function SearchHotelResult() {
 
           }});
     } catch (err) {
-      console.error(err.message);
+      console.error(err);
     }
   };
 
