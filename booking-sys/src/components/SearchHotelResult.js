@@ -27,8 +27,9 @@ function SearchHotelResult() {
 
   const searchData = {
     destination_id: "WD0M",
-    checkin: "2022-07-24",
-    checkout: "2022-07-25",
+    checkin: "2022-08-24",
+    checkout: "2022-08-27",
+    rooms: "2",
     // lang: "en_US",
     // currency: "SGD",
     // country_code: "SG",
@@ -38,6 +39,7 @@ function SearchHotelResult() {
   //if (location.state != null){
     var inputed = JSON.parse(localStorage.getItem("SEARCH_DATA")); // get data passed from SearchHotel page
     // adjust guest param
+    if (!inputed == null){
     var no_of_guest = +(inputed['adults']) + (+inputed['childs']);
     var guest_per_room = Math.floor(no_of_guest/inputed['rooms']);
     var param_guests = "" + guest_per_room;
@@ -50,6 +52,7 @@ function SearchHotelResult() {
     // adjust check in check out
     searchData['checkin'] = inputed['startDate'].slice(0,10);
     searchData['checkout'] = inputed['endDate'].slice(0,10);
+    }
     
   //}
   const getHotelAndPrices = async () => {
@@ -95,7 +98,7 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
-    <div className="d-flex p-2 justify-content-around">
+    <div className="d-flex p-2 justify-content-around" id="hotel_results">
     <h3>{"Total Results : " + hotelQ + " Hotels Found"}</h3></div>
       <div className="grid grid-cols-3 gap-4 content-start">
         {data.map((hotels, index) => (
@@ -121,11 +124,11 @@ function HotelDisplay(props) {
   const navigate = useNavigate();
   return (
     <>
-      <div className="d-flex p-2 justify-content-around">
+      <div className="d-flex p-2 justify-content-around" id="hotel_card">
         {/* <h3>{"showing hotels at" + props.search['destination_id']}</h3> */}
         <Card className="text-center" style={{ width: "60rem", height: "fit-content" }} >
           <Card.Header as="h3">{info.name}</Card.Header>
-          <div className="d-flex" style={{ flexDirection: "row" }}>
+          <div className="d-flex" style={{ flexDirection: "row" }} id="hotel_content">
             <Card.Img
               style={{ maxWidth: "30rem", maxHeight: "20rem" }}
               src={`${info.image_details.prefix}${info.default_image_index}${info.image_details.suffix}`}
@@ -156,7 +159,7 @@ function HotelDisplay(props) {
                             })}{' '}
                   </Card.Body>
                   <Card.Text>Address : {info.address}</Card.Text>
-                  <Button  onClick={() => {
+                  <Button id="select_hotel" onClick={() => {
                     localStorage.setItem("HOTEL_ID", info.id);
                     navigate("/viewhotel");
                   }} 
