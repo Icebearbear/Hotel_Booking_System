@@ -27,6 +27,7 @@ function CustomerInformation() {
   const uid = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
 
   // for input fields validation
+  const [validity, setValidity] = useState(false); //for input field validation
   const [validated, setValidated] = useState(false); //for input field validation
   const [noInput, setNoInput] = useState(true);
 
@@ -36,6 +37,7 @@ function CustomerInformation() {
   const comPrice = parseInt(hotelInfo.roomRate * noNight);
   useEffect(() => {
     const selectedObj = JSON.parse(localStorage.getItem("BOOKING_DATA")); // data stored from viewhotel
+    console.log("BOOKING INFO ", selectedObj);
     setHotelInfo(selectedObj);
     setNight(2);
   }, [setNight]);
@@ -109,6 +111,7 @@ function CustomerInformation() {
       event.stopPropagation();
       setNoInput(true);
       console.log("stuck");
+      setValidity(form.checkValidity());
     } else {
       setNoInput(false);
     }
@@ -141,7 +144,11 @@ function CustomerInformation() {
                 <h1>Customer Information Page</h1>
                 <Form noValidate validated={validated}>
                   <Row className="mb-3">
-                    <Form.Group as={Col} className="mb-3">
+                    <Form.Group
+                      as={Col}
+                      className="mb-3"
+                      controlId="formBasicEmail"
+                    >
                       <Form.Label>First Name</Form.Label>
                       <Form.Control
                         type="string"
@@ -149,12 +156,21 @@ function CustomerInformation() {
                         onChange={(e) => setFName(e.target.value)}
                         required
                       />
-                      <Form.Control.Feedback type="invalid">
+                      <Form.Control.Feedback
+                        type="invalid"
+                        role="alert"
+                        data-validity={validity}
+                        data-testid="fb-fname"
+                      >
                         {"Please input valid first name"}
                       </Form.Control.Feedback>
                     </Form.Group>
 
-                    <Form.Group as={Col} className="mb-3">
+                    <Form.Group
+                      as={Col}
+                      className="mb-3"
+                      controlId="formBasicEmail"
+                    >
                       <Form.Label>Last Name</Form.Label>
                       <Form.Control
                         type="string"
@@ -162,7 +178,12 @@ function CustomerInformation() {
                         onChange={(e) => setLName(e.target.value)}
                         required
                       />
-                      <Form.Control.Feedback type="invalid">
+                      <Form.Control.Feedback
+                        type="invalid"
+                        role="alert"
+                        data-validity={validity}
+                        data-testid="fb-lname"
+                      >
                         {"Please input valid last name"}
                       </Form.Control.Feedback>
                     </Form.Group>
@@ -177,7 +198,12 @@ function CustomerInformation() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
-                    <Form.Control.Feedback type="invalid">
+                    <Form.Control.Feedback
+                      type="invalid"
+                      role="alert"
+                      data-validity={validity}
+                      data-testid="fb-email-ci"
+                    >
                       {"Please input valid email address"}
                     </Form.Control.Feedback>
                   </Form.Group>
@@ -208,7 +234,12 @@ function CustomerInformation() {
                         onChange={(e) => setCountry(e.target.value)}
                         required
                       />
-                      <Form.Control.Feedback type="invalid">
+                      <Form.Control.Feedback
+                        type="invalid"
+                        role="alert"
+                        data-validity={validity}
+                        data-testid="fb-country"
+                      >
                         {"Please input valid country"}
                       </Form.Control.Feedback>
                     </Form.Group>
@@ -276,7 +307,10 @@ function CustomerInformation() {
                     ].map((lbl) => (
                       <Col sm={20}>
                         <Form.Check
+                          name="group3"
+                          controlId={lbl[0]}
                           type="checkbox"
+                          id={`checkbox-2`}
                           label={lbl[0]}
                           onChange={(e) => handleRequest(lbl[1])}
                         />
@@ -308,20 +342,20 @@ function CustomerInformation() {
                 <Card.Body>
                   <Stack gap={3}>
                     <h3>Booking Information</h3>
-                    <h5>
+                    <h5 controlId="hotelname">
                       <strong>{hotelInfo.hotelName}</strong>
                     </h5>
                     <></>
-                    <h5>
+                    <h5 id="roomtype">
                       <strong>{hotelInfo.roomType}</strong>
                     </h5>
-                    <h5>
-                      {noNight +
-                        " Room    " +
+                    <h5 id="roominfo">
+                      {hotelInfo.noOfRooms +
+                        " Room " +
                         hotelInfo.noOfAdults +
                         " Adults, " +
                         hotelInfo.noOfChildren +
-                        " Children / Per Room"}{" "}
+                        " Children / Per Room"}
                     </h5>
 
                     {[

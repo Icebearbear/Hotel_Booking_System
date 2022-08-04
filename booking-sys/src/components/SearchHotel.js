@@ -164,7 +164,7 @@ function SearchHotel(props) {
   };
 
   return (
-    <div className="SearchHotel">
+    <div className="SearchHotel" data-testid="search-page">
       <div className="container mb-4 p-3 d-flex justify-content-around">
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
@@ -275,14 +275,15 @@ function SearchHotel(props) {
             <DatePicker selected={selectedDate2} onChange={date => selectDateStart2(date)}
             dateFormat='dd/MMM/yy' minDate={new Date()} isClearable showYearDropdown scrollableYearDropdown />
           </div> */}
-              <Button
-                onClick={onSubmit}
-                variant="primary"
-                className="float-right"
-              >
-                Search hotel
-              </Button>
-
+              <div>
+                <Button
+                  onClick={onSubmit}
+                  variant="primary"
+                  className="float-right"
+                >
+                  Search hotel
+                </Button>
+              </div>
               {/* <Link to="/userprofile">
             <Button variant="primary" type="submit" className="float-right">
               View User Profile

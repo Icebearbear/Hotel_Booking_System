@@ -10,6 +10,8 @@ Only client installation is inside /booking-sys, while the rest are installed ou
 npm install react-bootstrap bootstrap
 npm install axios
 npm install react-router-dom@6
+npm install react-icons --save
+npm install ol
 ```
 
 ### Node (server)
@@ -228,6 +230,14 @@ Testing Stripe in checkout page:
 - BOOKING_DATA = passData in ViewHotel, to pass to custinfo
 - HOTEL_BOOKING_INFO = infoObject in CustometInformation page - to keep data before checkout and use it after checkout is successful
 - LOGIN = user session set in NavBar
+
+### Testing (Jest UI)
+
+#### Snapshot
+
+Snapshot tests are a very useful tool whenever you want to make sure your UI does not change unexpectedly.
+
+A typical snapshot test case renders a UI component, takes a snapshot, then compares it to a reference snapshot file stored alongside the test. The test will fail if the two snapshots do not match: either the change is unexpected, or the reference snapshot needs to be updated to the new version of the UI component.
 
 ## Error
 
