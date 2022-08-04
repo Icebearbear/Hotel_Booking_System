@@ -47,14 +47,11 @@ describe('User looking at the hotel page', () => {
     it('clicks on buttons', () => {
         cy.contains('View rooms').scrollIntoView()
             .click()
-
         cy.contains('Book your room').scrollIntoView()
             .should('be.visible')
     })
 
     it('logs in and books a hotel room', () => {
-        cy.visit('http://localhost:3000/viewhotel');
-        cy.wait(2000);
         cy.contains('View rooms').scrollIntoView()
             .click()
         cy.contains('Book your room').scrollIntoView()

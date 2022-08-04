@@ -37,12 +37,12 @@ function ViewHotel() {
   const navigate = useNavigate();
   const hotelId = localStorage.getItem("HOTEL_ID");
   const hotelLocation = JSON.parse(localStorage.getItem("HOTEL_LOC"));
-  console.log("LAT HOTELPAGE", hotelLocation.latitude)
+  console.log("LAT HOTELPAGE", hotelLocation.latitude);
 
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
-  var no_of_guest = +searchDataLocal["adults"] + +searchDataLocal["childs"];
+  var no_of_guest = searchDataLocal['guests'];
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal["rooms"]);
   var param_guests = "" + guest_per_room;
   for (var i = 0; i < searchDataLocal["rooms"] - 1; i++) {
@@ -56,7 +56,8 @@ function ViewHotel() {
     var format = year + "-" + month + "-" + day;
     return format;
   };
-  const searchData = {
+
+  var searchData = {
     hotel_id: hotelId,
     destination_id: searchDataLocal["destination_id"],
     checkin: dateFormat(searchDataLocal["checkin"]),
@@ -230,11 +231,14 @@ function ViewHotel() {
   }
 
   const initMarker = () => {
-    if (hotelLocation.latitude == "null" || hotelLocation.latitude == "undefined") {
+    if (
+      hotelLocation.latitude == "null" ||
+      hotelLocation.latitude == "undefined"
+    ) {
       return addMarkers([["0.0", "0.0"]]);
     }
     return addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
-  }
+  };
 
   // long, lat, idk why its the other way round but ok
   const [center, setCenter] = useState(["0.0", "0.0"]);
@@ -251,10 +255,17 @@ function ViewHotel() {
         params: { data: searchData },
       })
       .then((roomData) => {
-        setRoomFlag(roomData.data.completed);
-        console.log("set rooms");
-        setRoomsDetails(roomData.data.rooms);
-        setCheapestRoomPrice(roomData.data.rooms[0].lowest_converted_price);
+        if (roomData.data.completed == "false") {
+          console.log("set rooms: ", roomData.data.completed);
+          getHotelIdPrices();
+        }
+        // setRoomFlag(roomData.data.completed);
+        else {
+          console.log("set rooms: ", roomData.data.completed);
+          setRoomsDetails(roomData.data.rooms);
+          setCheapestRoomPrice(roomData.data.rooms[0].lowest_converted_price);
+        }
+
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   };
@@ -272,7 +283,7 @@ function ViewHotel() {
 
   const refresh = () => {
     window.location.reload();
-  }
+  };
 
   const onClose = () => {
     setWarning(false);
@@ -323,8 +334,6 @@ function ViewHotel() {
     getHotelData();
     getHotelIdPrices();
   }, [setLongitude, setImageData, setLogin]);
-
-
 
   return (
     <>
@@ -469,7 +478,8 @@ function ViewHotel() {
         >
           <Card id="location" style={{ width: "70rem", height: "35rem" }}>
             <Card.Body>
-              <Card.Title>Hotel Location
+              <Card.Title>
+                Hotel Location
                 <Button
                   onClick={refresh}
                   variant="primary"
@@ -498,7 +508,8 @@ function ViewHotel() {
         <div class="d-flex flex-column justify-content-center align-items-center">
           <Card id="rooms" style={{ width: "70rem", flex: 1 }}>
             <Card.Body>
-              <Card.Title>Available Rooms
+              <Card.Title>
+                Available Rooms
                 <Button
                   onClick={refresh}
                   variant="primary"
@@ -524,11 +535,14 @@ function ViewHotel() {
             >
               <Card.Img
                 style={{
-                  height: "100%", width: "40%", borderRadius: 0,
-                  backgroundImage: "url(https://cdn.pixabay.com/photo/2014/08/19/19/39/bedroom-421848_960_720.jpg)",
+                  height: "100%",
+                  width: "40%",
+                  borderRadius: 0,
+                  backgroundImage:
+                    "url(https://cdn.pixabay.com/photo/2014/08/19/19/39/bedroom-421848_960_720.jpg)",
                   backgroundSize: "100%",
                   backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center"
+                  backgroundPosition: "center",
                 }}
                 src={`${roomImg(key)[0]}`}
               />
@@ -541,8 +555,7 @@ function ViewHotel() {
                   style={{ overflow: "auto", maxHeight: "195px" }}
                 >
                   <Card.Text style={{ flex: 1, flexWrap: "wrap" }}>
-                    Offered at <b>${roomsDetails[key]["lowest_converted_price"]}</b>, down
-                    from ${roomsDetails[key]["price"]}! <br /> <br />
+                    Offered at <b>${roomsDetails[key]["lowest_converted_price"]}</b>! <br /> <br />
                     <div
                       dangerouslySetInnerHTML={{
                         __html: roomsDetails[key]["long_description"],
