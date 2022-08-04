@@ -12,6 +12,7 @@ npm install axios
 npm install react-router-dom@6
 npm install react-icons --save
 npm install ol
+npm install fz-search
 ```
 
 ### Node (server)

@@ -41,7 +41,8 @@ function ViewHotel() {
 
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
-  var no_of_guest = +searchDataLocal["adults"] + +searchDataLocal["childs"];
+
+  var no_of_guest = searchDataLocal["guests"];
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal["rooms"]);
   var param_guests = "" + guest_per_room;
   for (var i = 0; i < searchDataLocal["rooms"] - 1; i++) {
@@ -55,7 +56,8 @@ function ViewHotel() {
     var format = year + "-" + month + "-" + day;
     return format;
   };
-  const searchData = {
+
+  var searchData = {
     hotel_id: hotelId,
     destination_id: searchDataLocal["destination_id"],
     checkin: dateFormat(searchDataLocal["checkin"]),
@@ -97,8 +99,6 @@ function ViewHotel() {
         .then((hoteldt) => {
           const hotelData = JSON.parse(hoteldt.data.data);
           const imgUrl = JSON.parse(hoteldt.data.iurl);
-          console.log(hotelData);
-          console.log(imgUrl);
           // console.log(imgUrl);
           setHotelName(hotelData["name"]);
           setAddress(hotelData["address"]);
@@ -331,18 +331,21 @@ function ViewHotel() {
   return (
     <>
       {/* Title Card */}
-      <div class="image d-flex flex-column justify-content-center align-items-center">
+      <div
+        class="image d-flex flex-column justify-content-center align-items-center"
+        data-testid="view-hotel-page"
+      >
         <Card style={{ width: "70rem", height: "25rem" }}>
           <Row>
             {/* IMAGE SLIDER COL */}
             <Col
-            // style={{
-            //   backgroundImage:
-            //     "url(https://instant.space/hotel-placeholder.png)",
-            //   backgroundSize: "90%",
-            //   backgroundRepeat: "no-repeat",
-            //   backgroundPosition: "center",
-            // }}
+              style={{
+                backgroundImage:
+                  "url(https://instant.space/hotel-placeholder.png)",
+                backgroundSize: "90%",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+              }}
             >
               <ImageSlider slides={imageData} />
             </Col>
@@ -369,7 +372,7 @@ function ViewHotel() {
                   <br />
                   <br />
                   <br /> <br />
-                  Select a room starting from ${CheapestRoomPrice}
+                  Select a room starting from ${CheapestRoomPrice}.
                 </Card.Text>
               </Row>
               <div style={{ display: "flex" }}>

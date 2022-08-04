@@ -142,40 +142,64 @@ app.get("/hotelnprices", (req, res) => {
   });
   var fhotels = [];
   var len = 0;
+  var hotelPrices = null;
+  var hotelDetails = null;
+  var completed = false;
+  var nulls = [];
+
   axios
     .all([requestPrice, requestHotel])
     .then(
       axios.spread((...responses) => {
-        const hotelPrices = responses[0].data.hotels;
-        const hotelDetails = responses[1].data;
-        // console.log(hotelPrices);
-        // console.log(hotelDetails);
-        // console.log(hotelPrices);
-        // hotelPrices.map((val) => console.log(val.id));
+        completed = responses[0].data.completed;
+        // setTimeout(()=>{console.log(completed)},5000);
+        hotelPrices = responses[0].data.hotels;
+        console.log(Object.keys(hotelPrices).length);
+        hotelDetails = responses[1].data;
         hotelPrices.map((value) => {
           let match = hotelDetails.find((detail) => detail.id === value.id);
-
           const output = (value.id && match) || null;
           if (output !== null) {
+            // console.log(typeof(value))
             fhotels.push({ ...value, ...output });
+            // console.log(output);
             len = len + 1;
+          } else {
+            nulls.push(value);
+            // console.log(nulls.length)
           }
         });
-        console.log(len);
-        console.log("ONEEEE ", fhotels[0]);
-        // // console.log("TWOOOOOO ", responsetWO.data);
-
+        // console.log(nulls);
+        // nulls.map((nulls)=>{
+        //   setTimeout(()=>{
+        //   try{
+        //     console.log("calling")
+        //     axios
+        //     .get(`https://hotelapi.loyalty.dev/api/hotels/${nulls.id}`)
+        //     .then((hotelres) => {
+        //       fhotels.push({...hotelres, ... nulls})
+        //       console.log(fhotels)
+        //   })
+        //   }
+        //   catch{(errors) => {
+        //     //console.log(errors.response.status);
+        //     console.log("ERRORR", errors.message);
+        //     res.status(errors.response.status).send(errors.message);
+        //     // react on errors.
+        //   }}
+        // },1000)})
+        // console.log("LALALALA ", fhotels);
         res.status(200).json({
           finalData: JSON.stringify(fhotels),
-          dataLen: len,
+          nulls: JSON.stringify(nulls),
+          dataLen: Object.keys(hotelPrices).length,
         });
-        // use/access the results
       })
     )
     .catch((errors) => {
       //console.log(errors.response.status);
       console.log("ERRORR", errors.message);
-      res.status(errors.response.status).send(errors.message);
+      // res.status(errors.response.status).send(errors.message);
       // react on errors.
     });
 });
