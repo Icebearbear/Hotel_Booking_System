@@ -43,6 +43,7 @@
   },
   "homepage": "https://github.com/Icebearbear/Hotel_Booking_System#readme",
   "devDependencies": {
+    "cypress": "^10.4.0",
     "nodemon": "^2.0.19"
   }
 }
