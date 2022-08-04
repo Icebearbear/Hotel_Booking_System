@@ -162,7 +162,7 @@ app.get("/hotelnprices", (req, res) => {
           }
         });
         console.log(len);
-        // console.log("ONEEEE ", fhotels);
+        console.log("ONEEEE ", fhotels[0]);
         // // console.log("TWOOOOOO ", responsetWO.data);
 
         res.status(200).json({

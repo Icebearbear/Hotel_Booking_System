@@ -135,7 +135,7 @@ function CustomerInformation() {
     }
   };
   return (
-    <div>
+    <div data-testid="customer-info-page">
       <Row>
         <Col md={{ span: 6, offset: 1 }}>
           <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">

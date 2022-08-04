@@ -41,7 +41,6 @@ function ViewHotel() {
 
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
-
   var no_of_guest = +searchDataLocal["adults"] + +searchDataLocal["childs"];
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal["rooms"]);
   var param_guests = "" + guest_per_room;
@@ -98,6 +97,8 @@ function ViewHotel() {
         .then((hoteldt) => {
           const hotelData = JSON.parse(hoteldt.data.data);
           const imgUrl = JSON.parse(hoteldt.data.iurl);
+          console.log(hotelData);
+          console.log(imgUrl);
           // console.log(imgUrl);
           setHotelName(hotelData["name"]);
           setAddress(hotelData["address"]);
@@ -257,7 +258,7 @@ function ViewHotel() {
         setRoomFlag(roomData.data.completed);
         console.log("set rooms");
         setRoomsDetails(roomData.data.rooms);
-        setCheapestRoomPrice(roomData.data.rooms[0].lowest_price);
+        setCheapestRoomPrice(roomData.data.rooms[0].lowest_converted_price);
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   };
@@ -335,13 +336,13 @@ function ViewHotel() {
           <Row>
             {/* IMAGE SLIDER COL */}
             <Col
-              style={{
-                backgroundImage:
-                  "url(https://instant.space/hotel-placeholder.png)",
-                backgroundSize: "90%",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-              }}
+            // style={{
+            //   backgroundImage:
+            //     "url(https://instant.space/hotel-placeholder.png)",
+            //   backgroundSize: "90%",
+            //   backgroundRepeat: "no-repeat",
+            //   backgroundPosition: "center",
+            // }}
             >
               <ImageSlider slides={imageData} />
             </Col>
@@ -368,7 +369,7 @@ function ViewHotel() {
                   <br />
                   <br />
                   <br /> <br />
-                  Select a room starting from ${CheapestRoomPrice}.
+                  Select a room starting from ${CheapestRoomPrice}
                 </Card.Text>
               </Row>
               <div style={{ display: "flex" }}>
@@ -584,7 +585,7 @@ function ViewHotel() {
 
       <Modal show={warning} onHide={onClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Booking Cancellation</Modal.Title>
+          <Modal.Title>Login is required</Modal.Title>
         </Modal.Header>
         <Modal.Body>Login is required to book hotel</Modal.Body>
         <Modal.Footer>

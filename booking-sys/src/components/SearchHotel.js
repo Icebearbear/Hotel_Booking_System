@@ -118,7 +118,7 @@ function SearchHotel() {
     setValidated(true);
 
     if (passData["destination_id"] == null || passData["checkout"] == null) {
-      alert("empty fields");
+      // alert("empty fields");
       return;
     }
 
