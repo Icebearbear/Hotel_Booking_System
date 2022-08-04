@@ -19,17 +19,25 @@ describe('User looking at the hotel page', () => {
     };
 
     beforeEach(() => {
+        cy.viewport(1280, 720)
         localStorage.setItem("HOTEL_ID", hotelId);
         localStorage.setItem("HOTEL_LOC", JSON.stringify(hotelLocation));
         localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
         cy.visit('http://localhost:3000/viewhotel');
         cy.wait(2500);
-      })
+    })
 
     it('views ViewHotel page', () => {
         cy.get('h2.card-title')
-            .should('contain', 'Grand Copthorne Waterfront') // ensure it contains the text
+            .should('contain', 'Grand Copthorne Waterfront') // ensure api load data
+        cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg") // ensure api is returning the image
+            .its('status').should('eq', 200);
+
+        cy.get("div[style='width: 70rem; height: 25rem;']")
+            .find("div").eq(5)
+            .should('have.css', 'background-image')
+            .and('include', 'https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg'); // ensure image loaded in ImageSlider
     })
 
     it('interacts with links', () => {
@@ -45,6 +53,25 @@ describe('User looking at the hotel page', () => {
     })
 
     it('clicks on buttons', () => {
+        // click right button
+        cy.get("div[style='position: absolute; top: 50%; transform: translate(0px, -50%); right: 32px; font-size: 45px; color: rgb(255, 255, 255); z-index: 1; cursor: pointer;']").click()
+            .should('have.css', 'background-image')
+        cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/1.jpg")
+            .its('status').should('eq', 200);
+        cy.get("div[style='width: 70rem; height: 25rem;']")
+            .find("div").eq(5)
+            .should('have.css', 'background-image')
+            .and('include', 'https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/1.jpg');  // correct image
+        // click left button
+        cy.get("div[style='position: absolute; top: 50%; transform: translate(0px, -50%); left: 32px; font-size: 45px; color: rgb(255, 255, 255); z-index: 1; cursor: pointer;']").click()
+            .should('have.css', 'background-image')
+        cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg")
+            .its('status').should('eq', 200);
+        cy.get("div[style='width: 70rem; height: 25rem;']")
+            .find("div").eq(5)
+            .should('have.css', 'background-image')
+            .and('include', 'https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg');  // correct image
+
         cy.contains('View rooms').scrollIntoView()
             .click()
         cy.contains('Book your room').scrollIntoView()
@@ -63,7 +90,7 @@ describe('User looking at the hotel page', () => {
             .click()
         cy.location('pathname').should('eq', '/login')
         cy.wait(500);
- 
+
         // at login page
         cy.get('#formBasicEmail').type("testone@gmail.com")
         cy.get('#formBasicPassword').type("123456")
@@ -71,7 +98,7 @@ describe('User looking at the hotel page', () => {
             .click()
         cy.location('pathname').should('eq', '/viewhotel')
             cy.wait(500);
-        
+
         cy.contains('Book your room').scrollIntoView()
             .click()
         cy.location('pathname').should('eq', '/custinfo')
