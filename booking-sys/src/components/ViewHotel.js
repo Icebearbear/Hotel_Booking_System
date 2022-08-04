@@ -42,7 +42,7 @@ function ViewHotel() {
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
-  var no_of_guest = +searchDataLocal["adults"] + +searchDataLocal["childs"];
+  var no_of_guest = searchDataLocal['guests'];
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal["rooms"]);
   var param_guests = "" + guest_per_room;
   for (var i = 0; i < searchDataLocal["rooms"] - 1; i++) {
@@ -56,7 +56,8 @@ function ViewHotel() {
     var format = year + "-" + month + "-" + day;
     return format;
   };
-  const searchData = {
+
+  var searchData = {
     hotel_id: hotelId,
     destination_id: searchDataLocal["destination_id"],
     checkin: dateFormat(searchDataLocal["checkin"]),
