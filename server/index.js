@@ -144,9 +144,6 @@ app.get("/hotelnprices", (req, res) => {
   var hotelDetails = null
   var completed = false;
   var nulls = [];
-  
-
-  
     axios
       .all([requestPrice, requestHotel])
       .then(
@@ -200,10 +197,6 @@ app.get("/hotelnprices", (req, res) => {
       // res.status(errors.response.status).send(errors.message);
       // react on errors.
     });
-   
-
-    
-    
 });
 
 app.get("/hotelidprices", (req, res) => {
