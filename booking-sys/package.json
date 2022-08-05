@@ -52,6 +52,7 @@
     ]
   },
   "devDependencies": {
-    "axios-mock-adapter": "^1.21.1"
+    "axios-mock-adapter": "^1.21.1",
+    "cypress": "^10.4.0"
   }
 }

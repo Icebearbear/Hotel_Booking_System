@@ -211,8 +211,6 @@ describe("UsersPage test without login", async () => {
 
       const user = screen.queryByText(userData.email);
       expect(user).not.toBeInTheDocument();
-      const hotel = screen.queryByText("Hotel Bookings");
-      expect(hotel).not.toBeInTheDocument();
     });
   });
 });
@@ -251,9 +249,6 @@ describe("UsersPage test with login but no booking", () => {
       // expect(login_req).not.toBeInTheDocument();
       const no_book_user = screen.queryByText(noBookingUser.email);
       expect(no_book_user).toBeInTheDocument();
-
-      const hotel = screen.queryByText("Hotel Bookings");
-      expect(hotel).not.toBeInTheDocument();
 
       const no_book_popup = screen.queryByText(
         /You have no bookings at this moment/i

@@ -86,7 +86,7 @@ function BookingHistory() {
         </div>
       ) : (
         <div>
-          <p>Hotel Bookings</p>
+          {/* <p>Hotel Bookings</p> */}
           {bookObj.map((value, index) => (
             <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
               <Card key={index[1]} style={{ width: "50rem", height: "20rem" }}>
