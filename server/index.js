@@ -397,14 +397,14 @@ app.post("/mail", async (req, res) => {
     to: tomail,
     subject: "Booking confirmation for Hotel " + hotelName,
     text:
-      "Dear Ms " +
+      "Dear Ms/Mr " +
       guestInfo.firstName +
-      "Booking and payment confirmation for Hotel :" +
+      ",\nBooking and payment confirmation for Hotel :" +
       hotelName +
-      "with booking details as follow: " +
-      bookingDets +
-      "with payment id: " +
-      paymentId,
+      "\nPayment id: " +
+      paymentId +
+      "\nBooking details as follow: " +
+      bookingDets,
   };
   var transporter = nodemailer.createTransport({
     service: "gmail",
