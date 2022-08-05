@@ -85,7 +85,7 @@ function Login() {
   return (
     <div className="wrapper" data-testid="login-page">
       <div className="container mb-4 p-3 d-flex justify-content-center">
-        <Card className="card-login"  id="login_form">
+        <Card className="card-login" id="login_form">
           <Card.Body>
             <h1>Login page</h1>
             <Form noValidate validated={validated}>
