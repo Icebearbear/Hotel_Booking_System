@@ -27,8 +27,8 @@ function SearchHotel(props) {
   const [nrooms, setnrooms] = useState("1");
   const [nadults, setnadults] = useState("2");
   const [nchildren, setnchildren] = useState("0");
-  const [validated, setValidated] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(""); //for input field validation
+  const [validated, setValidated] = useState(false); 
+  const [selectedItem, setSelectedItem] = useState("")//for input field validation
   // Destination ID to pass on
   // const [destID, setDestID] = useState("");
   // if (props.data!=undefined){
@@ -41,27 +41,23 @@ function SearchHotel(props) {
   //   setUid(props.data["destination_id"])
   // }
 
-  const debouncedSearch = useRef(
-    debounce(async (searcher, searchWord) => {
-      const newFilter = searcher.search(searchWord);
+  const debouncedSearch = useRef(debounce(async (searcher, searchWord) => {
+    const newFilter = searcher.search(searchWord);
       console.log(newFilter);
       if (searchWord === "") {
         setSearchTerm([]);
       } else {
         setSearchTerm(newFilter);
       }
-    }, 700)
-  ).current;
+  }, 700)).current;
 
   const handleFilter = (event) => {
     const searchWord = event.target.value;
     setWordEntered(searchWord);
-    const searcher = new FuzzySearch({
-      source: JSONDATA,
-      keys: ["term"],
-      token_query_min_length: 0,
-    });
+    const searcher = new FuzzySearch({source: JSONDATA, keys:["term"], token_query_min_length: 0});
     debouncedSearch(searcher, searchWord);
+
+  
 
     // const newFilter = JSONDATA.filter((value) => {
     //   if (value.term == undefined) {
@@ -69,6 +65,7 @@ function SearchHotel(props) {
     //   }
     //   return value.term.toLowerCase().includes(searchWord.toLowerCase());
     // });
+    
   };
   // prompt user these data and pass to SearchHotelResult to search for hotels
   const passData = {
@@ -84,6 +81,7 @@ function SearchHotel(props) {
     guests: null,
     partner_id: "1",
   };
+
 
   const selectDest = (event, term, uid) => {
     setWordEntered(term);
@@ -148,7 +146,7 @@ function SearchHotel(props) {
     setValidated(true);
 
     if (passData["destination_id"] == null || passData["checkout"] == null) {
-      // alert("empty fields");
+      alert("empty fields");
       return;
     }
 
@@ -157,30 +155,30 @@ function SearchHotel(props) {
     console.log("data stored");
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
-    if (location.pathname != "/searchhotelresult") {
+    if (location.pathname != "/searchhotelresult"){
       navigate("/searchhotelresult");
-    } else {
+    }else{
       window.location.reload();
     }
+    
   };
 
   return (
     <div className="SearchHotel" data-testid="search-page">
-      <div className="container mb-4 p-3 d-flex justify-content-around">
+      <div className="container mb-4 p-3 d-flex justify-content-around" id="form">
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
             <h1>Search Page</h1>
             <Form noValidate validated={validated}>
-              <Form.Group className="mb-3" controlId="formBasicDestinations">
-                <Form.Label>Destination</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Search..."
-                  value={wordEntered}
-                  onChange={handleFilter}
-                  required
-                />
-              </Form.Group>
+              <Form.Label>Destination</Form.Label>
+              <Form.Control
+                id="dropdown"
+                type="text"
+                placeholder="Search..."
+                value={wordEntered}
+                onChange={handleFilter}
+                required
+              />
               {/* <h2>Destination</h2>
           <div className="searchInputs">
             <input type="text" id="field1" placeholder="Search..." value={wordEntered} onChange={handleFilter}/>
@@ -208,10 +206,7 @@ function SearchHotel(props) {
               <div className="d-flex p-2 justify-content-around">
                 <div>
                   <Form.Label>Rooms</Form.Label>
-                  <Form.Select
-                    data-testid="combobox-rooms"
-                    onChange={(e) => selectRooms(e.target.value)}
-                  >
+                  <Form.Select id="rooms" onChange={(e) => selectRooms(e.target.value)}>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -221,11 +216,7 @@ function SearchHotel(props) {
 
                 <div>
                   <Form.Label>Adults</Form.Label>
-                  <Form.Select
-                    defaultValue={"2"}
-                    data-testid="combobox-adults"
-                    onChange={(e) => selectAdults(e.target.value)}
-                  >
+                  <Form.Select defaultValue={"2"} onChange={(e) => selectAdults(e.target.value)}>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -235,10 +226,7 @@ function SearchHotel(props) {
 
                 <div>
                   <Form.Label>Childs</Form.Label>
-                  <Form.Select
-                    data-testid="combobox-child"
-                    onChange={(e) => selectChild(e.target.value)}
-                  >
+                  <Form.Select id="childs" onChange={(e) => selectChild(e.target.value)}>
                     <option value="0">0</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -251,6 +239,7 @@ function SearchHotel(props) {
                 <div>
                   <Form.Label>Start Date</Form.Label>
                   <DatePicker
+                    id="startdate"
                     selected={selectedDate}
                     dateFormat="dd/MM/yyyy"
                     onChange={(date) => selectDateStart(date)}
@@ -267,6 +256,7 @@ function SearchHotel(props) {
                 <div>
                   <Form.Label>End Date</Form.Label>
                   <DatePicker
+                    id="enddate"
                     selected={selectedDate2}
                     dateFormat="dd/MM/yyyy"
                     onChange={(date) => selectDateStart2(date)}
@@ -290,6 +280,7 @@ function SearchHotel(props) {
           </div> */}
               <div>
                 <Button
+                  id="submit"
                   onClick={onSubmit}
                   variant="primary"
                   className="float-right"

@@ -255,10 +255,16 @@ function ViewHotel() {
         params: { data: searchData },
       })
       .then((roomData) => {
-        setRoomFlag(roomData.data.completed);
-        console.log("set rooms");
-        setRoomsDetails(roomData.data.rooms);
-        setCheapestRoomPrice(roomData.data.rooms[0].lowest_converted_price);
+        if (roomData.data.completed == "false") {
+          console.log("set rooms: ", roomData.data.completed);
+          getHotelIdPrices();
+        }
+        // setRoomFlag(roomData.data.completed);
+        else {
+          console.log("set rooms: ", roomData.data.completed);
+          setRoomsDetails(roomData.data.rooms);
+          setCheapestRoomPrice(roomData.data.rooms[0].lowest_converted_price);
+        }
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   };
@@ -315,7 +321,7 @@ function ViewHotel() {
       noOfChildren: searchDataLocal["childs"],
       checkIn: searchData.checkin,
       checkOut: searchData.checkout,
-      roomRate: roomsDetails[key].lowest_price,
+      roomRate: roomsDetails[key].lowest_converted_price,
       surcharges: surcharge[0],
     };
     console.log(passData);
@@ -551,8 +557,9 @@ function ViewHotel() {
                   style={{ overflow: "auto", maxHeight: "195px" }}
                 >
                   <Card.Text style={{ flex: 1, flexWrap: "wrap" }}>
-                    Offered at <b>${roomsDetails[key]["lowest_price"]}</b>, down
-                    from ${roomsDetails[key]["price"]}! <br /> <br />
+                    Offered at{" "}
+                    <b>${roomsDetails[key]["lowest_converted_price"]}</b>!{" "}
+                    <br /> <br />
                     <div
                       dangerouslySetInnerHTML={{
                         __html: roomsDetails[key]["long_description"],
@@ -585,7 +592,6 @@ function ViewHotel() {
           ))}
         </div>
       </Container>
-
       <Modal show={warning} onHide={onClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Login is required</Modal.Title>

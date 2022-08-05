@@ -169,26 +169,6 @@ app.get("/hotelnprices", (req, res) => {
             // console.log(nulls.length)
           }
         });
-        // console.log(nulls);
-        // nulls.map((nulls)=>{
-        //   setTimeout(()=>{
-        //   try{
-        //     console.log("calling")
-        //     axios
-        //     .get(`https://hotelapi.loyalty.dev/api/hotels/${nulls.id}`)
-        //     .then((hotelres) => {
-        //       fhotels.push({...hotelres, ... nulls})
-        //       console.log(fhotels)
-        //   })
-        //   }
-        //   catch{(errors) => {
-        //     //console.log(errors.response.status);
-        //     console.log("ERRORR", errors.message);
-        //     res.status(errors.response.status).send(errors.message);
-        //     // react on errors.
-        //   }}
-        // },1000)})
-        // console.log("LALALALA ", fhotels);
         res.status(200).json({
           finalData: JSON.stringify(fhotels),
           nulls: JSON.stringify(nulls),

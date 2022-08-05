@@ -22,7 +22,7 @@ function ErrorModal(props){
           <h4>{props.msg}</h4>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={()=>{
+          <Button id="redirect" onClick={()=>{
             navigate("/");}
           }>Search</Button>
         </Modal.Footer>
