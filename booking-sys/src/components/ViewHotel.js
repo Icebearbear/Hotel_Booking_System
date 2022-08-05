@@ -42,7 +42,7 @@ function ViewHotel() {
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
-  var no_of_guest = searchDataLocal['guests'];
+  var no_of_guest = searchDataLocal["guests"];
   var guest_per_room = Math.floor(no_of_guest / searchDataLocal["rooms"]);
   var param_guests = "" + guest_per_room;
   for (var i = 0; i < searchDataLocal["rooms"] - 1; i++) {
@@ -265,7 +265,6 @@ function ViewHotel() {
           setRoomsDetails(roomData.data.rooms);
           setCheapestRoomPrice(roomData.data.rooms[0].lowest_converted_price);
         }
-
       })
       .catch((err) => console.log("hotelroomdata " + err.message));
   };
@@ -338,7 +337,10 @@ function ViewHotel() {
   return (
     <>
       {/* Title Card */}
-      <div class="image d-flex flex-column justify-content-center align-items-center">
+      <div
+        class="image d-flex flex-column justify-content-center align-items-center"
+        data-testid="view-hotel-page"
+      >
         <Card style={{ width: "70rem", height: "25rem" }}>
           <Row>
             {/* IMAGE SLIDER COL */}
@@ -555,7 +557,9 @@ function ViewHotel() {
                   style={{ overflow: "auto", maxHeight: "195px" }}
                 >
                   <Card.Text style={{ flex: 1, flexWrap: "wrap" }}>
-                    Offered at <b>${roomsDetails[key]["lowest_converted_price"]}</b>! <br /> <br />
+                    Offered at{" "}
+                    <b>${roomsDetails[key]["lowest_converted_price"]}</b>!{" "}
+                    <br /> <br />
                     <div
                       dangerouslySetInnerHTML={{
                         __html: roomsDetails[key]["long_description"],
@@ -588,10 +592,9 @@ function ViewHotel() {
           ))}
         </div>
       </Container>
-
       <Modal show={warning} onHide={onClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Booking Cancellation</Modal.Title>
+          <Modal.Title>Login is required</Modal.Title>
         </Modal.Header>
         <Modal.Body>Login is required to book hotel</Modal.Body>
         <Modal.Footer>

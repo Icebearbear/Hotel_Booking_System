@@ -27,18 +27,20 @@ const UsersPage = () => {
   };
 
   return (
-    <div>
+    <div data-testid="user-page">
       {login == "true" ? (
         <Container>
           <Row>
             <Col md={4}>
-              <div className="userPage">
+              <div className="userPage" data-testid="user-profile-page">
                 <UserProfile />
               </div>
             </Col>
             <Col md={{ span: 8 }}>
               {" "}
-              <BookingHistory />
+              <div data-testid="booking-history-page">
+                <BookingHistory />
+              </div>
             </Col>
           </Row>
         </Container>
@@ -46,11 +48,16 @@ const UsersPage = () => {
         <div></div>
       )}
 
-      <Modal show={warning} onHide={onClose} centered>
+      <Modal
+        show={warning}
+        onHide={onClose}
+        centered
+        data-testid="popup_login_warning"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Booking Cancellation</Modal.Title>
+          <Modal.Title>User Page require login</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Login is required to book hotel</Modal.Body>
+        <Modal.Body>Login is required</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onClose}>
             Back

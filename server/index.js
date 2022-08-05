@@ -137,61 +137,46 @@ app.get("/hotelnprices", (req, res) => {
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
   console.log(urlPrice);
   const requestPrice = axios.get(urlPrice);
-  const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {params: { destination_id: destination_id } });
+  const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
+    params: { destination_id: destination_id },
+  });
   var fhotels = [];
   var len = 0;
   var hotelPrices = null;
-  var hotelDetails = null
+  var hotelDetails = null;
   var completed = false;
   var nulls = [];
-    axios
-      .all([requestPrice, requestHotel])
-      .then(
-        axios.spread((...responses) => {
-          completed = responses[0].data.completed;
-          // setTimeout(()=>{console.log(completed)},5000);
-          hotelPrices = responses[0].data.hotels;
-          console.log(Object.keys(hotelPrices).length)
-          hotelDetails = responses[1].data;
-          hotelPrices.map((value) => {
-            let match = hotelDetails.find((detail) => detail.id === value.id);
-            const output = (value.id && match) || null;
-            if (output !== null) {
-              // console.log(typeof(value))
-              fhotels.push({ ...value, ...output });
-              // console.log(output);
-              len = len + 1;
-            }else{
-              nulls.push(value)
-              // console.log(nulls.length)
-            }
-          });
-          // console.log(nulls);
-          // nulls.map((nulls)=>{
-          //   setTimeout(()=>{
-          //   try{
-          //     console.log("calling")
-          //     axios
-          //     .get(`https://hotelapi.loyalty.dev/api/hotels/${nulls.id}`)
-          //     .then((hotelres) => {
-          //       fhotels.push({...hotelres, ... nulls})
-          //       console.log(fhotels) 
-          //   })
-          //   }
-          //   catch{(errors) => {
-          //     //console.log(errors.response.status);
-          //     console.log("ERRORR", errors.message);
-          //     res.status(errors.response.status).send(errors.message);
-          //     // react on errors.
-          //   }}
-          // },1000)})
-          res.status(200).json({
-            finalData: JSON.stringify(fhotels),
-            nulls: JSON.stringify(nulls),
-            dataLen: Object.keys(hotelPrices).length
+
+  axios
+    .all([requestPrice, requestHotel])
+    .then(
+      axios.spread((...responses) => {
+        completed = responses[0].data.completed;
+        // setTimeout(()=>{console.log(completed)},5000);
+        hotelPrices = responses[0].data.hotels;
+        console.log(Object.keys(hotelPrices).length);
+        hotelDetails = responses[1].data;
+        hotelPrices.map((value) => {
+          let match = hotelDetails.find((detail) => detail.id === value.id);
+          const output = (value.id && match) || null;
+          if (output !== null) {
+            // console.log(typeof(value))
+            fhotels.push({ ...value, ...output });
+            // console.log(output);
+            len = len + 1;
+          } else {
+            nulls.push(value);
+            // console.log(nulls.length)
+          }
+        });
+        res.status(200).json({
+          finalData: JSON.stringify(fhotels),
+          nulls: JSON.stringify(nulls),
+          dataLen: Object.keys(hotelPrices).length,
         });
       })
-    ).catch((errors) => {
+    )
+    .catch((errors) => {
       //console.log(errors.response.status);
       console.log("ERRORR", errors.message);
       // res.status(errors.response.status).send(errors.message);
@@ -392,14 +377,14 @@ app.post("/mail", async (req, res) => {
     to: tomail,
     subject: "Booking confirmation for Hotel " + hotelName,
     text:
-      "Dear Ms " +
+      "Dear Ms/Mr " +
       guestInfo.firstName +
-      "Booking and payment confirmation for Hotel :" +
+      ",\nBooking and payment confirmation for Hotel :" +
       hotelName +
-      "with booking details as follow: " +
-      bookingDets +
-      "with payment id: " +
-      paymentId,
+      "\nPayment id: " +
+      paymentId +
+      "\nBooking details as follow: " +
+      bookingDets,
   };
   var transporter = nodemailer.createTransport({
     service: "gmail",
