@@ -9,9 +9,7 @@ const searchButton = () => {
   });
 };
 const searchBox = () => {
-  return screen.getByRole("textbox", {
-    name: /destination/i,
-  });
+  return screen.getByTestId("destination");
 };
 const roomCombobox = () => {
   return screen.getByTestId("combobox-rooms");
@@ -24,8 +22,10 @@ const childCombobox = () => {
   return screen.getByTestId("combobox-child");
 };
 describe("test components", () => {
-  beforeEach(() => {
-    const { container } = render(<App />);
+  beforeEach(async () => {
+    await waitFor(() => {
+      render(<App />);
+    });
   });
   it("all components rendered successfully", () => {
     expect(screen.getByText(/search page/i)).toBeInTheDocument();

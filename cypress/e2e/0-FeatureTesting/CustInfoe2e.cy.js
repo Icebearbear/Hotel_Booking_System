@@ -20,7 +20,7 @@ describe("User looking at the hotel page", () => {
     // arrange
     localStorage.setItem("USER_ID", uid);
     localStorage.setItem("BOOKING_DATA", JSON.stringify(dudData));
-
+    localStorage.setItem("LOGIN", false);
     cy.visit("http://localhost:3000/custinfo");
     cy.wait(1000);
   });
