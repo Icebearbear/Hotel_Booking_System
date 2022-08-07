@@ -259,7 +259,6 @@ function ViewHotel() {
           console.log("set rooms: ", roomData.data.completed);
           getHotelIdPrices();
         }
-        // setRoomFlag(roomData.data.completed);
         else {
           console.log("set rooms: ", roomData.data.completed);
           setRoomsDetails(roomData.data.rooms);
