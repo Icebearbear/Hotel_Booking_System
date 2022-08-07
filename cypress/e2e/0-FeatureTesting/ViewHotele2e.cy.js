@@ -20,6 +20,7 @@ describe('User looking at the hotel page', () => {
 
     beforeEach(() => {
         cy.viewport(1280, 720)
+        localStorage.setItem("LOGIN", false);
         localStorage.setItem("HOTEL_ID", hotelId);
         localStorage.setItem("HOTEL_LOC", JSON.stringify(hotelLocation));
         localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
@@ -44,7 +45,7 @@ describe('User looking at the hotel page', () => {
         const hrefTagsLoc = ['Show on map', 'View reviews', 'View room options']
         const hrefTags = ['#location', "#reviews", "#rooms"]
         for (let i = 0; i < hrefTags.length; i++) {
-            cy.contains(hrefTagsLoc[i]) 
+            cy.contains(hrefTagsLoc[i])
                 .click()
                 .should("have.attr", "href", hrefTags[i])
                 .go("back");
@@ -94,13 +95,17 @@ describe('User looking at the hotel page', () => {
         // at login page
         cy.get('#formBasicEmail').type("testone@gmail.com")
         cy.get('#formBasicPassword').type("123456")
+        // cy.get("input[placeholder='Enter email']").type("testone@gmail.com")
+        // cy.get("input[placeholder='Password']").type("123456")
         cy.contains('Submit')
             .click()
+        cy.wait(500);
         cy.location('pathname').should('eq', '/viewhotel')
-            cy.wait(500);
+        cy.wait(500);
 
         cy.contains('Book your room').scrollIntoView()
             .click()
+        cy.wait(10000);
         cy.location('pathname').should('eq', '/custinfo')
     })
 })

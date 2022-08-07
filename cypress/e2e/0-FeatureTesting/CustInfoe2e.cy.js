@@ -18,6 +18,7 @@ describe('User looking at the hotel page', () => {
     beforeEach(() => {
         cy.viewport(1280, 720)
         // arrange
+        localStorage.setItem("LOGIN", false);
         localStorage.setItem("USER_ID", uid);
         localStorage.setItem("BOOKING_DATA", JSON.stringify(dudData));
 
