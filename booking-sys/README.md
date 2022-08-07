@@ -13,6 +13,7 @@ npm install react-router-dom@6
 npm install react-icons --save
 npm install ol
 npm install fz-search
+npm install cypress --save-dev   ( after installing use: npx cypress open : to run)
 ```
 
 ### Node (server)

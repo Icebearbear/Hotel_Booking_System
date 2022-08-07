@@ -29,7 +29,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jest-environment-jsdom-sixteen",
+    "test": "react-scripts test --env=jest-environment-jsdom-sixteen --transformIgnorePatterns \"node_modules/(?!your-module-name)/\"",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:3001",
@@ -52,6 +52,7 @@
     ]
   },
   "devDependencies": {
-    "axios-mock-adapter": "^1.21.1"
+    "axios-mock-adapter": "^1.21.1",
+    "cypress": "^10.4.0"
   }
 }

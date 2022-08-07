@@ -14,7 +14,7 @@ function Success() {
     let interval = setInterval(() => {
       if (time == 3) {
         bookHotel();
-        //sendEmailConfirmation();
+        sendEmailConfirmation();
       }
       setTime(time - 1);
       if (time == 1) {

@@ -148,7 +148,7 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
-      <div className="d-flex p-2 justify-content-around">
+      <div className="d-flex p-2 justify-content-around" id="hotel_results">
         <h3>{"Total Results : " + hotelQ + " Hotels Found"}</h3>
       </div>
       <div className="grid grid-cols-3 gap-4 content-start">
@@ -183,14 +183,14 @@ function HotelDisplay(props) {
   const navigate = useNavigate();
   return (
     <>
-      <div className="d-flex p-2 justify-content-around">
+      <div className="d-flex p-2 justify-content-around" id="hotel_card">
         {/* <h3>{"showing hotels at" + props.search['destination_id']}</h3> */}
         <Card
           className="text-center"
           style={{ width: "60rem", height: "fit-content" }}
         >
           <Card.Header as="h3">{info.name}</Card.Header>
-          <div className="d-flex" style={{ flexDirection: "row" }}>
+          <div className="d-flex" id="hotel_content" style={{ flexDirection: "row" }}>
             <Card.Img
               style={{ maxWidth: "30rem", maxHeight: "20rem" }}
               src={`${info.image_details.prefix}${info.default_image_index}${info.image_details.suffix}`}
@@ -222,6 +222,7 @@ function HotelDisplay(props) {
               </Card.Body>
               <Card.Text>Address : {info.address}</Card.Text>
               <Button
+                id='select_hotel'
                 onClick={() => {
                   localStorage.setItem("HOTEL_ID", info.id);
                   try {

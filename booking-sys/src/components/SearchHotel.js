@@ -165,13 +165,14 @@ function SearchHotel(props) {
 
   return (
     <div className="SearchHotel" data-testid="search-page">
-      <div className="container mb-4 p-3 d-flex justify-content-around">
+      <div className="container mb-4 p-3 d-flex justify-content-around" id="form">
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
             <h1>Search Page</h1>
             <Form noValidate validated={validated}>
               <Form.Label>Destination</Form.Label>
               <Form.Control
+                id="dropdown"
                 type="text"
                 placeholder="Search..."
                 value={wordEntered}
@@ -205,7 +206,7 @@ function SearchHotel(props) {
               <div className="d-flex p-2 justify-content-around">
                 <div>
                   <Form.Label>Rooms</Form.Label>
-                  <Form.Select onChange={(e) => selectRooms(e.target.value)}>
+                  <Form.Select id="rooms" onChange={(e) => selectRooms(e.target.value)}>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -225,7 +226,7 @@ function SearchHotel(props) {
 
                 <div>
                   <Form.Label>Childs</Form.Label>
-                  <Form.Select onChange={(e) => selectChild(e.target.value)}>
+                  <Form.Select id="childs" onChange={(e) => selectChild(e.target.value)}>
                     <option value="0">0</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -238,6 +239,7 @@ function SearchHotel(props) {
                 <div>
                   <Form.Label>Start Date</Form.Label>
                   <DatePicker
+                    id="startdate"
                     selected={selectedDate}
                     dateFormat="dd/MM/yyyy"
                     onChange={(date) => selectDateStart(date)}
@@ -254,6 +256,7 @@ function SearchHotel(props) {
                 <div>
                   <Form.Label>End Date</Form.Label>
                   <DatePicker
+                    id="enddate"
                     selected={selectedDate2}
                     dateFormat="dd/MM/yyyy"
                     onChange={(date) => selectDateStart2(date)}
@@ -277,6 +280,7 @@ function SearchHotel(props) {
           </div> */}
               <div>
                 <Button
+                  id="submit"
                   onClick={onSubmit}
                   variant="primary"
                   className="float-right"

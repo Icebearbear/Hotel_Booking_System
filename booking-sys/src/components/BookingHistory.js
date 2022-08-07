@@ -15,34 +15,36 @@ function BookingHistory() {
   const [selBook, setSelBook] = useState(""); // contains the docId of the selected booking
   const [empty, setEmpty] = useState(false);
 
-  const getBooking = () => {
-    axios
-      .get(
-        "http://localhost:3001/getBook",
-        { params: { uid: userID } },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      )
-      .then((res) => {
-        // console.log(res.data.finalData.length);
-        console.log("BOOK HISTORY ", res.data.finalData);
-        setBook(res.data.finalData);
-        return;
-      })
-      .catch((err) => {
-        console.log(err.response.data);
-        if (err.response.data === "Not Found" && err.response.status == 404) {
-          setEmpty(true);
-        }
-      });
+  const getBooking = async () => {
+    const response = await axios.get(
+      "http://localhost:3001/getBook",
+      { params: { uid: userID } },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    // .then((res) => {
+    // console.log(res.data.finalData.length);
+
+    // })
+    // .catch((err) => {
+    console.log(response.data);
+    if (response.data === "Not Found" && response.status == 404) {
+      setEmpty(true);
+    } else {
+      console.log("BOOK HISTORY ", response.data);
+      setBook(response.data.finalData);
+      setEmpty(false);
+    }
+    // });
   };
 
   useEffect(() => {
     getBooking();
-  }, [setBook, setEmpty]);
+    console.log("BOOKKKKK ", bookObj, empty);
+  }, [setBook]);
 
   const onSubmit = (valuePass) => {
     setRemove(true);
@@ -74,7 +76,8 @@ function BookingHistory() {
   };
   return (
     <div>
-      {empty ? (
+      {console.log("BOOKKKKK ", bookObj, empty)}
+      {empty == true ? (
         <div className="container mb-4 p-3 d-flex justify-content-center">
           <Alert>
             <Alert.Heading>You have no bookings at this moment</Alert.Heading>
@@ -83,15 +86,15 @@ function BookingHistory() {
         </div>
       ) : (
         <div>
+          {/* <p>Hotel Bookings</p> */}
           {bookObj.map((value, index) => (
-            <div
-              className="container mt-4 mb-4 p-3 d-flex justify-content-around"
-              data-testid="booking-card"
-            >
+            <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
               <Card key={index[1]} style={{ width: "50rem", height: "20rem" }}>
                 <Card.Body>
                   <h5>
-                    <strong>{value[1].hotelName}</strong>
+                    <strong data-testid="hotelname">
+                      {value[1].hotelName}
+                    </strong>
                   </h5>
                   <></>
                   <h5>
