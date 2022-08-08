@@ -29,15 +29,15 @@ const App = () => {
               <Route path="/custinfo" element={<CustomerInformation />} />
               <Route path="/payinfo" element={<PaymentInformation />} />
               <Route path="/searchhotel" element={<SearchHotel />} />
-              <Route element={<WitSearchBar />}>
-                <Route
+                
+              <Route path="/userspage" element={<UsersPage />} />
+            </Route>
+            
+            <Route
                   path="/searchhotelresult"
                   element={<SearchHotelResult />}
                 />
-                <Route path="/viewhotel" element={<ViewHotel />} />
-              </Route>
-              <Route path="/userspage" element={<UsersPage />} />
-            </Route>
+            <Route path="/viewhotel" element={<ViewHotel />} />
             <Route element={<WithoutNavBar />}>
               <Route path="/login" element={<Login />} />
               <Route path="/registration" element={<Register />} />

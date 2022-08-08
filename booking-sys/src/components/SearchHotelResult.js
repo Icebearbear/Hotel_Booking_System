@@ -9,8 +9,7 @@ import useLazyLoad from "./useLazyLoad";
 import ErrorModal from "./ErrorModal";
 import { async } from "@firebase/util";
 import { AiFillStar } from "react-icons/ai";
-import CardHeader from "react-bootstrap/CardHeader";
-import { Col, Row } from "react-bootstrap";
+import NavigationBar from "./NavigationBar";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 //import hotel_placeholder from "../data/hotel_placeholder.png";
 
@@ -20,13 +19,16 @@ function SearchHotelResult() {
   const [hotelQ, setHotelQ] = useState(0);
   const [tobequeried, setToQuery] = useState([]);
   const [loaded, setLoaded] = useState(0);
+  const [calling, setCalling] = useState(true)
+  const [complete, setComplete] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   /// for lazy loading
   const NUM_PER_PAGE = 10;
   const TOTAL_PAGES = (hotelQ - finalHotels.length) / NUM_PER_PAGE + 1;
   const triggerRef = useRef(null);
   /////////////////////////////
-
   var searchData = {};
   // var finalHotels = [];
   var inputed = JSON.parse(localStorage.getItem("SEARCH_DATA"));
@@ -36,15 +38,17 @@ function SearchHotelResult() {
       "Search details not recorded, please head to Search page and input search";
     return <ErrorModal msg={message} />;
   }
+  
+
   // get data passed from SearchHotel page
   // adjust guest param
-  var no_of_guest = inputed["guests"];
-  var guest_per_room = Math.floor(no_of_guest / inputed["rooms"]);
-  var param_guests = "" + guest_per_room;
-  for (var i = 0; i < inputed["rooms"] - 1; i++) {
-    param_guests = param_guests + "|" + guest_per_room;
-  }
-  searchData["guests"] = param_guests;
+  // var no_of_guest = inputed["guests"];
+  // var guest_per_room = Math.floor(no_of_guest / inputed["rooms"]);
+  // var param_guests = "" + guest_per_room;
+  // for (var i = 0; i < inputed["rooms"] - 1; i++) {
+  //   param_guests = param_guests + "|" + guest_per_room;
+  // }
+  searchData["guests"] = inputed["guests"];
   // adjust destination id
   searchData["destination_id"] = inputed["destination_id"];
   // adjust check in check out
@@ -62,37 +66,44 @@ function SearchHotelResult() {
   searchData["checkout"] = dateFormat(inputed["checkout"]);
   //}
   const getHotelAndPrices = async () => {
-    console.log("called backend");
-    try {
-      await axios
-        .get("http://localhost:3001/hotelnprices", {
-          params: { data: searchData },
-        })
-        .then((res) => {
-          if (res.data.dataLen == 0) {
-            console.log(res.data.dataLen);
-            getHotelAndPrices();
-          } else {
-            setFinalHotels(JSON.parse(res.data.finalData));
-            console.log(JSON.parse(res.data.nulls));
-            setHotelQ(res.data.dataLen);
-            setToQuery(JSON.parse(res.data.nulls));
-          }
+    console.log("called backend")
+    await axios
+      .get("http://localhost:3001/hotelnprices", {
+        params: { data: searchData },
+      })
+      .then((res) => {
+        console.log(res.data.dataLen);
+        console.log(res.data.complete);
+        setFinalHotels(JSON.parse(res.data.finalData));
+        setHotelQ(res.data.dataLen);
+        setComplete(res.data.complete)
+        setToQuery(JSON.parse(res.data.nulls));
+        if (res.data.complete ==false){
+          setTimeout(getHotelAndPrices(),400);
+        };
+        if(res.data.dataLen==0 && res.data.complete ==true){
+          setCalling(false);
+        }}).catch((errors)=>{
+          setStatus(errors.response.status);
+          setErrorMsg(errors.response.statusText);
+          setCalling(false);
+          console.log(errors);
         });
-    } catch (err) {
-      console.error(err.message);
-    }
+          
   };
 
   const getnulls = async (value) => {
     console.log(value.id);
-    try {
-      const hotel = await axios
-        .get("http://localhost:3001/viewhotel", {
-          params: { hotelId: value.id },
-        })
-        .then((res) => JSON.parse(res.data.data));
-      // console.log(hotel);
+    try{
+       const hotel = await axios.get("http://localhost:3001/viewhotel", {
+        params: { hotelId: value.id },
+      }).then(res=>
+        JSON.parse(res.data.data))
+      .catch((errors)=>{
+        setStatus(errors.response.status);
+        setErrorMsg(errors.response.statusText);
+        console.log(errors);
+        return null}); 
       return hotel;
     } catch (err) {
       console.error(err.message);
@@ -108,7 +119,8 @@ function SearchHotelResult() {
     if (currentPage == 1) {
       var data = finalHotels;
       setLoaded(finalHotels.length);
-      return [data, finalHotels.length];
+      setCalling(false);
+      return [data, finalHotels.length]
     }
     const cut = (currentPage - 2) * NUM_PER_PAGE;
     if (currentPage > TOTAL_PAGES) {
@@ -153,9 +165,13 @@ function SearchHotelResult() {
   /// call the diplay cards and display the updated data from lazy loading
   return (
     <>
-      <div className="d-flex p-2 justify-content-around" id="hotel_results">
+      <NavigationBar />
+      <LoadingPosts hidden={!calling} />
+      <div hidden= {!calling} className="d-flex p-2 justify-content-around" id="hotel_results">
         <h3>{"Total Results : " + hotelQ + " Hotels Found"}</h3>
       </div>
+        {(complete==true && hotelQ==0)&&<ErrorModal msg={'No results to show, please change search parameters'}/>}
+        {(status!= null)&&<ErrorModal msg={`${status} ${errorMsg}: Please head back to search page and select valid parameters`}/>}
       <div className="grid grid-cols-3 gap-4 content-start">
         {data.map((hotels, index) => (
           <HotelDisplay key={index} info={hotels} search={searchData} />
@@ -356,29 +372,30 @@ function HotelDisplay(props) {
                       class="align-self-end btn1 btn-lg btn-block btn-dark mt-auto"
                       onClick={() => {
                         localStorage.setItem("HOTEL_ID", info.id);
-                        try {
-                          axios
-                            .get("http://localhost:3001/viewhotel", {
-                              params: { hotelId: info.id },
-                            })
-                            .then((hoteldt) => {
-                              const hotelData = JSON.parse(hoteldt.data.data);
-                              const hotelLocation = {
-                                latitude: hotelData["latitude"],
-                                longitude: hotelData["longitude"],
-                              };
-                              console.log("LAT PASSED", hotelLocation.latitude);
-                              localStorage.setItem(
-                                "HOTEL_LOC",
-                                JSON.stringify(hotelLocation)
-                              );
-                            })
-                            .catch((err) => {
-                              console.log(err.message);
-                            });
-                        } catch (err) {
-                          console.log(err);
-                        }
+                        localStorage.setItem("HotelDetails", info);
+                        // try {
+                        //   axios
+                        //     .get("http://localhost:3001/viewhotel", {
+                        //       params: { hotelId: info.id },
+                        //     })
+                        //     .then((hoteldt) => {
+                        //       const hotelData = JSON.parse(hoteldt.data.data);
+                        //       const hotelLocation = {
+                        //         latitude: hotelData["latitude"],
+                        //         longitude: hotelData["longitude"],
+                        //       };
+                        //       console.log("LAT PASSED", hotelLocation.latitude);
+                        //       localStorage.setItem(
+                        //         "HOTEL_LOC",
+                        //         JSON.stringify(hotelLocation)
+                        //       );
+                        //     })
+                        //     .catch((err) => {
+                        //       console.log(err.message);
+                        //     });
+                        // } catch (err) {
+                        //   console.log(err);
+                        // }
                         navigate("/viewhotel");
                       }}
                     >

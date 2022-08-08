@@ -1,14 +1,26 @@
 const express = require("express");
+// var session = require('express-session')
 const PORT = process.env.PORT || 3001;
+const support = require('axios-cookiejar-support');
+const tough = require('tough-cookie');
 const app = express();
 const cors = require("cors");
 const axios = require("axios");
+const http = require("http");
+const https = require("https");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-app.use(cors({ origin: "*" }));
-
+app.use(cors({ origin: "*", credentials:true }));
 app.use(express.json());
 const path = require("path");
+
+const httpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs:5000 })
+const httpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs:5000 })
+
+const BASE_URL = "https://hotelapi.loyalty.dev/api/hotels/prices";
+
+const jar = new tough.CookieJar();
+const api = support.wrapper(axios.create({jar}));
 
 const { initializeApp } = require("firebase/app");
 const {
@@ -30,6 +42,7 @@ const {
   updateDoc,
   doc,
   deleteDoc,
+  connectFirestoreEmulator,
 } = require("firebase/firestore");
 
 const fc = require("./firebase_config");
@@ -123,7 +136,7 @@ app.get("/viewhotel", (req, res) => {
   }
 });
 
-app.get("/hotelnprices", (req, res) => {
+app.get("/hotelnprices", async(req, res) => {
   const searchData = JSON.parse(req.query.data);
   // console.log(searchData);
   var destination_id = searchData.destination_id;
@@ -136,51 +149,44 @@ app.get("/hotelnprices", (req, res) => {
   var guests = searchData.guests;
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
   console.log(urlPrice);
-  const requestPrice = axios.get(urlPrice);
-  const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
-    params: { destination_id: destination_id },
-  });
+  const requestPrice = api.get(urlPrice); 
+  const requestHotel = api.get("https://hotelapi.loyalty.dev/api/hotels", {params: { destination_id: destination_id } });
   var fhotels = [];
   var len = 0;
   var hotelPrices = null;
   var hotelDetails = null;
   var completed = false;
   var nulls = [];
-
-  axios
-    .all([requestPrice, requestHotel])
-    .then(
-      axios.spread((...responses) => {
-        completed = responses[0].data.completed;
-        // setTimeout(()=>{console.log(completed)},5000);
-        hotelPrices = responses[0].data.hotels;
-        console.log(Object.keys(hotelPrices).length);
-        hotelDetails = responses[1].data;
-        hotelPrices.map((value) => {
-          let match = hotelDetails.find((detail) => detail.id === value.id);
-          const output = (value.id && match) || null;
-          if (output !== null) {
-            // console.log(typeof(value))
-            fhotels.push({ ...value, ...output });
-            // console.log(output);
-            len = len + 1;
-          } else {
-            nulls.push(value);
-            // console.log(nulls.length)
-          }
-        });
-        res.status(200).json({
-          finalData: JSON.stringify(fhotels),
-          nulls: JSON.stringify(nulls),
-          dataLen: Object.keys(hotelPrices).length,
+  
+    await Promise
+      .all([requestPrice, requestHotel])
+      .then((responses) => {
+          completed = responses[0].data.completed;
+          console.log(completed);
+          hotelPrices = responses[0].data.hotels;
+          console.log(Object.keys(hotelPrices).length)
+          hotelDetails = responses[1].data;
+          hotelPrices.map((value) => {
+            let match = hotelDetails.find((detail) => detail.id === value.id);
+            const output = (value.id && match) || null;
+            if (output !== null) {
+              // console.log(typeof(value))
+              fhotels.push({ ...value, ...output });
+              // console.log(output);
+              len = len + 1;
+            }else{
+              nulls.push(value)
+            }});
+          res.status(200).json({
+            finalData: JSON.stringify(fhotels),
+            nulls: JSON.stringify(nulls),
+            dataLen: Object.keys(hotelPrices).length,
+            complete: completed
         });
       })
-    )
     .catch((errors) => {
-      //console.log(errors.response.status);
-      console.log("ERRORR", errors.message);
-      // res.status(errors.response.status).send(errors.message);
-      // react on errors.
+      // res.status(errors.response.status).send(errors.response.statusText);
+      console.log("Error", errors.response.status, errors.response.statusText);
     });
 });
 
