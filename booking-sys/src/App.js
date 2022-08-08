@@ -14,7 +14,6 @@ import Cancel from "./components/Cancel";
 import "./App.css";
 import UsersPage from "./components/UsersPage";
 import NavigationBar from "./components/NavigationBar";
-import SearchDataNav from "./components/SearchDataNav";
 import { Outlet } from "react-router-dom";
 const App = () => {
   return (
@@ -65,13 +64,5 @@ const WitNavBar = () => {
   );
 };
 
-const WitSearchBar = () => {
-  return (
-    <div>
-      <SearchDataNav />
-      <Outlet />
-    </div>
-  );
-};
 
 export default App;

@@ -33,21 +33,15 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 
 function ViewHotel() {
+  const [hotelId, setHotelId] = useState(localStorage.getItem("HOTEL_ID"));
+  const [hotelData, setHotelData] = useState(JSON.parse(localStorage.getItem("HOTEL_DETAILS")));
   // get data passed from SearchHotelResult page
   const navigate = useNavigate();
-  const hotelId = localStorage.getItem("HOTEL_ID");
-  const hotelLocation = JSON.parse(localStorage.getItem("HOTEL_LOC"));
-  console.log("LAT HOTELPAGE", hotelLocation.latitude);
 
   // get data passed from SearchHotel page
   var searchDataLocal = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
-  var no_of_guest = searchDataLocal["guests"];
-  var guest_per_room = Math.floor(no_of_guest / searchDataLocal["rooms"]);
-  var param_guests = "" + guest_per_room;
-  for (var i = 0; i < searchDataLocal["rooms"] - 1; i++) {
-    param_guests = param_guests + "|" + guest_per_room;
-  }
+  
   const dateFormat = (string) => {
     var date = new Date(string);
     var day = date.getDate();
@@ -65,11 +59,13 @@ function ViewHotel() {
     lang: "en_US",
     currency: "SGD",
     country_code: "SG",
-    guests: param_guests, // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
+    rooms: searchDataLocal["rooms"],
+    guests: searchDataLocal["guests"], // 1 room 2 guests,  if >1 room eg "3|2" is 3 rooms 2 guest each
     partner_id: "1",
   };
 
   // hotel info from api
+  
   const [hotelName, setHotelName] = useState("");
   const [address, setAddress] = useState("");
   const [rating, setRating] = useState("");
@@ -79,7 +75,6 @@ function ViewHotel() {
 
   const [reviews, setReviews] = useState({});
 
-  const [longitude, setLongitude] = useState("");
   const [imageData, setImageData] = useState([]);
 
   const [roomsDetails, setRoomsDetails] = useState({});
@@ -89,36 +84,48 @@ function ViewHotel() {
   const [warning, setWarning] = useState(false);
   const [login, setLogin] = useState("false");
 
+  const [longitude, setLongitude]= useState("");
+  const [latitude, setLatitude] = useState("");
+
   // FUNCTIONS FOR HOTEL DISPLAY
   const getHotelData = () => {
-    try {
-      axios
-        .get("http://localhost:3001/viewhotel", {
-          params: { hotelId: searchData.hotel_id },
-        })
-        .then((hoteldt) => {
-          const hotelData = JSON.parse(hoteldt.data.data);
-          const imgUrl = JSON.parse(hoteldt.data.iurl);
-          // console.log(imgUrl);
-          setHotelName(hotelData["name"]);
-          setAddress(hotelData["address"]);
-          setRating(hotelData["rating"]);
-
-          setDescr(hotelData["description"]);
-          setAmenities(hotelData["amenities"]);
-
-          setReviews(hotelData["amenities_ratings"]);
-
-          setCenter([hotelData["longitude"], hotelData["latitude"]]);
-
-          setImageData(imgUrl);
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+    const hotelData= JSON.parse(localStorage.getItem("HOTEL_DETAILS"));
+  // const hotelLocation = JSON.parse(localStorage.getItem("HOTEL_LOC"));
+    setHotelId(hotelData["hotelId"])
+    setHotelName(hotelData["name"]);
+    setAddress(hotelData["address"]);
+    setRating(hotelData["rating"]);
+    setDescr(hotelData["description"]);
+    setAmenities(hotelData["amenities"]);
+    setReviews(hotelData["amenities_ratings"]);
+    setCenter([hotelData["longitude"], hotelData["latitude"]]);
+    setImageData(hotelData["imgUrl"]);
+    setLongitude(hotelData["longitude"]);
+    setLatitude(hotelData["latitude"]);
+    // try {
+    //   axios
+    //     .get("http://localhost:3001/viewhotel", {
+    //       params: { hotelId: searchData.hotel_id },
+    //     })
+    //     .then((hoteldt) => {
+          
+    //       const imgUrl = JSON.parse(hoteldt.data.iurl);
+    //       // console.log(imgUrl);
+    //       setHotelName(hotelData["name"]);
+    //       setAddress(hotelData["address"]);
+    //       setRating(hotelData["rating"]);
+    //       setDescr(hotelData["description"]);
+    //       setAmenities(hotelData["amenities"]);
+    //       setReviews(hotelData["amenities_ratings"]);
+    //       setCenter([hotelData["longitude"], hotelData["latitude"]]);
+    //       setImageData(imgUrl);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err.message);
+    //     });
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   const starRating = (rating) => {
@@ -202,11 +209,11 @@ function ViewHotel() {
   // the given data sucks so this is to make fake reviews
   const convertReviews = (key, score) => {
     if (score >= 65) {
-      return ["Very Good", `The ${reviews[key]["name"]} is great!`];
+      return ["Very Good", `The ${hotelData.amenities_ratings[key]["name"]} is great!`];
     } else if (score >= 35) {
-      return ["Average", `The ${reviews[key]["name"]} is so-so.`];
+      return ["Average", `The ${hotelData.amenities_ratings[key]["name"]} is so-so.`];
     } else {
-      return ["Bad", `The ${reviews[key]["name"]} sucks.`];
+      return ["Bad", `The ${hotelData.amenities_ratings[key]["name"]} sucks.`];
     }
   };
 
@@ -232,12 +239,12 @@ function ViewHotel() {
 
   const initMarker = () => {
     if (
-      hotelLocation.latitude == "null" ||
-      hotelLocation.latitude == "undefined"
+      hotelData.latitude == "null" ||
+      hotelData.latitude == "undefined"
     ) {
       return addMarkers([["0.0", "0.0"]]);
     }
-    return addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
+    return addMarkers([[hotelData.longitude, hotelData.latitude]]);
   };
 
   // long, lat, idk why its the other way round but ok
@@ -249,18 +256,19 @@ function ViewHotel() {
   const [features, setFeatures] = useState(initFeat);
 
   // FUNCTIONS FOR ROOMS DISPLAY
-  const getHotelIdPrices = () => {
-    axios
+  const getHotelIdPrices = async() => {
+    await axios
       .get("http://localhost:3001/hotelidprices", {
         params: { data: searchData },
       })
       .then((roomData) => {
-        if (roomData.data.completed == "false") {
+        console.log(roomData.data.completed);
+        if (roomData.data.completed == false){
           console.log("set rooms: ", roomData.data.completed);
-          getHotelIdPrices();
+          setTimeout(getHotelIdPrices(),400);
         }
-        // setRoomFlag(roomData.data.completed);
-        else {
+        else{
+          // console.log(roomData.data.completed);
           console.log("set rooms: ", roomData.data.completed);
           setRoomsDetails(roomData.data.rooms);
           setCheapestRoomPrice(roomData.data.rooms[0].lowest_converted_price);
@@ -314,11 +322,9 @@ function ViewHotel() {
     const passData = {
       destination_id: searchData["destination_id"],
       hotelId: hotelId,
-      hotelName: hotelName,
+      hotelName: hotelData.name,
       roomType: roomsDetails[key].description,
-      noOfRooms: searchDataLocal["rooms"],
-      noOfAdults: searchDataLocal["adults"],
-      noOfChildren: searchDataLocal["childs"],
+      noOfRooms: searchData.rooms,
       checkIn: searchData.checkin,
       checkOut: searchData.checkout,
       roomRate: roomsDetails[key].lowest_converted_price,
@@ -332,7 +338,7 @@ function ViewHotel() {
     getLogin();
     getHotelData();
     getHotelIdPrices();
-  }, [setLongitude, setImageData, setLogin]);
+  }, []);
 
   return (
     <>
@@ -341,7 +347,7 @@ function ViewHotel() {
         class="image d-flex flex-column justify-content-center align-items-center"
         data-testid="view-hotel-page"
       >
-        <Card style={{ width: "90rem", height: "32rem" }}>
+        <Card className="p-3" style={{ width: "90rem"}}>
           <Row>
             {/* IMAGE SLIDER COL */}
             <Col
@@ -353,23 +359,23 @@ function ViewHotel() {
                 backgroundPosition: "center",
               }}
             >
-              <ImageSlider slides={imageData} />
+              <ImageSlider slides={hotelData.imgUrl} />
             </Col>
             {/* TEXT COL */}
             <Col>
               <Row>
-                <Card.Text>
+                <Card.Text className="m-3">
                   <Row>
-                    <h2 class="card-title">{hotelName} </h2>
+                    <h2 class="card-title">{hotelData.name} </h2>
                   </Row>
                   <Row>
                     <Col>
-                      <h5>{address}</h5> <br />
+                      <h5>{hotelData.address}</h5> <br />
                       <br />
                       <a href="#location">Show on map</a>
                     </Col>
-                    <Col style={{ textAlign: "right" }}>
-                      {starRating(rating)}
+                    <Col className="m-3" style={{ textAlign: "right" }}>
+                      {starRating(hotelData.rating)}
                       <br /> <br /> <br />
                       {reviews.length} reviews <br />
                       <a href="#reviews">View reviews</a>
@@ -383,7 +389,7 @@ function ViewHotel() {
                 <Row>
                   <br />
                   <br />
-                  <div style={{ display: "flex" }}>
+                  <div className="m-3" style={{ display: "flex" }}>
                     <h5
                       className="float-left"
                       class="mt-auto me-2"
@@ -431,7 +437,7 @@ function ViewHotel() {
                   <Card.Body>
                     <Card.Text>
                       <h2>Hotel Overview</h2>
-                      <div dangerouslySetInnerHTML={{ __html: descr }} />
+                      <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
                     </Card.Text>
                   </Card.Body>
                 </Card>
@@ -447,7 +453,7 @@ function ViewHotel() {
                     <h3>Amenities</h3>
                     <Card.Text class="text-justify">
                       <Card.Text>{checkAmenities()}</Card.Text>
-                      {Object.entries(amenities).map(([key, value]) => (
+                      {Object.entries(hotelData.amenities).map(([key, value]) => (
                         <Card.Text>
                           {key + ": "}
                           {convertAmenities(value)}
@@ -471,7 +477,7 @@ function ViewHotel() {
               <Card.Text class="text-justify">
                 <Card.Text>{checkReviews()}</Card.Text>
                 <ListGroup>
-                  {Object.entries(reviews).map(([key, value]) => (
+                  {Object.entries(hotelData.amenities_ratings).map(([key, value]) => (
                     <Card.Text>
                       <ListGroup.Item>
                         <Row>
@@ -480,17 +486,17 @@ function ViewHotel() {
                             <b>
                               {" "}
                               {
-                                convertReviews(key, reviews[key]["score"])[0]
+                                convertReviews(key, hotelData.amenities_ratings[key]["score"])[0]
                               }{" "}
                             </b>{" "}
                             <br />
                             <h5 style={{ color: "green" }}>
                               {" "}
-                              {reviews[key]["score"] + "/100"}{" "}
+                              {hotelData.amenities_ratings[key]["score"] + "/100"}{" "}
                             </h5>
                           </Col>
                           <Col style={{ flexDirection: "row", flex: 2 }}>
-                            {convertReviews(key, reviews[key]["score"])[1]}
+                            {convertReviews(key, hotelData.amenities_ratings[key]["score"])[1]}
                           </Col>
                         </Row>
                       </ListGroup.Item>

@@ -10,6 +10,8 @@ import ErrorModal from "./ErrorModal";
 import { async } from "@firebase/util";
 import { AiFillStar } from "react-icons/ai";
 import NavigationBar from "./NavigationBar";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 //import hotel_placeholder from "../data/hotel_placeholder.png";
 
@@ -372,7 +374,7 @@ function HotelDisplay(props) {
                       class="align-self-end btn1 btn-lg btn-block btn-dark mt-auto"
                       onClick={() => {
                         localStorage.setItem("HOTEL_ID", info.id);
-                        localStorage.setItem("HotelDetails", info);
+                        localStorage.setItem("HOTEL_DETAILS", JSON.stringify(info));
                         // try {
                         //   axios
                         //     .get("http://localhost:3001/viewhotel", {
