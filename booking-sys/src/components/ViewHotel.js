@@ -81,6 +81,7 @@ function ViewHotel() {
   const getHotelData = () => {
     const hotelData = JSON.parse(localStorage.getItem("HOTEL_DETAILS"));
     // const hotelLocation = JSON.parse(localStorage.getItem("HOTEL_LOC"));
+    setCenter([hotelData.longitude, hotelData.latitude]);
     setHotelData(hotelData);
   };
 
@@ -226,7 +227,7 @@ function ViewHotel() {
         console.log(roomData.data.completed);
         if (roomData.data.completed == false) {
           console.log("set rooms: ", roomData.data.completed);
-          setTimeout(getHotelIdPrices(), 400);
+          setTimeout(getHotelIdPrices(), 700);
         } else {
           // console.log(roomData.data.completed);
           console.log("set rooms: ", roomData.data.completed);
@@ -560,7 +561,7 @@ function ViewHotel() {
                       placement="bottom"
                       rootClose={true}
                       overlay={
-                        <Popover id={`popover-positioned-bottom`}>
+                        <Popover style={{ maxWidth: 700 }} id={`popover-positioned-bottom`}>
                           <Popover.Header as="h3">Room details</Popover.Header>
                           <Popover.Body>
                             <div
