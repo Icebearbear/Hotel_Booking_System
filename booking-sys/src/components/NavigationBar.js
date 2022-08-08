@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { Button, Container } from "react-bootstrap";
+import { Button, Col, Row, Container, Stack } from "react-bootstrap";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import SearchHotel from "./SearchHotel";
-import Modal from 'react-bootstrap/Modal';
-
+import Modal from "react-bootstrap/Modal";
 
 const NavigationBar = () => {
   const [login, setLogin] = useState(false);
@@ -19,42 +18,42 @@ const NavigationBar = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const checkpath = ()=>{
+  const checkpath = () => {
     console.log(location.pathname);
-    if (location.pathname == "/searchhotelresult" || location.pathname == "/viewhotel"){
+    if (
+      location.pathname == "/searchhotelresult" ||
+      location.pathname == "/viewhotel"
+    ) {
       setShowSearch(true);
-    }else{
+    } else {
       setShowSearch(false);
     }
-  }
+  };
 
-
-  function getSearchData(){
+  function getSearchData() {
     var data = {};
     var inputed = JSON.parse(localStorage.getItem("SEARCH_DATA"));
 
-    if (inputed == null){
-        return
+    if (inputed == null) {
+      return;
     }
 
     const dateFormat = (string) => {
-        var date = new Date(string);
-        var day = date.getDate();
-        var month = date.getMonth() + 1;
-        var year = date.getFullYear();
-        var format = year + "-" + month + "-" + day;
-        return format;
-      };
+      var date = new Date(string);
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
+      var year = date.getFullYear();
+      var format = year + "-" + month + "-" + day;
+      return format;
+    };
 
     data["guests"] = inputed["guests"];
     data["name"] = inputed["name"];
     data["checkin"] = dateFormat(inputed["checkin"]);
     data["checkout"] = dateFormat(inputed["checkout"]);
-    console.log(data)
-    setSearchData(data)
-  };
-
-  
+    console.log(data);
+    setSearchData(data);
+  }
 
   const getUser = async () => {
     try {
@@ -83,15 +82,46 @@ const NavigationBar = () => {
   return (
     <div data-testid="userprofile">
       <Navbar bg="dark" id="nav-bar">
-        
-        <Navbar.Collapse className="justify-content-end">
-          {showSearch ? (
-            <Container>
-            <Nav.Link onClick={()=> handleShow()}><p><b>Destination:</b> <u>{searchData["name"]}</u></p><b>Check In:</b> <u>{searchData["checkin"]}</u> <b>Check Out:</b> <u>{searchData["checkout"]}</u>    <b>Guests:</b> <u>{searchData["guests"]}</u></Nav.Link>
-            </Container>
-          ):(
-            <></>
+        {showSearch ? (
+          <div onClick={() => handleShow()}>
+            <Stack direction="horizontal" gap={5}>
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div className="vr" />
+              <div>
+                <h5 class="text-muted">Destination</h5>
+                <h5 class="text-light bg-dark">{searchData["name"]}</h5>
+              </div>
+              <div className="vr" />
+              <div>
+                <h5 class="text-muted">Check In</h5>
+                <h5 class="text-light bg-dark">{searchData["checkin"]}</h5>
+              </div>
+              <div className="vr" />
+              <div>
+                <h5 class="text-muted">Check Out</h5>{" "}
+                <h5 class="text-light bg-dark">{searchData["checkout"]}</h5>
+              </div>
+              <div className="vr" />
+              <div>
+                <h5 class="text-muted">Guests</h5>
+                <h5 class="text-light bg-dark">
+                  {searchData["guests"]} Adults
+                </h5>
+              </div>
+            </Stack>
+          </div>
+        ) : (
+          <></>
         )}
+        <Navbar.Collapse className="justify-content-end">
           {login ? (
             <Nav.Link href="/userspage">
               <Button variant="warning">User Profile</Button>
@@ -101,15 +131,13 @@ const NavigationBar = () => {
               <Button variant="warning">Login/Register</Button>
             </Nav.Link>
           )}
-          {"  "}
-          
+          <div className="vr" />
         </Navbar.Collapse>
       </Navbar>
       <Modal show={show} onHide={handleClose}>
-        <SearchHotel data={searchData} handle={handleClose}/>
+        <SearchHotel data={searchData} handle={handleClose} />
       </Modal>
     </div>
-    
   );
 };
 

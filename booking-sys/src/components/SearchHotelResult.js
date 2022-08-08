@@ -10,6 +10,7 @@ import ErrorModal from "./ErrorModal";
 import { async } from "@firebase/util";
 import { AiFillStar } from "react-icons/ai";
 import NavigationBar from "./NavigationBar";
+import { Col, Row } from "react-bootstrap";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 //import hotel_placeholder from "../data/hotel_placeholder.png";
 
@@ -19,7 +20,7 @@ function SearchHotelResult() {
   const [hotelQ, setHotelQ] = useState(0);
   const [tobequeried, setToQuery] = useState([]);
   const [loaded, setLoaded] = useState(0);
-  const [calling, setCalling] = useState(true)
+  const [calling, setCalling] = useState(true);
   const [complete, setComplete] = useState(false);
   const [status, setStatus] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
@@ -38,7 +39,6 @@ function SearchHotelResult() {
       "Search details not recorded, please head to Search page and input search";
     return <ErrorModal msg={message} />;
   }
-  
 
   // get data passed from SearchHotel page
   // adjust guest param
@@ -66,7 +66,7 @@ function SearchHotelResult() {
   searchData["checkout"] = dateFormat(inputed["checkout"]);
   //}
   const getHotelAndPrices = async () => {
-    console.log("called backend")
+    console.log("called backend");
     await axios
       .get("http://localhost:3001/hotelnprices", {
         params: { data: searchData },
@@ -76,34 +76,37 @@ function SearchHotelResult() {
         console.log(res.data.complete);
         setFinalHotels(JSON.parse(res.data.finalData));
         setHotelQ(res.data.dataLen);
-        setComplete(res.data.complete)
+        setComplete(res.data.complete);
         setToQuery(JSON.parse(res.data.nulls));
-        if (res.data.complete ==false){
-          setTimeout(getHotelAndPrices(),400);
-        };
-        if(res.data.dataLen==0 && res.data.complete ==true){
+        if (res.data.complete == false) {
+          setTimeout(getHotelAndPrices(), 400);
+        }
+        if (res.data.dataLen == 0 && res.data.complete == true) {
           setCalling(false);
-        }}).catch((errors)=>{
-          setStatus(errors.response.status);
-          setErrorMsg(errors.response.statusText);
-          setCalling(false);
-          console.log(errors);
-        });
-          
+        }
+      })
+      .catch((errors) => {
+        setStatus(errors.response.status);
+        setErrorMsg(errors.response.statusText);
+        setCalling(false);
+        console.log(errors);
+      });
   };
 
   const getnulls = async (value) => {
     console.log(value.id);
-    try{
-       const hotel = await axios.get("http://localhost:3001/viewhotel", {
-        params: { hotelId: value.id },
-      }).then(res=>
-        JSON.parse(res.data.data))
-      .catch((errors)=>{
-        setStatus(errors.response.status);
-        setErrorMsg(errors.response.statusText);
-        console.log(errors);
-        return null}); 
+    try {
+      const hotel = await axios
+        .get("http://localhost:3001/viewhotel", {
+          params: { hotelId: value.id },
+        })
+        .then((res) => JSON.parse(res.data.data))
+        .catch((errors) => {
+          setStatus(errors.response.status);
+          setErrorMsg(errors.response.statusText);
+          console.log(errors);
+          return null;
+        });
       return hotel;
     } catch (err) {
       console.error(err.message);
@@ -120,7 +123,7 @@ function SearchHotelResult() {
       var data = finalHotels;
       setLoaded(finalHotels.length);
       setCalling(false);
-      return [data, finalHotels.length]
+      return [data, finalHotels.length];
     }
     const cut = (currentPage - 2) * NUM_PER_PAGE;
     if (currentPage > TOTAL_PAGES) {
@@ -167,11 +170,23 @@ function SearchHotelResult() {
     <>
       <NavigationBar />
       <LoadingPosts hidden={!calling} />
-      <div hidden= {!calling} className="d-flex p-2 justify-content-around" id="hotel_results">
+      <div
+        hidden={!calling}
+        className="d-flex p-2 justify-content-around "
+        id="hotel_results"
+      >
         <h3>{"Total Results : " + hotelQ + " Hotels Found"}</h3>
       </div>
-        {(complete==true && hotelQ==0)&&<ErrorModal msg={'No results to show, please change search parameters'}/>}
-        {(status!= null)&&<ErrorModal msg={`${status} ${errorMsg}: Please head back to search page and select valid parameters`}/>}
+      {complete == true && hotelQ == 0 && (
+        <ErrorModal
+          msg={"No results to show, please change search parameters"}
+        />
+      )}
+      {status != null && (
+        <ErrorModal
+          msg={`${status} ${errorMsg}: Please head back to search page and select valid parameters`}
+        />
+      )}
       <div className="grid grid-cols-3 gap-4 content-start">
         {data.map((hotels, index) => (
           <HotelDisplay key={index} info={hotels} search={searchData} />
