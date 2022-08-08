@@ -93,28 +93,28 @@ const NavigationBar = () => {
               <div className="vr" />
               <div className="vr" />
               <div className="vr" />
-              <div className="vr" />
-              <div className="vr" />
+              {/* <div className="vr" />
+              <div className="vr" /> */}
               <div>
-                <h5 class="text-muted">Destination</h5>
-                <h5 class="text-light bg-dark">{searchData["name"]}</h5>
+                <h6 class="text-muted">Destination</h6>
+                <h6 class="text-light bg-dark">{searchData["name"]}</h6>
               </div>
               <div className="vr" />
               <div>
-                <h5 class="text-muted">Check In</h5>
-                <h5 class="text-light bg-dark">{searchData["checkin"]}</h5>
+                <h6 class="text-muted">Check In</h6>
+                <h6 class="text-light bg-dark">{searchData["checkin"]}</h6>
               </div>
               <div className="vr" />
               <div>
-                <h5 class="text-muted">Check Out</h5>{" "}
-                <h5 class="text-light bg-dark">{searchData["checkout"]}</h5>
+                <h6 class="text-muted">Check Out</h6>{" "}
+                <h6 class="text-light bg-dark">{searchData["checkout"]}</h6>
               </div>
               <div className="vr" />
               <div>
-                <h5 class="text-muted">Guests</h5>
-                <h5 class="text-light bg-dark">
+                <h6 class="text-muted">Guests</h6>
+                <h6 class="text-light bg-dark">
                   {searchData["guests"]} Adults
-                </h5>
+                </h6>
               </div>
             </Stack>
           </div>

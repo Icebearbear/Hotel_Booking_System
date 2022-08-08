@@ -34,7 +34,9 @@ function CustomerInformation() {
   /// Booking Information
   const [hotelInfo, setHotelInfo] = useState([]);
   const [noNight, setNight] = useState(2);
-  const comPrice = parseInt(hotelInfo.roomRate * noNight);
+  const comPrice = parseInt(
+    hotelInfo.roomRate * noNight + hotelInfo.surcharges
+  );
   useEffect(() => {
     const selectedObj = JSON.parse(localStorage.getItem("BOOKING_DATA")); // data stored from viewhotel
     console.log("BOOKING INFO ", selectedObj);
@@ -57,8 +59,7 @@ function CustomerInformation() {
       noNight: noNight,
       startDate: hotelInfo.checkIn,
       endDate: hotelInfo.checkOut,
-      noAdult: hotelInfo.noOfAdults,
-      noChildren: hotelInfo.noOfChildren,
+      noAdult: hotelInfo.noOfGuests,
       message: "booking for birthday celebration",
       roomType: hotelInfo.roomType,
       bookForSomeone: bookForSomeone,
@@ -139,7 +140,7 @@ function CustomerInformation() {
       <Row>
         <Col md={{ span: 6, offset: 1 }}>
           <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
-            <Card style={{ width: "40rem", height: "32rem" }}>
+            <Card style={{ width: "40rem", height: "fit-content" }}>
               <Card.Body>
                 <h1>Customer Information Page</h1>
                 <Form noValidate validated={validated}>
@@ -259,7 +260,7 @@ function CustomerInformation() {
           </div>
 
           <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
-            <Card style={{ width: "40rem", height: "36rem" }}>
+            <Card style={{ width: "40rem", height: "fit-content" }}>
               <Card.Body>
                 <h1>Special Requests</h1>
                 <div key={`inline-radio1`} className="mb-3">
@@ -338,24 +339,22 @@ function CustomerInformation() {
         <Col md={4}>
           <div className="userPage">
             <div className="container mt-4 mb-4 p-3 d-flex justify-content-right">
-              <Card style={{ width: "40rem", height: "35rem" }}>
+              <Card style={{ width: "40rem", height: "fit-content" }}>
                 <Card.Body>
                   <Stack gap={3}>
-                    <h3>Booking Information</h3>
-                    <h5 controlId="hotelname">
+                    <h1>Booking Information</h1>
+                    <h4 controlId="hotelname">
                       <strong>{hotelInfo.hotelName}</strong>
-                    </h5>
+                    </h4>
                     <></>
-                    <h5 id="roomtype">
+                    <h4 id="roomtype">
                       <strong>{hotelInfo.roomType}</strong>
-                    </h5>
+                    </h4>
                     <h5 id="roominfo">
                       {hotelInfo.noOfRooms +
-                        " Room " +
-                        hotelInfo.noOfAdults +
-                        " Adults, " +
-                        hotelInfo.noOfChildren +
-                        " Children / Per Room"}
+                        " Rooms " +
+                        hotelInfo.noOfGuests +
+                        " Guests, "}
                     </h5>
 
                     {[
@@ -367,49 +366,49 @@ function CustomerInformation() {
                           noNight +
                           " nights, " +
                           hotelInfo.noOfRooms +
-                          "room",
+                          "room)",
                         "SGD " + hotelInfo.roomRate,
                       ],
+                      ["Surcharge:", "SGD " + hotelInfo.surcharges],
                     ].map((display) => (
                       <Form.Group as={Col} className="g-4">
                         <Row>
-                          <Col sm={5}>
-                            <p3>{display[0]}</p3>
+                          <Col md={7}>
+                            <h6>{display[0]}</h6>
                           </Col>
-                          <Col sm={5}>
-                            <p3>
+                          <Col>
+                            <h6>
                               <strong>{display[1]}</strong>
-                            </p3>
+                            </h6>
                           </Col>
                         </Row>
                       </Form.Group>
                     ))}
                     <Form.Group as={Col} className="g-4">
                       <Row>
-                        <Col sm={5}>
+                        <Col md={7}>
                           <h5>
                             <strong>Total:</strong>
                           </h5>{" "}
                         </Col>
-                        <Col sm={5}>
-                          <p3>
+                        <Col>
+                          <h5>
                             <strong>{"SGD " + comPrice}</strong>
-                          </p3>
+                          </h5>
                         </Col>
                       </Row>
                     </Form.Group>
+                    <div class="d-flex flex-column mt-2">
+                      <button
+                        class="align-self-end btn1 btn-lg btn-block btn btn-outline-dark mt-auto"
+                        onClick={onSubmit}
+                      >
+                        Proceed to checkout
+                      </button>
+                    </div>
                   </Stack>
                 </Card.Body>
               </Card>
-            </div>
-            <div className="float-right">
-              <Button
-                variant="primary"
-                onClick={onSubmit}
-                className="float-right"
-              >
-                Proceed to next step
-              </Button>
             </div>
           </div>
         </Col>

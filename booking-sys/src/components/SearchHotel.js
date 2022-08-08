@@ -25,8 +25,7 @@ function SearchHotel(props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDate2, setSelectedDate2] = useState(null);
   const [nrooms, setnrooms] = useState("1");
-  const [nadults, setnadults] = useState({0: 1, 1:1, 2:1, 3:1});
-  const [nchildren, setnchildren] = useState("0");
+  const [nadults, setnadults] = useState({0: 1, 1:1, 2:1, 3:1});  
   const [validated, setValidated] = useState(false);
   const [selectedItem, setSelectedItem] = useState(""); //for input field validation
   // Destination ID to pass on
@@ -77,7 +76,6 @@ function SearchHotel(props) {
     currency: "SGD",
     rooms: nrooms,
     adults: nadults,
-    childs: nchildren,
     guests: null,
     partner_id: "1",
   };
@@ -127,12 +125,6 @@ function SearchHotel(props) {
     // alert(passData['adults']);
   };
 
-  const selectChild = (child) => {
-    // passData['childs'] = child;
-    setnchildren(child);
-    // setnguests(+nadults + +nchildren);
-    // alert(passData['childs']);
-  };
   const location = useLocation();
   // console.log(location);
   // console.log(location.pathname);

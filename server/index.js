@@ -108,7 +108,6 @@ app.get("/viewhotel", (req, res) => {
         );
         const imgDet = hotelres.data.image_details;
         const ids = hotelres.data.hires_image_index;
-
         const imgUrl = [];
         if (typeof ids !== "undefined") {
           const imgId = ids.split(",");
@@ -122,10 +121,9 @@ app.get("/viewhotel", (req, res) => {
             imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
           }
         }
-
+        hotelres["imgUrl"] = imgUrl
         res.status(200).json({
-          data: JSON.stringify(hotelres.data),
-          iurl: JSON.stringify(imgUrl),
+          data: JSON.stringify(hotelres.data)
         });
       })
       .catch((error) => {
@@ -152,7 +150,6 @@ app.get("/hotelnprices", async(req, res) => {
   const requestPrice = api.get(urlPrice); 
   const requestHotel = api.get("https://hotelapi.loyalty.dev/api/hotels", {params: { destination_id: destination_id } });
   var fhotels = [];
-  var len = 0;
   var hotelPrices = null;
   var hotelDetails = null;
   var completed = false;
@@ -170,10 +167,26 @@ app.get("/hotelnprices", async(req, res) => {
             let match = hotelDetails.find((detail) => detail.id === value.id);
             const output = (value.id && match) || null;
             if (output !== null) {
-              // console.log(typeof(value))
-              fhotels.push({ ...value, ...output });
+              // console.log(output)
+              
+              const imgDet = output.image_details;
+              const ids = output.hires_image_index;
+              const imgUrl = [];
+              if (typeof ids !== "undefined") {
+                const imgId = ids.split(",");
+                imgId.forEach(
+                  (imageI) =>
+                    (imgUrl[`${imageI}`] =
+                      imgDet["prefix"] + imageI + imgDet["suffix"])
+                );
+              } else {
+                for (let i = 0; i < output.number_of_images; i++) {
+                  imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
+                }
+              }
+              const imgObj = {imgUrl: imgUrl}
+              fhotels.push({ ...value, ...output, ...imgObj});
               // console.log(output);
-              len = len + 1;
             }else{
               nulls.push(value)
             }});
@@ -186,7 +199,7 @@ app.get("/hotelnprices", async(req, res) => {
       })
     .catch((errors) => {
       // res.status(errors.response.status).send(errors.response.statusText);
-      console.log("Error", errors.response.status, errors.response.statusText);
+      console.log("Error", errors);
     });
 });
 
@@ -229,7 +242,7 @@ app.get("/hotelidprices", (req, res) => {
   //   catch (err) {
   //     res.status(500).send(err);
   //   }
-  axios
+  api
     .get(url)
     .then((roomres) => {
       console.log("got hotel rooms, completed: " + roomres.data.completed);

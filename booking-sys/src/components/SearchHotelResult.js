@@ -10,7 +10,9 @@ import ErrorModal from "./ErrorModal";
 import { async } from "@firebase/util";
 import { AiFillStar } from "react-icons/ai";
 import NavigationBar from "./NavigationBar";
-import { Col, Row } from "react-bootstrap";
+
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 //const Hoteldisplay = lazy(()=> import("./loadHotels"));
 //import hotel_placeholder from "../data/hotel_placeholder.png";
 
@@ -266,7 +268,7 @@ function HotelDisplay(props) {
         {/* <h3>{"showing hotels at" + props.search['destination_id']}</h3> */}
         <Card
           className="text-center"
-          style={{ width: "60rem", height: "fit-content" }}
+          style={{ width: "70rem", height: "fit-content" }}
         >
           <div
             className="d-flex"
@@ -286,19 +288,6 @@ function HotelDisplay(props) {
               className="card_bodies"
               style={{ width: "20rem", height: "fit-content" }}
             >
-              {/* <Card.Body> */}
-              {/* <Card.Title>{info.rating + "   stars"}</Card.Title> */}
-              {/* {[...Array(5)].map((star, i) => {
-                  const ratingValue = i + 1;
-                  return (
-                    <AiFillStar
-                      color={ratingValue > info.rating ? "grey" : "teal"}
-                    />
-                  );
-                })}{" "} */}
-              {/* </Card.Body> */}
-              {/* <Card.Text>Address : {info.address}</Card.Text> */}
-
               <Col>
                 <Row>
                   <Card.Header as="h3" className="float-left">
@@ -344,73 +333,16 @@ function HotelDisplay(props) {
                 </Row>
 
                 <Row>
-                  {/* <div style={{ display: "flex" }} class="ca">
-                    <Button
-                      id="select_hotel"
-                      onClick={() => {
-                        localStorage.setItem("HOTEL_ID", info.id);
-                        try {
-                          axios
-                            .get("http://localhost:3001/viewhotel", {
-                              params: { hotelId: info.id },
-                            })
-                            .then((hoteldt) => {
-                              const hotelData = JSON.parse(hoteldt.data.data);
-                              const hotelLocation = {
-                                latitude: hotelData["latitude"],
-                                longitude: hotelData["longitude"],
-                              };
-                              console.log("LAT PASSED", hotelLocation.latitude);
-                              localStorage.setItem(
-                                "HOTEL_LOC",
-                                JSON.stringify(hotelLocation)
-                              );
-                            })
-                            .catch((err) => {
-                              console.log(err.message);
-                            });
-                        } catch (err) {
-                          console.log(err);
-                        }
-                        navigate("/viewhotel");
-                      }}
-                      variant="primary"
-                      className="float-right"
-                      style={{ marginLeft: "auto" }}
-                    >
-                      Select hotel
-                    </Button> */}
-                  {/* </div> */}
                   <div class="d-flex flex-column mt-2">
                     <button
                       id="select_hotel"
                       class="align-self-end btn1 btn-lg btn-block btn-dark mt-auto"
                       onClick={() => {
                         localStorage.setItem("HOTEL_ID", info.id);
-                        localStorage.setItem("HotelDetails", info);
-                        // try {
-                        //   axios
-                        //     .get("http://localhost:3001/viewhotel", {
-                        //       params: { hotelId: info.id },
-                        //     })
-                        //     .then((hoteldt) => {
-                        //       const hotelData = JSON.parse(hoteldt.data.data);
-                        //       const hotelLocation = {
-                        //         latitude: hotelData["latitude"],
-                        //         longitude: hotelData["longitude"],
-                        //       };
-                        //       console.log("LAT PASSED", hotelLocation.latitude);
-                        //       localStorage.setItem(
-                        //         "HOTEL_LOC",
-                        //         JSON.stringify(hotelLocation)
-                        //       );
-                        //     })
-                        //     .catch((err) => {
-                        //       console.log(err.message);
-                        //     });
-                        // } catch (err) {
-                        //   console.log(err);
-                        // }
+                        localStorage.setItem(
+                          "HOTEL_DETAILS",
+                          JSON.stringify(info)
+                        );
                         navigate("/viewhotel");
                       }}
                     >
