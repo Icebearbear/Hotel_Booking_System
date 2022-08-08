@@ -7,6 +7,8 @@ import {
   Row,
   Button,
   ListGroup,
+  OverlayTrigger,
+  Popover,
 } from "react-bootstrap";
 import axios from "axios";
 import ImageSlider from "./ImageSlider";
@@ -572,19 +574,35 @@ function ViewHotel() {
                   <br />
                 </h4>
                 <Row>
-                  <Col md={9}>
-                    <div
-                      class="scrollable"
-                      style={{ overflow: "auto", maxHeight: "185px" }}
+                  <Col md={7}>
+                    <OverlayTrigger
+                      trigger="click"
+                      key="bottom"
+                      placement="bottom"
+                      rootClose={true}
+                      overlay={
+                        <Popover id={`popover-positioned-bottom`}>
+                          <Popover.Header as="h3">Room details</Popover.Header>
+                          <Popover.Body>
+                            <div
+                              class="scrollable"
+                              style={{ overflow: "auto", maxHeight: "220px" }}
+                            >
+                              <Card.Text style={{ flex: 1, flexWrap: "wrap" }}>
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html:
+                                      roomsDetails[key]["long_description"],
+                                  }}
+                                />
+                              </Card.Text>
+                            </div>{" "}
+                          </Popover.Body>
+                        </Popover>
+                      }
                     >
-                      <Card.Text style={{ flex: 1, flexWrap: "wrap" }}>
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: roomsDetails[key]["long_description"],
-                          }}
-                        />
-                      </Card.Text>
-                    </div>
+                      <Button variant="light">Show Room Details</Button>
+                    </OverlayTrigger>
                   </Col>
 
                   <Col>
