@@ -588,9 +588,9 @@ function ViewHotel() {
                   <Col>
                     <Row>
                       <div className="float-right" style={{ display: "flex" }}>
-                        <h9 class="mt-auto me-2" style={{ marginLeft: "auto" }}>
+                        <h8 class="mt-auto me-2" style={{ marginLeft: "auto" }}>
                           SGD
-                        </h9>
+                        </h8>
                         <h4>
                           <strong>
                             {roomsDetails[key]["lowest_converted_price"]}
