@@ -331,6 +331,7 @@ function ViewHotel() {
   return (
     <>
       {/* Title Card */}
+      <NavigationBar/>
       <div class="image d-flex flex-column justify-content-center align-items-center">
         <Card style={{ width: "70rem", height: "25rem" }}>
           <Row>
