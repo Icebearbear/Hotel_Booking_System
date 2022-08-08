@@ -341,14 +341,14 @@ function ViewHotel() {
         class="image d-flex flex-column justify-content-center align-items-center"
         data-testid="view-hotel-page"
       >
-        <Card style={{ width: "70rem", height: "25rem" }}>
+        <Card style={{ width: "90rem", height: "32rem" }}>
           <Row>
             {/* IMAGE SLIDER COL */}
             <Col
               style={{
                 backgroundImage:
                   "url(https://instant.space/hotel-placeholder.png)",
-                backgroundSize: "90%",
+                backgroundSize: "100%",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
               }}
@@ -364,8 +364,8 @@ function ViewHotel() {
                   </Row>
                   <Row>
                     <Col>
-                      {address} <br />
-                      <br /> <br /> <br />
+                      <h5>{address}</h5> <br />
+                      <br />
                       <a href="#location">Show on map</a>
                     </Col>
                     <Col style={{ textAlign: "right" }}>
@@ -376,69 +376,98 @@ function ViewHotel() {
                     </Col>
                   </Row>
                   <br />
-                  <br />
-                  <br /> <br />
-                  Select a room starting from ${CheapestRoomPrice}.
+                  {/* <br /> <br /> */}
+                  {/* Select a room starting from ${CheapestRoomPrice}. */}
                 </Card.Text>
+
+                <Row>
+                  <br />
+                  <br />
+                  <div style={{ display: "flex" }}>
+                    <h5
+                      className="float-left"
+                      class="mt-auto me-2"
+                      style={{ marginRight: "auto" }}
+                    >
+                      Select a room starting from
+                    </h5>
+                    <h6
+                      className="float-right"
+                      class="mt-auto me-2"
+                      style={{ marginLeft: "auto" }}
+                    >
+                      SGD
+                    </h6>
+                    <h2 className="float-right">
+                      <strong>{" " + CheapestRoomPrice}</strong>
+                    </h2>
+                  </div>
+                </Row>
               </Row>
-              <div style={{ display: "flex" }}>
-                <Button
-                  variant="primary"
-                  className="float-right"
-                  style={{ marginLeft: "auto" }}
+              <div class="d-flex flex-column mt-2">
+                <button
+                  id="select_hotel"
+                  class="align-self-end btn1 btn-lg btn-block btn-dark mt-auto"
                 >
                   <a
                     href="#rooms"
                     style={{ color: "white", textDecoration: "none", flex: 1 }}
                   >
                     View room options
-                  </a>
-                </Button>
+                  </a>{" "}
+                </button>
               </div>
             </Col>
           </Row>
         </Card>
       </div>
-
-      <Container maxWidth="lg" className="p-4">
+      <Container class="d-flex justify-content-center" className="p-4" fluid>
         {/* Hotel Description */}
-        <div class="d-flex flex-column justify-content-center align-items-center">
-          <CardGroup>
-            <div class="d-flex flex-column justify-content-center align-items-center">
-              <Card style={{ width: "50rem", flex: 2.5 }}>
-                <Card.Body>
-                  <Card.Text>
-                    <h2>Hotel Overview</h2>
-                    <div dangerouslySetInnerHTML={{ __html: descr }} />
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
-
-            <div class="d-flex flex-column justify-content-center align-items-center">
-              <Card style={{ width: "20rem", flex: 1 }}>
-                <Card.Body>
-                  <h3>Amenities</h3>
-                  <Card.Text class="text-justify">
-                    <Card.Text>{checkAmenities()}</Card.Text>
-                    {Object.entries(amenities).map(([key, value]) => (
-                      <Card.Text>
-                        {key + ": "}
-                        {convertAmenities(value)}
-                      </Card.Text>
-                    ))}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
+        <div class="d-flex justify-content-center align-items-center">
+          <CardGroup class="d-flex justify-content-center">
+            <Col md="auto">
+              <div class="d-flex flex-column justify-content-center align-items-center">
+                <Card style={{ width: "70rem", flex: 2.5 }}>
+                  <Card.Body>
+                    <Card.Text>
+                      <h2>Hotel Overview</h2>
+                      <div dangerouslySetInnerHTML={{ __html: descr }} />
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Col>
+            <Col md="auto">
+              <div class="d-flex flex-column justify-content-center align-items-center">
+                <Card
+                  className="d-flex flex-column"
+                  style={{ width: "20rem", flex: 1 }}
+                >
+                  <Card.Body>
+                    <h3>Amenities</h3>
+                    <Card.Text class="text-justify">
+                      <Card.Text>{checkAmenities()}</Card.Text>
+                      {Object.entries(amenities).map(([key, value]) => (
+                        <Card.Text>
+                          {key + ": "}
+                          {convertAmenities(value)}
+                        </Card.Text>
+                      ))}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Col>
           </CardGroup>
         </div>
 
         {/* Hotel Reviews */}
         <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card id="reviews" style={{ width: "70rem", flex: 1 }}>
+          <Card id="reviews" style={{ width: "90rem", flex: 1 }}>
             <Card.Body>
-              <Card.Title>Hotel Reviews</Card.Title>
+              <h2>
+                <strong>Hotel Reviews</strong>
+              </h2>
               <Card.Text class="text-justify">
                 <Card.Text>{checkReviews()}</Card.Text>
                 <ListGroup>
@@ -472,25 +501,31 @@ function ViewHotel() {
             </Card.Body>
           </Card>
         </div>
-
         {/* Map */}
         <div
           id="reactmap"
           class="d-flex flex-column justify-content-center align-items-center"
         >
-          <Card id="location" style={{ width: "70rem", height: "35rem" }}>
+          <Card id="location" style={{ width: "90rem", height: "35rem" }}>
             <Card.Body>
-              <Card.Title>
-                Hotel Location
-                <Button
-                  onClick={refresh}
-                  variant="primary"
-                  className="float-right"
-                  style={{ marginLeft: "772px" }}
-                >
-                  View location
-                </Button>
-              </Card.Title>
+              <Row>
+                <Col>
+                  <h2>
+                    <strong>Hotel Location</strong>
+                  </h2>
+                </Col>
+                <Col>
+                  <div class="d-flex flex-column mt-2">
+                    <button
+                      class="align-self-end btn1 btn-lg btn-block btn-dark mt-auto"
+                      onClick={refresh}
+                    >
+                      View location
+                    </button>
+                  </div>
+                </Col>
+              </Row>
+
               <div>
                 <MapOl center={fromLonLat(center)} zoom={zoom}>
                   <Layers>
@@ -505,22 +540,27 @@ function ViewHotel() {
             </Card.Body>
           </Card>
         </div>
-
         {/* Rooms */}
         <div class="d-flex flex-column justify-content-center align-items-center">
-          <Card id="rooms" style={{ width: "70rem", flex: 1 }}>
+          <Card id="rooms" style={{ width: "90rem", flex: 1 }}>
             <Card.Body>
-              <Card.Title>
-                Available Rooms
-                <Button
-                  onClick={refresh}
-                  variant="primary"
-                  className="float-right"
-                  style={{ marginLeft: "768px" }}
-                >
-                  View rooms
-                </Button>
-              </Card.Title>
+              <Row>
+                <Col>
+                  <h2>
+                    <strong>Available Rooms</strong>
+                  </h2>
+                </Col>
+                <Col>
+                  <div class="d-flex flex-column mt-2">
+                    <button
+                      class="align-self-end btn1 btn-lg btn-block btn-dark mt-auto"
+                      onClick={refresh}
+                    >
+                      View Rooms
+                    </button>
+                  </div>
+                </Col>
+              </Row>
             </Card.Body>
           </Card>
 
@@ -528,8 +568,8 @@ function ViewHotel() {
             <Card
               className="flex-fill"
               style={{
-                height: "23rem",
-                width: "70rem",
+                // height: "23rem",
+                width: "90rem",
                 flexDirection: "row",
                 alignItems: "flex-start",
                 flex: 1,
@@ -549,9 +589,7 @@ function ViewHotel() {
                 src={`${roomImg(key)[0]}`}
               />
               <Card.Body className="d-flex flex-column">
-                <Card.Title>
-                  {roomsDetails[key]["roomNormalizedDescription"]}
-                </Card.Title>
+                <h3>{roomsDetails[key]["roomNormalizedDescription"]}</h3>
                 <div
                   class="scrollable"
                   style={{ overflow: "auto", maxHeight: "195px" }}
@@ -568,25 +606,54 @@ function ViewHotel() {
                   </Card.Text>
                 </div>
                 <br />
-                <Link className="link" to="/custinfo">
-                  <Button
-                    onClick={(event) => onClick(event, key)}
-                    variant="primary"
-                    className="float-right"
-                  >
-                    Book your room
-                  </Button>
-                </Link>
-                <Card.Text>
-                  {" "}
-                  *Room surcharges at $
-                  {roomsDetails[
-                    key
-                  ].roomAdditionalInfo.displayFields.surcharges.map(
-                    (fee) => fee.amount
-                  )}
-                  .{" "}
-                </Card.Text>
+                <Col>
+                  <Row>
+                    <div style={{ display: "flex" }}>
+                      <h6
+                        className="float-right"
+                        class="mt-auto me-2"
+                        style={{ marginLeft: "auto" }}
+                      >
+                        SGD
+                      </h6>
+                      <h4 className="float-right">
+                        <strong>
+                          {roomsDetails[key]["lowest_converted_price"]}
+                        </strong>
+                      </h4>
+                    </div>
+                  </Row>
+
+                  <Row>
+                    <Link className="link" to="/custinfo">
+                      <div class="d-flex flex-column mt-2">
+                        <button
+                          class="align-self-end btn1 btn-lg btn-block btn btn-outline-dark mt-auto"
+                          onClick={(event) => onClick(event, key)}
+                        >
+                          Book this room
+                        </button>
+                      </div>
+                    </Link>
+                  </Row>
+                  <Row>
+                    {/* <Card.Text> */}
+                    <div style={{ display: "flex" }}>
+                      <h6
+                        className="float-right"
+                        class="mt-auto me-2"
+                        style={{ marginLeft: "auto" }}
+                      >
+                        *Room surcharges at $
+                        {roomsDetails[
+                          key
+                        ].roomAdditionalInfo.displayFields.surcharges.map(
+                          (fee) => fee.amount
+                        )}{" "}
+                      </h6>
+                    </div>
+                  </Row>
+                </Col>
               </Card.Body>
             </Card>
           ))}

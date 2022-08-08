@@ -6,7 +6,7 @@ const ImageSlider = (props) => {
   const data = props.slides;
   const sliderStyle = {
     width: "103%",
-    height: "110%",
+    height: "145%",
     position: "relative",
   };
   const slideStyle = {
