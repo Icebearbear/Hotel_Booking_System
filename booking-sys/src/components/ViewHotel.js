@@ -39,6 +39,10 @@ function ViewHotel() {
   const [hotelData, setHotelData] = useState(
     JSON.parse(localStorage.getItem("HOTEL_DETAILS"))
   );
+  const [roomsDetails, setRoomsDetails] = useState({});
+  const [CheapestRoomPrice, setCheapestRoomPrice] = useState("");
+  const [warning, setWarning] = useState(false);
+  const [login, setLogin] = useState("false");
   // get data passed from SearchHotelResult page
   const navigate = useNavigate();
 
@@ -69,42 +73,16 @@ function ViewHotel() {
 
   // hotel info from api
 
-  const [hotelName, setHotelName] = useState("");
-  const [address, setAddress] = useState("");
-  const [rating, setRating] = useState("");
 
-  const [descr, setDescr] = useState("");
-  const [amenities, setAmenities] = useState({});
 
-  const [reviews, setReviews] = useState({});
 
-  const [imageData, setImageData] = useState([]);
-
-  const [roomsDetails, setRoomsDetails] = useState({});
-  const [roomFlag, setRoomFlag] = useState("");
-  const [CheapestRoomPrice, setCheapestRoomPrice] = useState("");
-
-  const [warning, setWarning] = useState(false);
-  const [login, setLogin] = useState("false");
-
-  const [longitude, setLongitude] = useState("");
-  const [latitude, setLatitude] = useState("");
 
   // FUNCTIONS FOR HOTEL DISPLAY
   const getHotelData = () => {
     const hotelData = JSON.parse(localStorage.getItem("HOTEL_DETAILS"));
     // const hotelLocation = JSON.parse(localStorage.getItem("HOTEL_LOC"));
-    setHotelId(hotelData["hotelId"]);
-    setHotelName(hotelData["name"]);
-    setAddress(hotelData["address"]);
-    setRating(hotelData["rating"]);
-    setDescr(hotelData["description"]);
-    setAmenities(hotelData["amenities"]);
-    setReviews(hotelData["amenities_ratings"]);
-    setCenter([hotelData["longitude"], hotelData["latitude"]]);
-    setImageData(hotelData["imgUrl"]);
-    setLongitude(hotelData["longitude"]);
-    setLatitude(hotelData["latitude"]);
+    setCenter([hotelData.longitude, hotelData.latitude]);
+    setHotelData(hotelData);
   };
 
   const starRating = (rating) => {
@@ -146,13 +124,13 @@ function ViewHotel() {
   };
   // check if there are amenities data given
   const checkAmenities = () => {
-    if (Object.keys(amenities).length === 0) {
+    if (Object.keys(hotelData.amenities).length === 0) {
       return "No information was provided.";
     }
   };
   // check if there are reviews
   const checkReviews = () => {
-    if (reviews.length === 0) {
+    if (hotelData.amenities_ratings.length === 0) {
       return "This hotel does not have any reviews.";
     }
   };
@@ -222,6 +200,9 @@ function ViewHotel() {
     return features;
   }
 
+  const [center, setCenter] = useState(["0.0", "0.0"]);
+  const [zoom, setZoom] = useState(12);
+
   const initMarker = () => {
     if (hotelData.latitude == "null" || hotelData.latitude == "undefined") {
       return addMarkers([["0.0", "0.0"]]);
@@ -230,8 +211,7 @@ function ViewHotel() {
   };
 
   // long, lat, idk why its the other way round but ok
-  const [center, setCenter] = useState(["0.0", "0.0"]);
-  const [zoom, setZoom] = useState(12);
+
   // const initfeat = addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
   const initFeat = initMarker();
   // const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]]));
@@ -247,7 +227,7 @@ function ViewHotel() {
         console.log(roomData.data.completed);
         if (roomData.data.completed == false) {
           console.log("set rooms: ", roomData.data.completed);
-          setTimeout(getHotelIdPrices(), 400);
+          setTimeout(getHotelIdPrices(), 700);
         } else {
           // console.log(roomData.data.completed);
           console.log("set rooms: ", roomData.data.completed);
@@ -369,7 +349,7 @@ function ViewHotel() {
                     </Col>
                     <Col className="m-3" style={{ textAlign: "right" }}>
                       <br /> <br />
-                      <h5>{reviews.length} reviews </h5>
+                      <h5>{hotelData.amenities_ratings.length} reviews </h5>
                       <a href="#reviews">
                         <h5>View reviews</h5>
                       </a>
@@ -424,7 +404,7 @@ function ViewHotel() {
                     <h3>
                       <strong>Hotel Overview</strong>
                     </h3>
-                    <div dangerouslySetInnerHTML={{ __html: descr }} />
+                    <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
                   </Card.Text>
                 </Card.Body>
               </Card>
@@ -438,7 +418,7 @@ function ViewHotel() {
                   </h3>
                   <Card.Text class="text-justify">
                     <Card.Text>{checkAmenities()}</Card.Text>
-                    {Object.entries(amenities).map(([key, value]) => (
+                    {Object.entries(hotelData.amenities).map(([key, value]) => (
                       <Card.Text>
                         {key + ": "}
                         {convertAmenities(value)}
@@ -581,7 +561,7 @@ function ViewHotel() {
                       placement="bottom"
                       rootClose={true}
                       overlay={
-                        <Popover id={`popover-positioned-bottom`}>
+                        <Popover style={{ maxWidth: 700 }} id={`popover-positioned-bottom`}>
                           <Popover.Header as="h3">Room details</Popover.Header>
                           <Popover.Body>
                             <div
@@ -608,9 +588,9 @@ function ViewHotel() {
                   <Col>
                     <Row>
                       <div className="float-right" style={{ display: "flex" }}>
-                        <h9 class="mt-auto me-2" style={{ marginLeft: "auto" }}>
+                        <h8 class="mt-auto me-2" style={{ marginLeft: "auto" }}>
                           SGD
-                        </h9>
+                        </h8>
                         <h4>
                           <strong>
                             {roomsDetails[key]["lowest_converted_price"]}
