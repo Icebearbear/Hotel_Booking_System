@@ -32,12 +32,13 @@ function UserProfile() {
           uid: uid,
           dbdocId: dbDocId,
         };
+        localStorage.setItem("USER_DB_ACCOUNT", JSON.stringify(dbUserObj));
         // console.log(res.data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [fname, lname, email, uid, dbDocId]);
   const logOut = () => {
     console.log("logout callback");
     axios
@@ -78,7 +79,7 @@ function UserProfile() {
           <div onClick={() => navigate("/editprofile")} class="d-flex mt-2">
             <button class="btn1 btn-dark">Edit Profile</button>
           </div>
-          <div onClick={logOut} class="d-flex mt-2">
+          <div type="submit" onClick={logOut} class="d-flex mt-2">
             <button class="btn1 btn-dark">Logout</button>
           </div>
           <div onClick={() => navigate("/searchhotel")} class="d-flex mt-2">

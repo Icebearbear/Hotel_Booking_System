@@ -25,10 +25,9 @@ function SearchHotel(props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDate2, setSelectedDate2] = useState(null);
   const [nrooms, setnrooms] = useState("1");
-  const [nadults, setnadults] = useState("2");
-  const [nchildren, setnchildren] = useState("0");
-  const [validated, setValidated] = useState(false); 
-  const [selectedItem, setSelectedItem] = useState("")//for input field validation
+  const [nadults, setnadults] = useState({0: 1, 1:1, 2:1, 3:1});  
+  const [validated, setValidated] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(""); //for input field validation
   // Destination ID to pass on
   // const [destID, setDestID] = useState("");
   // if (props.data!=undefined){
@@ -41,24 +40,24 @@ function SearchHotel(props) {
   //   setUid(props.data["destination_id"])
   // }
 
-  const debouncedSearch = useRef(debounce(async (searcher, searchWord) => {
-    const newFilter = searcher.search(searchWord);
+  const debouncedSearch = useRef(
+    debounce(async (searcher, searchWord) => {
+      const newFilter = searcher.search(searchWord);
       console.log(newFilter);
       if (searchWord === "") {
         setSearchTerm([]);
       } else {
         setSearchTerm(newFilter);
       }
-  }, 700)).current;
+  }, 200)).current;
 
   const handleFilter = (event) => {
     const searchWord = event.target.value;
     setWordEntered(searchWord);
     const searcher = new FuzzySearch({source: JSONDATA, keys:["term"], token_query_min_length: 0});
-    debouncedSearch(searcher, searchWord);
+    debouncedSearch(searcher, searchWord);};
 
-  
-
+    const handleClose = props.handle;
     // const newFilter = JSONDATA.filter((value) => {
     //   if (value.term == undefined) {
     //     return null;
@@ -66,7 +65,7 @@ function SearchHotel(props) {
     //   return value.term.toLowerCase().includes(searchWord.toLowerCase());
     // });
     
-  };
+  
   // prompt user these data and pass to SearchHotelResult to search for hotels
   const passData = {
     name: wordEntered,
@@ -77,11 +76,9 @@ function SearchHotel(props) {
     currency: "SGD",
     rooms: nrooms,
     adults: nadults,
-    childs: nchildren,
     guests: null,
     partner_id: "1",
   };
-
 
   const selectDest = (event, term, uid) => {
     setWordEntered(term);
@@ -117,21 +114,17 @@ function SearchHotel(props) {
     // alert(passData['rooms']);
   };
 
-  const selectAdults = (adult) => {
+  const selectAdults = (key, adult) => {
     // passData['adults'] = adult;
-    setnadults(adult);
+    let updated = {...nadults};
+    console.log(updated);
+    updated[parseInt(key)] = adult;
+    console.log(updated);
+    setnadults(updated);
     // setnguests(+nadults + +nchildren);
-    console.log(passData);
     // alert(passData['adults']);
   };
 
-  const selectChild = (child) => {
-    // passData['childs'] = child;
-    setnchildren(child);
-    // setnguests(+nadults + +nchildren);
-    console.log(passData);
-    // alert(passData['childs']);
-  };
   const location = useLocation();
   // console.log(location);
   // console.log(location.pathname);
@@ -146,39 +139,52 @@ function SearchHotel(props) {
     setValidated(true);
 
     if (passData["destination_id"] == null || passData["checkout"] == null) {
-      alert("empty fields");
+      // alert("empty fields");
       return;
     }
-
-    // console.log(passData['endDate']);
-    passData["guests"] = +nadults + +nchildren;
+    console.log(nadults);
+    var param_guests = nadults[0];
+    for (var i = 1; i < nrooms; i++) {
+      param_guests = param_guests + "|" + nadults[i];
+    }
+    console.log(param_guests);
+    passData["guests"] = param_guests
     console.log("data stored");
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
-    if (location.pathname != "/searchhotelresult"){
+    if (location.pathname != "/searchhotelresult") {
       navigate("/searchhotelresult");
+      if(location.pathname == "/viewhotel"){
+        handleClose(); 
+      }
     }else{
       window.location.reload();
     }
-    
   };
 
   return (
     <div className="SearchHotel" data-testid="search-page">
-      <div className="container mb-4 p-3 d-flex justify-content-around" id="form">
+      <div
+        className="container mb-4 p-3 d-flex justify-content-around"
+        id="form"
+      >
         <Card style={{ width: "50rem", height: "30rem" }}>
           <Card.Body>
             <h1>Search Page</h1>
             <Form noValidate validated={validated}>
-              <Form.Label>Destination</Form.Label>
-              <Form.Control
-                id="dropdown"
-                type="text"
-                placeholder="Search..."
-                value={wordEntered}
-                onChange={handleFilter}
-                required
-              />
+              <Form.Group className="mb-3" controlId="formBasicDestinations">
+                <Form.Label>Destination</Form.Label>
+                <Form.Control
+                  id="dropdown"
+                  data-cy="search destination"
+                  data-testid="destination"
+                  type="text"
+                  placeholder="Search..."
+                  value={wordEntered}
+                  onChange={handleFilter}
+                  required
+                />
+              </Form.Group>
               {/* <h2>Destination</h2>
           <div className="searchInputs">
             <input type="text" id="field1" placeholder="Search..." value={wordEntered} onChange={handleFilter}/>
@@ -190,6 +196,7 @@ function SearchHotel(props) {
                       console.log(value.term);
                       return (
                         <Dropdown.Item
+                          data-cy = "destination"
                           onClick={(event) =>
                             selectDest(event, value.term, value.uid)
                           }
@@ -203,37 +210,52 @@ function SearchHotel(props) {
               )}
 
               {/* <h2>Start Date</h2> */}
-              <div className="d-flex p-2 justify-content-around">
+              <div className="d-flex justify-content-around">
                 <div>
                   <Form.Label>Rooms</Form.Label>
-                  <Form.Select id="rooms" onChange={(e) => selectRooms(e.target.value)}>
+                  <Form.Select
+                    data-testid="combobox-rooms"
+                    id="rooms"
+                    onChange={(e) => selectRooms(e.target.value)}
+                  >
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                   </Form.Select>
                 </div>
-
+                    
                 <div>
-                  <Form.Label>Adults</Form.Label>
-                  <Form.Select defaultValue={"2"} onChange={(e) => selectAdults(e.target.value)}>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                  </Form.Select>
+                  <Form.Label className="d-flex">Guests per Room</Form.Label>
+                  {Array(parseInt(nrooms)).fill(true).map((val, i) => {
+                    return(
+                      <div className="d-flex flex-row">
+                        <Form.Text className="d-flex m-1 text-nowrap" size="sm" muted>Room {i+1}:</Form.Text>
+                        <Form.Select className="d-flex mb-2" key={i} onChange={(e) => selectAdults(i, e.target.value)}>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                        </Form.Select>
+                      </div>
+                    )}) 
+                  }
+                  
                 </div>
-
-                <div>
+                {/* <div>
                   <Form.Label>Childs</Form.Label>
-                  <Form.Select id="childs" onChange={(e) => selectChild(e.target.value)}>
+                  <Form.Select
+                    id="childs"
+                    data-testid="combobox-child"
+                    onChange={(e) => selectChild(e.target.value)}
+                  >
                     <option value="0">0</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                   </Form.Select>
-                </div>
+                </div> */}
               </div>
               <div className="d-flex p-2 justify-content-around">
                 <div>

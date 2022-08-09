@@ -8,7 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { Alert } from "react-bootstrap";
 
-function BookingHistory() {
+function BookingHistoryc() {
   const userID = localStorage.getItem("USER_ID");
   const [bookObj, setBook] = useState([]);
   const [removeBook, setRemove] = useState(false);
@@ -27,22 +27,18 @@ function BookingHistory() {
         }
       )
       .then((response) => {
-        // console.log(res.data.finalData.length);
+        console.log(res.data.finalData.length);
         console.log("BOOK HISTORY ", response.data);
         setBook(response.data.finalData);
         setEmpty(false);
       })
-      .catch((error) => {
-        console.log(error);
-        if (error.response.status == 404) {
-          setEmpty(true);
-        }
-        if (error.response.data.code == "permission-denied") {
+      .catch((response) => {
+        console.log(response.data);
+        if (response.data === "Not Found" && response.status == 404) {
           setEmpty(true);
         }
       });
   };
-
   useEffect(() => {
     getBooking();
     console.log("BOOKKKKK ", bookObj, empty);
@@ -73,12 +69,13 @@ function BookingHistory() {
         console.log(" BOOKING HSTORY current data ", res);
       })
       .catch((err) => {
+        console.log("errrrr boking hist");
         console.log(err);
       });
   };
   return (
     <div>
-      {/* {console.log("BOOKKKKK ", bookObj, empty)} */}
+      {console.log("BOOKKKKK ", bookObj, empty)}
       {empty == true ? (
         <div className="container mb-4 p-3 d-flex justify-content-center">
           <Alert>
@@ -90,7 +87,7 @@ function BookingHistory() {
         <div>
           {/* <p>Hotel Bookings</p> */}
           {bookObj.map((value, index) => (
-            <div className="container mb-4 p-3 d-flex justify-content-around">
+            <div className="container mt-4 mb-4 p-3 d-flex justify-content-around">
               <Card key={index[1]} style={{ width: "50rem", height: "20rem" }}>
                 <Card.Body>
                   <h5>
@@ -102,7 +99,7 @@ function BookingHistory() {
                   <h5 data-testid="roomtype">
                     <strong>{value[1].bookingInfo.roomType}</strong>
                   </h5>
-                  <h5 data-testid="dates">
+                  <h5 data-testid="">
                     <strong>
                       {value[1].bookingInfo.startDate +
                         " until " +
@@ -136,6 +133,7 @@ function BookingHistory() {
                       <button
                         onClick={() => onSubmit(value[0])}
                         class="btn1 btn-dark"
+                        // data-testid={`cancel ${value[1].hotelName}`}
                       >
                         Cancel
                       </button>
@@ -145,6 +143,7 @@ function BookingHistory() {
               </Card>{" "}
             </div>
           ))}
+
           <Modal show={removeBook} onHide={onStop} centered>
             <Modal.Header closeButton>
               <Modal.Title>Booking Cancellation</Modal.Title>
@@ -170,4 +169,4 @@ function BookingHistory() {
   );
 }
 
-export default BookingHistory;
+export default BookingHistoryc;

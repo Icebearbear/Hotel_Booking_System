@@ -1,14 +1,26 @@
 const express = require("express");
+// var session = require('express-session')
 const PORT = process.env.PORT || 3001;
+const support = require("axios-cookiejar-support");
+const tough = require("tough-cookie");
 const app = express();
 const cors = require("cors");
 const axios = require("axios");
+const http = require("http");
+const https = require("https");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-app.use(cors({ origin: "*" }));
-
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 const path = require("path");
+
+const httpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 5000 });
+const httpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs: 5000 });
+
+const BASE_URL = "https://hotelapi.loyalty.dev/api/hotels/prices";
+
+const jar = new tough.CookieJar();
+const api = support.wrapper(axios.create({ jar }));
 
 const { initializeApp } = require("firebase/app");
 const {
@@ -30,6 +42,7 @@ const {
   updateDoc,
   doc,
   deleteDoc,
+  connectFirestoreEmulator,
 } = require("firebase/firestore");
 
 const fc = require("./firebase_config");
@@ -95,7 +108,6 @@ app.get("/viewhotel", (req, res) => {
         );
         const imgDet = hotelres.data.image_details;
         const ids = hotelres.data.hires_image_index;
-
         const imgUrl = [];
         if (typeof ids !== "undefined") {
           const imgId = ids.split(",");
@@ -109,10 +121,9 @@ app.get("/viewhotel", (req, res) => {
             imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
           }
         }
-
+        hotelres["imgUrl"] = imgUrl;
         res.status(200).json({
           data: JSON.stringify(hotelres.data),
-          iurl: JSON.stringify(imgUrl),
         });
       })
       .catch((error) => {
@@ -123,7 +134,7 @@ app.get("/viewhotel", (req, res) => {
   }
 });
 
-app.get("/hotelnprices", (req, res) => {
+app.get("/hotelnprices", async (req, res) => {
   const searchData = JSON.parse(req.query.data);
   // console.log(searchData);
   var destination_id = searchData.destination_id;
@@ -136,51 +147,61 @@ app.get("/hotelnprices", (req, res) => {
   var guests = searchData.guests;
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
   console.log(urlPrice);
-  const requestPrice = axios.get(urlPrice);
-  const requestHotel = axios.get("https://hotelapi.loyalty.dev/api/hotels", {
+  const requestPrice = api.get(urlPrice);
+  const requestHotel = api.get("https://hotelapi.loyalty.dev/api/hotels", {
     params: { destination_id: destination_id },
   });
   var fhotels = [];
-  var len = 0;
   var hotelPrices = null;
   var hotelDetails = null;
   var completed = false;
   var nulls = [];
 
-  axios
-    .all([requestPrice, requestHotel])
-    .then(
-      axios.spread((...responses) => {
-        completed = responses[0].data.completed;
-        // setTimeout(()=>{console.log(completed)},5000);
-        hotelPrices = responses[0].data.hotels;
-        console.log(Object.keys(hotelPrices).length);
-        hotelDetails = responses[1].data;
-        hotelPrices.map((value) => {
-          let match = hotelDetails.find((detail) => detail.id === value.id);
-          const output = (value.id && match) || null;
-          if (output !== null) {
-            // console.log(typeof(value))
-            fhotels.push({ ...value, ...output });
-            // console.log(output);
-            len = len + 1;
+  await Promise.all([requestPrice, requestHotel])
+    .then((responses) => {
+      completed = responses[0].data.completed;
+      console.log(completed);
+      hotelPrices = responses[0].data.hotels;
+      console.log(Object.keys(hotelPrices).length);
+      hotelDetails = responses[1].data;
+      hotelPrices.map((value) => {
+        let match = hotelDetails.find((detail) => detail.id === value.id);
+        const output = (value.id && match) || null;
+        if (output !== null) {
+          // console.log(output)
+
+          const imgDet = output.image_details;
+          const ids = output.hires_image_index;
+          const imgUrl = [];
+          if (typeof ids !== "undefined") {
+            const imgId = ids.split(",");
+            imgId.forEach(
+              (imageI) =>
+                (imgUrl[`${imageI}`] =
+                  imgDet["prefix"] + imageI + imgDet["suffix"])
+            );
           } else {
-            nulls.push(value);
-            // console.log(nulls.length)
+            for (let i = 0; i < output.number_of_images; i++) {
+              imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
+            }
           }
-        });
-        res.status(200).json({
-          finalData: JSON.stringify(fhotels),
-          nulls: JSON.stringify(nulls),
-          dataLen: Object.keys(hotelPrices).length,
-        });
-      })
-    )
+          const imgObj = { imgUrl: imgUrl };
+          fhotels.push({ ...value, ...output, ...imgObj });
+          // console.log(output);
+        } else {
+          nulls.push(value);
+        }
+      });
+      res.status(200).json({
+        finalData: JSON.stringify(fhotels),
+        nulls: JSON.stringify(nulls),
+        dataLen: Object.keys(hotelPrices).length,
+        complete: completed,
+      });
+    })
     .catch((errors) => {
-      //console.log(errors.response.status);
-      console.log("ERRORR", errors.message);
-      // res.status(errors.response.status).send(errors.message);
-      // react on errors.
+      // res.status(errors.response.status).send(errors.response.statusText);
+      console.log("Error", errors);
     });
 });
 
@@ -223,7 +244,7 @@ app.get("/hotelidprices", (req, res) => {
   //   catch (err) {
   //     res.status(500).send(err);
   //   }
-  axios
+  api
     .get(url)
     .then((roomres) => {
       console.log("got hotel rooms, completed: " + roomres.data.completed);
@@ -313,35 +334,44 @@ app.post("/deleteBook", async (req, res) => {
 
     if (finalData.length == 0) {
       res.status(404).send("No such booking found");
+      return;
     } else {
       res.status(200).json({ finalData: finalData });
+      return;
     }
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
+    return;
   }
 });
 
 app.get("/getBook", async (req, res) => {
   const userID = req.query.uid;
+  console.log(userID);
   // const userID = "rRETHSuFXTVjzmyN6VjnAPDj7YB2";
   try {
     var finalData = [];
     var ids = [];
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
+    console.log(docSnapshot.docs.length);
     if (docSnapshot.docs.length == 0) {
-      res.sendStatus(404);
+      console.log("ala");
+      res.status(404).send("auth/not-found");
+      return;
     } else {
       const d = docSnapshot.docs.map((doc) => {
         finalData.push([doc.id, doc.data()]);
       });
-      console.log("lalalal", finalData);
+      // console.log("lalalal", finalData);
       res.status(200).json({ finalData: finalData });
+      return;
     }
   } catch (err) {
-    console.log(err);
+    console.log("TRALALALA", err);
     res.status(500).send(err.message);
+    return;
   }
 });
 // book hotel
@@ -352,14 +382,17 @@ app.post("/bookhotel", async (req, res) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         res.status(200).json({ status: "booked", docId: docRef.id });
+        return;
       } else {
         res.status(500).send("Login required");
+        return;
       }
     });
     console.log("booked");
   } catch (err) {
     // console.log(err);
     res.status(500).send(err);
+    return;
   }
 });
 
@@ -399,22 +432,33 @@ app.post("/mail", async (req, res) => {
       res.status(500).json({
         msg: "fail",
       });
+      return;
     } else {
       res.status(200).json({
         msg: "success",
       });
+      return;
     }
   });
 });
 // get current session of loged in user
 app.get("/getSession", (req, res) => {
+  console.log("ses");
   var data = { login: false, uid: null };
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      data = { login: true, uid: user.id };
-      // res.status(200).json({ login: true, uid: user.id });
-    }
-    res.status(200).json(data);
+
+  new Promise(function (resolve) {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // data = { login: true, uid: user.id };
+
+        resolve(res.status(200).json({ login: true, uid: user.id }));
+        return;
+      } else {
+        resolve(res.status(200).json(data));
+        // resolve("no login");
+        return;
+      }
+    });
   });
 });
 
@@ -426,22 +470,25 @@ app.get("/user", async (req, res) => {
     const docSnapshot = await getDocs(q);
     if (docSnapshot.docs.length == 0) {
       res.send(404);
+      return;
     }
     docSnapshot.docs.map((doc) => {
       // console.log(doc.id, doc.data());
       res.status(200).json({ id: doc.id, data: doc.data() });
+      return;
     });
 
     // reach this point means docSnapshot is empty
   } catch (err) {
     // console.log(err);
     res.status(500).send(err);
+    return;
   }
 });
 
 app.post("/edituser", async (req, res) => {
   const { first_name, last_name, email, uid, dbDocId } = req.body;
-  // console.log(dbDocId, first_name, last_name, email, uid);
+  console.log(dbDocId, first_name, last_name, email, uid);
   try {
     // onAuthStateChanged(auth, (user) => {
     //   if (!user) {
@@ -453,7 +500,8 @@ app.post("/edituser", async (req, res) => {
     const docSnapshot = await getDocs(q);
     console.log(docSnapshot.docs.length);
     if (docSnapshot.docs.length == 0) {
-      res.status(404).send("not-found");
+      res.status(404).send({ code: "auth/not-found" });
+      return;
     } else {
       docSnapshot.docs.map((doc) => {
         if (
@@ -467,7 +515,8 @@ app.post("/edituser", async (req, res) => {
       console.log(update);
 
       if (update == false) {
-        res.status(500).send({ code: "not-new-data-given" });
+        res.status(500).send({ code: "auth/not-newdatagiven" });
+        return;
       } else {
         const userRef = doc(db, "users", dbDocId);
         await updateDoc(userRef, {
@@ -476,11 +525,13 @@ app.post("/edituser", async (req, res) => {
           last_name: last_name,
         });
         res.status(200).send("updated");
+        return;
       }
     }
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error);
+    return;
   }
 });
 
@@ -500,11 +551,13 @@ app.post("/login", async (req, res) => {
         var data = userCredentials.user.reloadUserInfo;
         // console.log(data.localId, data.email);
         res.status(200).json({ userId: data.localId, email: data.email });
+        return;
       }
     );
   } catch (err) {
     console.log("ERROR", err);
     res.status(500).send(err);
+    return;
   }
 });
 

@@ -10,9 +10,9 @@ import { InputGroup } from "react-bootstrap";
 
 function EditProfile() {
   const navigate = useNavigate();
-  const info = localStorage.getItem("USER_DB_ACCOUNT"); /// get the object from localStorage
-  const userDbInfo = JSON.parse(info);
+  const userDbInfo = JSON.parse(localStorage.getItem("USER_DB_ACCOUNT")); /// get the object from localStorage
 
+  console.log(userDbInfo.dbDocId, userDbInfo.first_name, userDbInfo.uid);
   // set initial value as the current user account info
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
@@ -50,7 +50,7 @@ function EditProfile() {
         .post("http://localhost:3001/edituser", updatedUserInfo)
         .then((res) => {
           if (res.status === 200) {
-            navigate("/userprofile"); /// return to profile page once update is done
+            navigate("/userspage"); /// return to profile page once update is done
             console.log(res);
           }
           if (res.status === 500) {
@@ -59,11 +59,11 @@ function EditProfile() {
           }
         })
         .catch((error) => {
+          console.log("ERRORR", error);
           const errMsg = error.response.data.code.split("/")[1].split("-");
           handleError(errMsg);
           setError(true);
           setErrorMsg(errMsg[0] + " " + errMsg[1]);
-
           console.log(error);
         });
     }
@@ -72,6 +72,8 @@ function EditProfile() {
     if (errMsg[1] === "email") {
       setEmail("");
       setEmailFb(errMsg[0] + " " + errMsg[1]);
+    } else {
+      setValidated(false);
     }
   };
   return (
@@ -125,6 +127,7 @@ function EditProfile() {
                   placeholder={userDbInfo.email}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
                 <Form.Control.Feedback type="invalid">
                   {emailFeedback}
