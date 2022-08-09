@@ -65,7 +65,6 @@ function Login() {
         }
       })
       .catch((error) => {
-        console.log("ERRORR", error);
         const errM = error.response.data.code.split("/")[1].split("-");
         var errMsg = "";
         errM.forEach((x) => (errMsg = errMsg + " " + x));

@@ -77,7 +77,7 @@ const NavigationBar = () => {
     getUser();
     checkpath();
     getSearchData();
-  }, [login, uid]);
+  }, [login]);
 
   return (
     <div data-testid="userprofile">

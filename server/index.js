@@ -334,35 +334,44 @@ app.post("/deleteBook", async (req, res) => {
 
     if (finalData.length == 0) {
       res.status(404).send("No such booking found");
+      return;
     } else {
       res.status(200).json({ finalData: finalData });
+      return;
     }
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
+    return;
   }
 });
 
 app.get("/getBook", async (req, res) => {
   const userID = req.query.uid;
+  console.log(userID);
   // const userID = "rRETHSuFXTVjzmyN6VjnAPDj7YB2";
   try {
     var finalData = [];
     var ids = [];
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
+    console.log(docSnapshot.docs.length);
     if (docSnapshot.docs.length == 0) {
-      res.sendStatus(404).send("auth/not-found");
+      console.log("ala");
+      res.status(404).send("auth/not-found");
+      return;
     } else {
       const d = docSnapshot.docs.map((doc) => {
         finalData.push([doc.id, doc.data()]);
       });
-      console.log("lalalal", finalData);
+      // console.log("lalalal", finalData);
       res.status(200).json({ finalData: finalData });
+      return;
     }
   } catch (err) {
-    console.log(err);
+    console.log("TRALALALA", err);
     res.status(500).send(err.message);
+    return;
   }
 });
 // book hotel
@@ -373,14 +382,17 @@ app.post("/bookhotel", async (req, res) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         res.status(200).json({ status: "booked", docId: docRef.id });
+        return;
       } else {
         res.status(500).send("Login required");
+        return;
       }
     });
     console.log("booked");
   } catch (err) {
     // console.log(err);
     res.status(500).send(err);
+    return;
   }
 });
 
@@ -420,22 +432,33 @@ app.post("/mail", async (req, res) => {
       res.status(500).json({
         msg: "fail",
       });
+      return;
     } else {
       res.status(200).json({
         msg: "success",
       });
+      return;
     }
   });
 });
 // get current session of loged in user
 app.get("/getSession", (req, res) => {
+  console.log("ses");
   var data = { login: false, uid: null };
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      data = { login: true, uid: user.id };
-      // res.status(200).json({ login: true, uid: user.id });
-    }
-    res.status(200).json(data);
+
+  new Promise(function (resolve) {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // data = { login: true, uid: user.id };
+
+        resolve(res.status(200).json({ login: true, uid: user.id }));
+        return;
+      } else {
+        resolve(res.status(200).json(data));
+        // resolve("no login");
+        return;
+      }
+    });
   });
 });
 
@@ -447,16 +470,19 @@ app.get("/user", async (req, res) => {
     const docSnapshot = await getDocs(q);
     if (docSnapshot.docs.length == 0) {
       res.send(404);
+      return;
     }
     docSnapshot.docs.map((doc) => {
       // console.log(doc.id, doc.data());
       res.status(200).json({ id: doc.id, data: doc.data() });
+      return;
     });
 
     // reach this point means docSnapshot is empty
   } catch (err) {
     // console.log(err);
     res.status(500).send(err);
+    return;
   }
 });
 
@@ -475,6 +501,7 @@ app.post("/edituser", async (req, res) => {
     console.log(docSnapshot.docs.length);
     if (docSnapshot.docs.length == 0) {
       res.status(404).send({ code: "auth/not-found" });
+      return;
     } else {
       docSnapshot.docs.map((doc) => {
         if (
@@ -489,6 +516,7 @@ app.post("/edituser", async (req, res) => {
 
       if (update == false) {
         res.status(500).send({ code: "auth/not-newdatagiven" });
+        return;
       } else {
         const userRef = doc(db, "users", dbDocId);
         await updateDoc(userRef, {
@@ -497,11 +525,13 @@ app.post("/edituser", async (req, res) => {
           last_name: last_name,
         });
         res.status(200).send("updated");
+        return;
       }
     }
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error);
+    return;
   }
 });
 
@@ -521,11 +551,13 @@ app.post("/login", async (req, res) => {
         var data = userCredentials.user.reloadUserInfo;
         // console.log(data.localId, data.email);
         res.status(200).json({ userId: data.localId, email: data.email });
+        return;
       }
     );
   } catch (err) {
     console.log("ERROR", err);
     res.status(500).send(err);
+    return;
   }
 });
 

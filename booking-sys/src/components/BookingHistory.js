@@ -32,9 +32,12 @@ function BookingHistory() {
         setBook(response.data.finalData);
         setEmpty(false);
       })
-      .catch((response) => {
-        console.log(response.data);
-        if (response.data === "Not Found" && response.status == 404) {
+      .catch((error) => {
+        console.log(error);
+        if (error.response.status == 404) {
+          setEmpty(true);
+        }
+        if (error.response.data.code == "permission-denied") {
           setEmpty(true);
         }
       });
