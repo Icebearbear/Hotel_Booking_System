@@ -32,12 +32,13 @@ function UserProfile() {
           uid: uid,
           dbdocId: dbDocId,
         };
+        localStorage.setItem("USER_DB_ACCOUNT", JSON.stringify(dbUserObj));
         // console.log(res.data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [fname, lname, email, uid, dbDocId]);
   const logOut = () => {
     console.log("logout callback");
     axios

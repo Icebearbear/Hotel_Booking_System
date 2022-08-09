@@ -1,8 +1,8 @@
 const express = require("express");
 // var session = require('express-session')
 const PORT = process.env.PORT || 3001;
-const support = require('axios-cookiejar-support');
-const tough = require('tough-cookie');
+const support = require("axios-cookiejar-support");
+const tough = require("tough-cookie");
 const app = express();
 const cors = require("cors");
 const axios = require("axios");
@@ -10,17 +10,17 @@ const http = require("http");
 const https = require("https");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-app.use(cors({ origin: "*", credentials:true }));
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 const path = require("path");
 
-const httpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs:5000 })
-const httpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs:5000 })
+const httpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 5000 });
+const httpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs: 5000 });
 
 const BASE_URL = "https://hotelapi.loyalty.dev/api/hotels/prices";
 
 const jar = new tough.CookieJar();
-const api = support.wrapper(axios.create({jar}));
+const api = support.wrapper(axios.create({ jar }));
 
 const { initializeApp } = require("firebase/app");
 const {
@@ -121,9 +121,9 @@ app.get("/viewhotel", (req, res) => {
             imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
           }
         }
-        hotelres["imgUrl"] = imgUrl
+        hotelres["imgUrl"] = imgUrl;
         res.status(200).json({
-          data: JSON.stringify(hotelres.data)
+          data: JSON.stringify(hotelres.data),
         });
       })
       .catch((error) => {
@@ -134,7 +134,7 @@ app.get("/viewhotel", (req, res) => {
   }
 });
 
-app.get("/hotelnprices", async(req, res) => {
+app.get("/hotelnprices", async (req, res) => {
   const searchData = JSON.parse(req.query.data);
   // console.log(searchData);
   var destination_id = searchData.destination_id;
@@ -147,56 +147,58 @@ app.get("/hotelnprices", async(req, res) => {
   var guests = searchData.guests;
   var urlPrice = `https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=${destination_id}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&country_code=SG&guests=${guests}&partner_id=1`;
   console.log(urlPrice);
-  const requestPrice = api.get(urlPrice); 
-  const requestHotel = api.get("https://hotelapi.loyalty.dev/api/hotels", {params: { destination_id: destination_id } });
+  const requestPrice = api.get(urlPrice);
+  const requestHotel = api.get("https://hotelapi.loyalty.dev/api/hotels", {
+    params: { destination_id: destination_id },
+  });
   var fhotels = [];
   var hotelPrices = null;
   var hotelDetails = null;
   var completed = false;
   var nulls = [];
-  
-    await Promise
-      .all([requestPrice, requestHotel])
-      .then((responses) => {
-          completed = responses[0].data.completed;
-          console.log(completed);
-          hotelPrices = responses[0].data.hotels;
-          console.log(Object.keys(hotelPrices).length)
-          hotelDetails = responses[1].data;
-          hotelPrices.map((value) => {
-            let match = hotelDetails.find((detail) => detail.id === value.id);
-            const output = (value.id && match) || null;
-            if (output !== null) {
-              // console.log(output)
-              
-              const imgDet = output.image_details;
-              const ids = output.hires_image_index;
-              const imgUrl = [];
-              if (typeof ids !== "undefined") {
-                const imgId = ids.split(",");
-                imgId.forEach(
-                  (imageI) =>
-                    (imgUrl[`${imageI}`] =
-                      imgDet["prefix"] + imageI + imgDet["suffix"])
-                );
-              } else {
-                for (let i = 0; i < output.number_of_images; i++) {
-                  imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
-                }
-              }
-              const imgObj = {imgUrl: imgUrl}
-              fhotels.push({ ...value, ...output, ...imgObj});
-              // console.log(output);
-            }else{
-              nulls.push(value)
-            }});
-          res.status(200).json({
-            finalData: JSON.stringify(fhotels),
-            nulls: JSON.stringify(nulls),
-            dataLen: Object.keys(hotelPrices).length,
-            complete: completed
-        });
-      })
+
+  await Promise.all([requestPrice, requestHotel])
+    .then((responses) => {
+      completed = responses[0].data.completed;
+      console.log(completed);
+      hotelPrices = responses[0].data.hotels;
+      console.log(Object.keys(hotelPrices).length);
+      hotelDetails = responses[1].data;
+      hotelPrices.map((value) => {
+        let match = hotelDetails.find((detail) => detail.id === value.id);
+        const output = (value.id && match) || null;
+        if (output !== null) {
+          // console.log(output)
+
+          const imgDet = output.image_details;
+          const ids = output.hires_image_index;
+          const imgUrl = [];
+          if (typeof ids !== "undefined") {
+            const imgId = ids.split(",");
+            imgId.forEach(
+              (imageI) =>
+                (imgUrl[`${imageI}`] =
+                  imgDet["prefix"] + imageI + imgDet["suffix"])
+            );
+          } else {
+            for (let i = 0; i < output.number_of_images; i++) {
+              imgUrl[`${i}`] = imgDet["prefix"] + i + imgDet["suffix"];
+            }
+          }
+          const imgObj = { imgUrl: imgUrl };
+          fhotels.push({ ...value, ...output, ...imgObj });
+          // console.log(output);
+        } else {
+          nulls.push(value);
+        }
+      });
+      res.status(200).json({
+        finalData: JSON.stringify(fhotels),
+        nulls: JSON.stringify(nulls),
+        dataLen: Object.keys(hotelPrices).length,
+        complete: completed,
+      });
+    })
     .catch((errors) => {
       // res.status(errors.response.status).send(errors.response.statusText);
       console.log("Error", errors);
@@ -350,7 +352,7 @@ app.get("/getBook", async (req, res) => {
     const q = query(collection(db, "booking"), where("uid", "==", userID));
     const docSnapshot = await getDocs(q);
     if (docSnapshot.docs.length == 0) {
-      res.sendStatus(404);
+      res.sendStatus(404).send("auth/not-found");
     } else {
       const d = docSnapshot.docs.map((doc) => {
         finalData.push([doc.id, doc.data()]);
@@ -460,7 +462,7 @@ app.get("/user", async (req, res) => {
 
 app.post("/edituser", async (req, res) => {
   const { first_name, last_name, email, uid, dbDocId } = req.body;
-  // console.log(dbDocId, first_name, last_name, email, uid);
+  console.log(dbDocId, first_name, last_name, email, uid);
   try {
     // onAuthStateChanged(auth, (user) => {
     //   if (!user) {
@@ -472,7 +474,7 @@ app.post("/edituser", async (req, res) => {
     const docSnapshot = await getDocs(q);
     console.log(docSnapshot.docs.length);
     if (docSnapshot.docs.length == 0) {
-      res.status(404).send("not-found");
+      res.status(404).send({ code: "auth/not-found" });
     } else {
       docSnapshot.docs.map((doc) => {
         if (
@@ -486,7 +488,7 @@ app.post("/edituser", async (req, res) => {
       console.log(update);
 
       if (update == false) {
-        res.status(500).send({ code: "not-new-data-given" });
+        res.status(500).send({ code: "auth/not-newdatagiven" });
       } else {
         const userRef = doc(db, "users", dbDocId);
         await updateDoc(userRef, {
