@@ -40,6 +40,7 @@ describe("User looking at the hotel page", () => {
     localStorage.setItem("HOTEL_ID", hotelId);
     localStorage.setItem("HOTEL_DETAILS", JSON.stringify(hotelData));
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
+    localStorage.setItem("LOGIN", false);
 
     cy.visit("http://localhost:3000/viewhotel");
     cy.wait(1500);
@@ -109,7 +110,9 @@ describe("User looking at the hotel page", () => {
     cy.contains("Book Hotel").scrollIntoView().click();
     cy.wait(500);
     cy.contains("Back").click();
-    cy.contains("button.btn.btn-warning").scrollIntoView().click();
+    cy.scrollTo(0, 0);
+    cy.wait(500);
+    cy.get("button.btn.btn-warning").scrollIntoView().click();
     cy.location("pathname").should("eq", "/login");
     cy.wait(500);
 
@@ -120,7 +123,7 @@ describe("User looking at the hotel page", () => {
     cy.location("pathname").should("eq", "/viewhotel");
     cy.wait(500);
 
-    cy.contains("Book your room").scrollIntoView().click();
+    cy.contains("Book Hotel").scrollIntoView().click();
     cy.location("pathname").should("eq", "/custinfo");
   });
 });

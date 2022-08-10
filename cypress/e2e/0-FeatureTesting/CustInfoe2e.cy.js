@@ -48,7 +48,7 @@ describe("User looking at the hotel page", () => {
     cy.wait(1000);
     // should go back to custinfo
     cy.location("pathname").should("eq", "/custinfo");
-    // cy.contains("User Profile").should("be.visible");  // fix this fiucking button
+    // cy.contains("User Profile").should("be.visible");
   });
 
   // it("interacts with all interactables and input is visible", () => {
