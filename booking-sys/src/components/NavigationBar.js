@@ -19,7 +19,7 @@ const NavigationBar = () => {
   const handleShow = () => setShow(true);
 
   const checkpath = () => {
-    console.log(location.pathname);
+    console.log("Location pathname", location.pathname);
     if (
       location.pathname == "/searchhotelresult" ||
       location.pathname == "/viewhotel"
@@ -59,13 +59,13 @@ const NavigationBar = () => {
     try {
       await axios.get("http://localhost:3001/getSession").then((res) => {
         setLogin(res.data.login);
-        console.log("navaaaaa", res.data.login);
+        console.log("b4 login check", res.data.login);
         if (login == true) {
           localStorage.setItem("LOGIN", true); // read by other pages to handle user session
         } else {
           localStorage.setItem("LOGIN", false); // read by other pages to handle user session
         }
-        console.log("navaaaaLLa", localStorage.getItem("LOGIN"));
+        console.log("aft login check", localStorage.getItem("LOGIN"));
       });
     } catch (error) {
       console.log(error);
