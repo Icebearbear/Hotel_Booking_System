@@ -29,7 +29,7 @@ function SearchHotelResult() {
 
   /// for lazy loading
   const NUM_PER_PAGE = 10;
-  const TOTAL_PAGES = (hotelQ - finalHotels.length) / NUM_PER_PAGE + 1;
+  const TOTAL_PAGES = Math.ceil(finalHotels.length/NUM_PER_PAGE)+Math.ceil(tobequeried/NUM_PER_PAGE);
   const triggerRef = useRef(null);
   /////////////////////////////
   var searchData = {};
@@ -117,22 +117,26 @@ function SearchHotelResult() {
 
   const onGrabData = (currentPage, dataloaded) => {
     console.log(currentPage);
-    console.log(TOTAL_PAGES);
+    console.log(finalHotels.length);
     if (dataloaded >= hotelQ) {
       return [null, dataloaded];
     }
-    if (currentPage == 1) {
-      var data = finalHotels;
-      setLoaded(finalHotels.length);
+    
+    if (dataloaded<finalHotels.length){
+      const cut = dataloaded;
+      var cut2 = dataloaded+NUM_PER_PAGE;
+      if (cut2>finalHotels.length){
+        cut2 = finalHotels.length}
+      const data = finalHotels.slice(cut, cut2)
+      setLoaded(cut2); 
       setCalling(false);
-      return [data, finalHotels.length];
+      return [data, cut2]
     }
-    const cut = (currentPage - 2) * NUM_PER_PAGE;
-    if (currentPage > TOTAL_PAGES) {
+    const cut = dataloaded-finalHotels.length;
+    var cut2 = cut+NUM_PER_PAGE;
+    if ( cut2 >= tobequeried.length) {
       var cut2 = hotelQ - finalHotels.length;
-    } else {
-      var cut2 = NUM_PER_PAGE * (currentPage - 1);
-    }
+    } 
     setLoaded(finalHotels.length + cut2);
     console.log(finalHotels.length + cut2);
     console.log("VVVVV ", cut, " MMMMMM ", cut2);
@@ -158,10 +162,13 @@ function SearchHotelResult() {
   // console.log("lazyload");
   var ref = triggerRef;
   const { data, loading } = useLazyLoad({ triggerRef, onGrabData });
-  console.log(data);
+  
   if (loaded >= hotelQ) {
+    console.log(loaded);
+    console.log(hotelQ);
     ref = null;
   }
+  console.log(ref);
 
   useEffect(() => {
     getHotelAndPrices();
