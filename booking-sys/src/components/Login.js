@@ -84,7 +84,7 @@ function Login() {
 
   return (
     <div className="wrapper" data-testid="login-page">
-      <div className="container mb-4 p-3 d-flex justify-content-center">
+      <div id="login_form" className="container mb-4 p-3 d-flex justify-content-center">
         <Card className="card-login">
           <Card.Body>
             <h1>Login page</h1>
@@ -93,6 +93,7 @@ function Login() {
                 <Form.Label>Email address</Form.Label>
                 <InputGroup hasValidation>
                   <Form.Control
+                    id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     type="email"
@@ -113,6 +114,7 @@ function Login() {
               <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
                 <Form.Control
+                  id="pw"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type="password"
@@ -134,6 +136,7 @@ function Login() {
 
               <div>
                 <Button
+                  id="submit"
                   onClick={onSubmit}
                   variant="primary"
                   className="float-right"

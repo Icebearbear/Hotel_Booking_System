@@ -305,6 +305,7 @@ function HotelDisplay(props) {
                 <Row>
                   <div style={{ display: "flex" }}>
                     <h5
+                      id="address"
                       class="text-secondary"
                       className="float-left"
                       style={{ marginRight: "auto" }}
@@ -317,7 +318,7 @@ function HotelDisplay(props) {
                 <br />
 
                 <Row>
-                  <div style={{ display: "flex" }}>
+                  <div id="starRating" style={{ display: "flex" }}>
                     {starRating(info.rating)}
                   </div>
                 </Row>
@@ -333,7 +334,7 @@ function HotelDisplay(props) {
                     >
                       SGD
                     </h6>
-                    <h3 className="float-right">
+                    <h3 className="float-right" id="price">
                       <strong>{" " + info.price}</strong>
                     </h3>
                   </div>

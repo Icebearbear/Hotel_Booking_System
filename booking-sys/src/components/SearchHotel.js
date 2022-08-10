@@ -231,7 +231,7 @@ function SearchHotel(props) {
                     return(
                       <div className="d-flex flex-row">
                         <Form.Text className="d-flex m-1 text-nowrap" size="sm" muted>Room {i+1}:</Form.Text>
-                        <Form.Select className="d-flex mb-2" key={i} onChange={(e) => selectAdults(i, e.target.value)}>
+                        <Form.Select id="guestperroom" className="d-flex mb-2" key={i} onChange={(e) => selectAdults(i, e.target.value)}>
                           <option value="1">1</option>
                           <option value="2">2</option>
                           <option value="3">3</option>
