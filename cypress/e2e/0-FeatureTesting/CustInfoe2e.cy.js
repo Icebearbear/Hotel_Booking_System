@@ -43,7 +43,8 @@ describe("User looking at the hotel page", () => {
     cy.get("#formBasicEmail").type("testone@gmail.com");
     cy.get("#formBasicPassword").type("123456");
     cy.contains("Submit").click();
-
+    cy.visit("http://localhost:3000/custinfo");
+    cy.wait(1000);
     // should go back to custinfo
     cy.location("pathname").should("eq", "/custinfo");
     cy.contains("User Profile").should("be.visible");

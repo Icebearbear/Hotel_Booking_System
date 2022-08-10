@@ -14,6 +14,7 @@ npm install react-icons --save
 npm install ol
 npm install fz-search
 npm install cypress --save-dev   ( after installing use: npx cypress open : to run)
+npm install --save react-google-places-autocomplete
 ```
 
 ### Node (server)
@@ -232,6 +233,13 @@ Testing Stripe in checkout page:
 - BOOKING_DATA = passData in ViewHotel, to pass to custinfo
 - HOTEL_BOOKING_INFO = infoObject in CustometInformation page - to keep data before checkout and use it after checkout is successful
 - LOGIN = user session set in NavBar
+
+### google places autocomplete
+
+- create a google cloud project
+- add billing card
+- enable 3 APIs: Geocoding API, Maps JavaScript API, Places API
+- use API key
 
 ### Testing (Jest UI)
 
