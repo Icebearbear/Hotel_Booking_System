@@ -71,16 +71,10 @@ function ViewHotel() {
     partner_id: "1",
   };
 
-  // hotel info from api
-
-
-
-
-
   // FUNCTIONS FOR HOTEL DISPLAY
   const getHotelData = () => {
     const hotelData = JSON.parse(localStorage.getItem("HOTEL_DETAILS"));
-    // const hotelLocation = JSON.parse(localStorage.getItem("HOTEL_LOC"));
+    console.log(hotelData);
     setCenter([hotelData.longitude, hotelData.latitude]);
     setHotelData(hotelData);
   };
@@ -204,17 +198,14 @@ function ViewHotel() {
   const [zoom, setZoom] = useState(12);
 
   const initMarker = () => {
-    if (hotelData.latitude == "null" || hotelData.latitude == "undefined") {
+    if (hotelData.latitude === null || hotelData.latitude === undefined) {
       return addMarkers([["0.0", "0.0"]]);
     }
     return addMarkers([[hotelData.longitude, hotelData.latitude]]);
   };
 
   // long, lat, idk why its the other way round but ok
-
-  // const initfeat = addMarkers([[hotelLocation.longitude, hotelLocation.latitude]]);
   const initFeat = initMarker();
-  // const [features, setFeatures] = useState(addMarkers([["0.0", "0.0"]]));
   const [features, setFeatures] = useState(initFeat);
 
   // FUNCTIONS FOR ROOMS DISPLAY
