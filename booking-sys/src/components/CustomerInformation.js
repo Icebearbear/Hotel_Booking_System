@@ -250,7 +250,7 @@ function CustomerInformation() {
                   <Row className="mb-3">
                     <Col md={2}>
                       <div>
-                        <Form.Label>Rooms</Form.Label>
+                        <Form.Label>Salutation</Form.Label>
                         <Form.Select
                           data-testid="combobox-rooms"
                           id="rooms"
@@ -258,8 +258,6 @@ function CustomerInformation() {
                         >
                           <option value="Mr">Mr</option>
                           <option value="Ms">Ms</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
                         </Form.Select>
                       </div>
                     </Col>
