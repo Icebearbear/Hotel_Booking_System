@@ -45,63 +45,63 @@ describe("User looking at the hotel page", () => {
     cy.wait(1500);
   });
 
-  // it("views ViewHotel page", () => {
-  //   cy.get("h4.card-title").should("contain", "Grand Copthorne Waterfront"); // ensure api load data
-  //   cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg") // ensure api is returning the image
-  //     .its("status")
-  //     .should("eq", 200);
+  it("views ViewHotel page", () => {
+    cy.get("h4.card-title").should("contain", "Grand Copthorne Waterfront"); // ensure api load data
+    cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg") // ensure api is returning the image
+      .its("status")
+      .should("eq", 200);
 
-  //   cy.get("div[style='width: 103%; height: 100%; position: relative;']")
-  //     .find("div")
-  //     .eq(2)
-  //     .should("have.css", "background-image")
-  //     .and("include", "https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg"); // ensure image loaded in ImageSlider
-  // });
+    cy.get("div[style='width: 103%; height: 100%; position: relative;']")
+      .find("div")
+      .eq(2)
+      .should("have.css", "background-image")
+      .and("include", "https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg"); // ensure image loaded in ImageSlider
+  });
 
-  // it("interacts with links", () => {
-  //   const hrefTagsLoc = ["Show on map", "View reviews", "View room options"];
-  //   const hrefTags = ["#location", "#reviews", "#rooms"];
-  //   for (let i = 0; i < hrefTags.length; i++) {
-  //     cy.contains(hrefTagsLoc[i])
-  //       .click()
-  //       .should("have.attr", "href", hrefTags[i])
-  //       .go("back");
-  //     cy.wait(500);
-  //   }
-  // });
+  it("interacts with links", () => {
+    const hrefTagsLoc = ["Show on map", "View reviews", "View room options"];
+    const hrefTags = ["#location", "#reviews", "#rooms"];
+    for (let i = 0; i < hrefTags.length; i++) {
+      cy.contains(hrefTagsLoc[i])
+        .click()
+        .should("have.attr", "href", hrefTags[i])
+        .go("back");
+      cy.wait(500);
+    }
+  });
 
-  // it("clicks on buttons", () => {
-  //   // click right button
-  //   cy.get(
-  //     "div[style='position: absolute; top: 50%; transform: translate(0px, -50%); right: 32px; font-size: 45px; color: rgb(255, 255, 255); z-index: 1; cursor: pointer;']"
-  //   )
-  //     .click()
-  //     .should("have.css", "background-image");
-  //   cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/1.jpg")
-  //     .its("status")
-  //     .should("eq", 200);
-  //   cy.get("div[style='width: 103%; height: 100%; position: relative;']")
-  //     .find("div")
-  //     .eq(2)
-  //     .should("have.css", "background-image")
-  //     .and("include", "https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/1.jpg"); // correct image
-  //   // click left button
-  //   cy.get(
-  //     "div[style='position: absolute; top: 50%; transform: translate(0px, -50%); left: 32px; font-size: 45px; color: rgb(255, 255, 255); z-index: 1; cursor: pointer;']"
-  //   )
-  //     .click()
-  //     .should("have.css", "background-image");
-  //   cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg")
-  //     .its("status")
-  //     .should("eq", 200);
-  //   cy.get("div[style='width: 103%; height: 100%; position: relative;']")
-  //     .find("div")
-  //     .eq(2)
-  //     .should("have.css", "background-image")
-  //     .and("include", "https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg"); // correct image
+  it("clicks on buttons", () => {
+    // click right button
+    cy.get(
+      "div[style='position: absolute; top: 50%; transform: translate(0px, -50%); right: 32px; font-size: 45px; color: rgb(255, 255, 255); z-index: 1; cursor: pointer;']"
+    )
+      .click()
+      .should("have.css", "background-image");
+    cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/1.jpg")
+      .its("status")
+      .should("eq", 200);
+    cy.get("div[style='width: 103%; height: 100%; position: relative;']")
+      .find("div")
+      .eq(2)
+      .should("have.css", "background-image")
+      .and("include", "https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/1.jpg"); // correct image
+    // click left button
+    cy.get(
+      "div[style='position: absolute; top: 50%; transform: translate(0px, -50%); left: 32px; font-size: 45px; color: rgb(255, 255, 255); z-index: 1; cursor: pointer;']"
+    )
+      .click()
+      .should("have.css", "background-image");
+    cy.request("https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg")
+      .its("status")
+      .should("eq", 200);
+    cy.get("div[style='width: 103%; height: 100%; position: relative;']")
+      .find("div")
+      .eq(2)
+      .should("have.css", "background-image")
+      .and("include", "https://d2ey9sqrvkqdfs.cloudfront.net/eqUd/0.jpg"); // correct image
 
-  //   cy.contains("Book Hotel").scrollIntoView().should("be.visible");
-  // });
+    cy.contains("Book Hotel").scrollIntoView().should("be.visible");
+  });
 
   it("logs in and books a hotel room", () => {
     cy.contains("Book Hotel").scrollIntoView().click();
