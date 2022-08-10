@@ -121,7 +121,7 @@ function BillingAddress() {
             <Form noValidate validated={validated}>
               <h1>Billing Address</h1>
               <GooglePlacesAutocomplete
-                apiKey="AIzaSyDJ25yShYJEzncqorEAo0JlESxZZaPF9uo"
+                apiKey="****"
                 selectProps={{
                   isClearable: true,
                   value: address,
