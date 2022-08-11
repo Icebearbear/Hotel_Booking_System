@@ -18,6 +18,7 @@ import FuzzySearch from "fz-search";
 // npm install react-datepicker --save
 
 function SearchHotel(props) {
+  const navigate = useNavigate();
   // console.log(props.data);
   const [uid, setUid] = useState(null);
   const [searchTerm, setSearchTerm] = useState([]);
@@ -128,7 +129,7 @@ function SearchHotel(props) {
   const location = useLocation();
   // console.log(location);
   // console.log(location.pathname);
-  const navigate = useNavigate();
+  
   const onSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {

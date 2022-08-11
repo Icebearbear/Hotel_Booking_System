@@ -442,24 +442,23 @@ app.post("/mail", async (req, res) => {
   });
 });
 // get current session of loged in user
-app.get("/getSession", (req, res) => {
+app.get("/getSession", async (req, res) => {
   console.log("ses");
-  var data = { login: false, uid: null };
+  var data = {login: false};
 
-  new Promise(function (resolve) {
+  const logged = await new Promise(function (resolve) {
     onAuthStateChanged(auth, (user) => {
+      // console.log(user);
       if (user) {
-        // data = { login: true, uid: user.id };
-
-        resolve(res.status(200).json({ login: true, uid: user.id }));
-        return;
+        resolve(true);
       } else {
-        resolve(res.status(200).json(data));
-        // resolve("no login");
-        return;
+        resolve(false);
       }
     });
   });
+  data.login = logged
+  console.log(logged);
+  res.status(200).json(data);
 });
 
 // get user info (not fully working)
@@ -536,8 +535,8 @@ app.post("/edituser", async (req, res) => {
 });
 
 // logout user
-app.post("/logout", (req, res) => {
-  signOut(auth);
+app.post("/logout", async (req, res) => {
+  await signOut(auth);
   console.log("signout");
   res.status(200).send("signed out");
 });
@@ -546,7 +545,7 @@ app.post("/logout", (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const r = await signInWithEmailAndPassword(auth, email, password).then(
+    await signInWithEmailAndPassword(auth, email, password).then(
       (userCredentials) => {
         var data = userCredentials.user.reloadUserInfo;
         // console.log(data.localId, data.email);
