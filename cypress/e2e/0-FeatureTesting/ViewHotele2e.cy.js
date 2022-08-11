@@ -117,8 +117,8 @@ describe("User looking at the hotel page", () => {
     cy.wait(500);
 
     // at login page
-    cy.get("#formBasicEmail").type("testone@gmail.com");
-    cy.get("#formBasicPassword").type("123456");
+    cy.get("input#email.form-control").type("testone@gmail.com");
+    cy.get("input#pw.form-control").type("123456");
     cy.contains("Submit").click();
     cy.location("pathname").should("eq", "/viewhotel");
     cy.wait(500);
