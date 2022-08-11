@@ -442,24 +442,27 @@ app.post("/mail", async (req, res) => {
   });
 });
 // get current session of loged in user
-app.get("/getSession", (req, res) => {
+app.get("/getSession", async (req, res) => {
   console.log("ses");
-  var data = { login: false, uid: null };
+  var data = { login: false };
 
-  new Promise(function (resolve) {
+  const log = await new Promise(function (resolve) {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         // data = { login: true, uid: user.id };
-
-        resolve(res.status(200).json({ login: true, uid: user.id }));
+        data = { login: true };
+        // console.log("in");
+        resolve(true);
         return;
       } else {
-        resolve(res.status(200).json(data));
+        resolve(false);
         // resolve("no login");
         return;
       }
     });
   });
+  console.log(data);
+  res.status(200).json(data);
 });
 
 // get user info (not fully working)

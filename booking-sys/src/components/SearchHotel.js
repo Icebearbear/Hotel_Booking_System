@@ -25,7 +25,7 @@ function SearchHotel(props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDate2, setSelectedDate2] = useState(null);
   const [nrooms, setnrooms] = useState("1");
-  const [nadults, setnadults] = useState({0: 1, 1:1, 2:1, 3:1});  
+  const [nadults, setnadults] = useState({ 0: 1, 1: 1, 2: 1, 3: 1 });
   const [validated, setValidated] = useState(false);
   const [selectedItem, setSelectedItem] = useState(""); //for input field validation
   // Destination ID to pass on
@@ -49,23 +49,28 @@ function SearchHotel(props) {
       } else {
         setSearchTerm(newFilter);
       }
-  }, 200)).current;
+    }, 200)
+  ).current;
 
   const handleFilter = (event) => {
     const searchWord = event.target.value;
     setWordEntered(searchWord);
-    const searcher = new FuzzySearch({source: JSONDATA, keys:["term"], token_query_min_length: 0});
-    debouncedSearch(searcher, searchWord);};
+    const searcher = new FuzzySearch({
+      source: JSONDATA,
+      keys: ["term"],
+      token_query_min_length: 0,
+    });
+    debouncedSearch(searcher, searchWord);
+  };
 
-    const handleClose = props.handle;
-    // const newFilter = JSONDATA.filter((value) => {
-    //   if (value.term == undefined) {
-    //     return null;
-    //   }
-    //   return value.term.toLowerCase().includes(searchWord.toLowerCase());
-    // });
-    
-  
+  const handleClose = props.handle;
+  // const newFilter = JSONDATA.filter((value) => {
+  //   if (value.term == undefined) {
+  //     return null;
+  //   }
+  //   return value.term.toLowerCase().includes(searchWord.toLowerCase());
+  // });
+
   // prompt user these data and pass to SearchHotelResult to search for hotels
   const passData = {
     name: wordEntered,
@@ -116,7 +121,7 @@ function SearchHotel(props) {
 
   const selectAdults = (key, adult) => {
     // passData['adults'] = adult;
-    let updated = {...nadults};
+    let updated = { ...nadults };
     console.log(updated);
     updated[parseInt(key)] = adult;
     console.log(updated);
@@ -148,16 +153,16 @@ function SearchHotel(props) {
       param_guests = param_guests + "|" + nadults[i];
     }
     console.log(param_guests);
-    passData["guests"] = param_guests
+    passData["guests"] = param_guests;
     console.log("data stored");
     localStorage.setItem("SEARCH_DATA", JSON.stringify(passData));
 
     if (location.pathname != "/searchhotelresult") {
       navigate("/searchhotelresult");
-      if(location.pathname == "/viewhotel"){
-        handleClose(); 
+      if (location.pathname == "/viewhotel") {
+        handleClose();
       }
-    }else{
+    } else {
       window.location.reload();
     }
   };
@@ -196,7 +201,7 @@ function SearchHotel(props) {
                       console.log(value.term);
                       return (
                         <Dropdown.Item
-                          data-cy = "destination"
+                          data-cy="destination"
                           onClick={(event) =>
                             selectDest(event, value.term, value.uid)
                           }
@@ -224,23 +229,38 @@ function SearchHotel(props) {
                     <option value="4">4</option>
                   </Form.Select>
                 </div>
-                    
+
                 <div>
                   <Form.Label className="d-flex">Guests per Room</Form.Label>
-                  {Array(parseInt(nrooms)).fill(true).map((val, i) => {
-                    return(
-                      <div className="d-flex flex-row">
-                        <Form.Text className="d-flex m-1 text-nowrap" size="sm" muted>Room {i+1}:</Form.Text>
-                        <Form.Select className="d-flex mb-2" key={i} onChange={(e) => selectAdults(i, e.target.value)}>
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                        </Form.Select>
-                      </div>
-                    )}) 
-                  }
-                  
+                  {Array(parseInt(nrooms))
+                    .fill(true)
+                    .map((val, i) => {
+                      return (
+                        <div
+                          className="d-flex flex-row"
+                          data-testid="combobox-adultsy"
+                        >
+                          <Form.Text
+                            className="d-flex m-1 text-nowrap"
+                            size="sm"
+                            muted
+                          >
+                            Room {i + 1}:
+                          </Form.Text>
+                          <Form.Select
+                            data-testid="combobox-adults"
+                            className="d-flex mb-2"
+                            key={i}
+                            onChange={(e) => selectAdults(i, e.target.value)}
+                          >
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                          </Form.Select>
+                        </div>
+                      );
+                    })}
                 </div>
                 {/* <div>
                   <Form.Label>Childs</Form.Label>
