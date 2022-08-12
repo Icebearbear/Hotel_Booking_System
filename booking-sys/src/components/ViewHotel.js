@@ -73,10 +73,6 @@ function ViewHotel() {
 
   // hotel info from api
 
-
-
-
-
   // FUNCTIONS FOR HOTEL DISPLAY
   const getHotelData = () => {
     const hotelData = JSON.parse(localStorage.getItem("HOTEL_DETAILS"));
@@ -404,7 +400,11 @@ function ViewHotel() {
                     <h3>
                       <strong>Hotel Overview</strong>
                     </h3>
-                    <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: hotelData.description,
+                      }}
+                    />
                   </Card.Text>
                 </Card.Body>
               </Card>
@@ -561,7 +561,10 @@ function ViewHotel() {
                       placement="bottom"
                       rootClose={true}
                       overlay={
-                        <Popover style={{ maxWidth: 700 }} id={`popover-positioned-bottom`}>
+                        <Popover
+                          style={{ maxWidth: 700 }}
+                          id={`popover-positioned-bottom`}
+                        >
                           <Popover.Header as="h3">Room details</Popover.Header>
                           <Popover.Body>
                             <div
