@@ -31,10 +31,12 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 // import MarkerStyle from "./MapComponents/MarkerStyle";
 
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 
 function ViewHotel() {
+  const location = useLocation();
+
   const [hotelId, setHotelId] = useState(localStorage.getItem("HOTEL_ID"));
   const [hotelData, setHotelData] = useState(
     JSON.parse(localStorage.getItem("HOTEL_DETAILS"))
@@ -251,17 +253,20 @@ function ViewHotel() {
 
   const onClose = () => {
     setWarning(false);
+    localStorage.setItem("RETURN_PATH", location.pathname);
+
+    navigate("/login");
   };
 
   const getLogin = () => {
-    const lin = localStorage.getItem("LOGIN");
+    const lin = sessionStorage.getItem("LOGIN");
     console.log("linn", lin);
     setLogin(lin);
   };
   function onClick(event, key) {
     getLogin();
     console.log("LOGINNNN ", login);
-    if (login == "false") {
+    if (login == "null") {
       setWarning(true);
       event.preventDefault();
       event.stopPropagation();

@@ -7,28 +7,37 @@ import UserProfile from "./UserProfile";
 import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import "../css/user.min.css";
+import { useNavigate, useLocation } from "react-router-dom";
 const UsersPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   //// for user session
-  const [login, setLogin] = useState("false");
+  const login = sessionStorage.getItem("LOGIN");
+
+  //const [login, setLogin] = useState(null);
   const [warning, setWarning] = useState(false);
   /////////
 
   useEffect(() => {
-    const lin = localStorage.getItem("LOGIN");
-    console.log("linn userspage", lin, typeof lin);
-    setLogin(lin);
+    console.log("login", login);
     {
-      login == "true" ? onClose() : setWarning(true);
+      login != "null" ? onClose() : setWarning(true);
     }
-  }, [login]);
+  }, []);
 
   const onClose = () => {
     setWarning(false);
   };
 
+  const onAgree = () => {
+    localStorage.setItem("RETURN_PATH", location.pathname);
+    setWarning(false);
+    navigate("/login");
+  };
+
   return (
     <div data-testid="user-page">
-      {login == "true" ? (
+      {login != "null" ? (
         <Container>
           <Row>
             <Col md={4}>
@@ -59,8 +68,8 @@ const UsersPage = () => {
         </Modal.Header>
         <Modal.Body>Login is required</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={onClose}>
-            Back
+          <Button variant="secondary" onClick={onAgree}>
+            Login
           </Button>
         </Modal.Footer>
       </Modal>

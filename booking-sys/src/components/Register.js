@@ -138,9 +138,13 @@ function Register() {
             >
               Submit
             </Button>
+
             <div className="reg-link">
               <Link className="link" to="/login">
-                <li>Login</li>
+                <h7 class="text-muted">
+                  <u>Login</u>
+                </h7>
+                {/* <li>Login</li> */}
               </Link>
             </div>
           </Form>

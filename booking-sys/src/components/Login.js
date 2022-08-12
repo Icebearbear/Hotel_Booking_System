@@ -4,10 +4,13 @@ import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { InputGroup } from "react-bootstrap";
 import "../css/login.min.css";
+import { useAuth } from "./context/auth";
+
 function Login() {
+  const { setLoginSesh } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false); // boolean if there is error
@@ -19,6 +22,8 @@ function Login() {
 
   // console.log("LOGINNN");
   const navigate = useNavigate();
+  const location = useLocation();
+
   const handleClose = () => setError(false);
   const updateEmail = (errMsg) => {
     setEmail("");
@@ -33,7 +38,7 @@ function Login() {
     setErrorMsg(errMsg);
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
@@ -48,7 +53,7 @@ function Login() {
       email: email,
       password: password,
     };
-    axios
+    await axios
       .post("http://localhost:3001/login", userObject)
       .then((res) => {
         if (res.status === 200) {
@@ -58,7 +63,18 @@ function Login() {
           console.log("ONSUBMIT222");
 
           // document.getElementById("nav-bar").style.display = "none";
-          navigate(-1);
+          //window.location.reload(false);
+
+          // if (location.pathname == "/register") {
+          //   console.log("reg", localStorage.get("RETURN_PATH"));
+
+          // } else {
+          //   console.log("no reg");
+          //   navigate(location.pathname);
+          // }
+          setLoginSesh(true);
+          console.log("login path", localStorage.getItem("RETURN_PATH"));
+          navigate(localStorage.getItem("RETURN_PATH"));
         }
         if (res.status === 500) {
           updateError(res);
@@ -82,9 +98,17 @@ function Login() {
       });
   };
 
+  const goRegister = () => {
+    console.log(localStorage.getItem("RETURN_PATH"));
+    navigate("/registration");
+  };
+
   return (
     <div className="wrapper" data-testid="login-page">
-      <div id="login_form" className="container mb-4 p-3 d-flex justify-content-center">
+      <div
+        id="login_form"
+        className="container mb-4 p-3 d-flex justify-content-center"
+      >
         <Card className="card-login">
           <Card.Body>
             <h1>Login page</h1>
@@ -130,9 +154,6 @@ function Login() {
                   {pwdFeedback}
                 </Form.Control.Feedback>
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                <Form.Check type="checkbox" label="Keep me signed in" />
-              </Form.Group>
 
               <div>
                 <Button
@@ -145,9 +166,11 @@ function Login() {
                 </Button>
               </div>
               <div className="reg-link">
-                <Link className="link" to="/registration">
-                  <li>Register Now</li>
-                </Link>
+                {/* <Link className="link" to="/registration"> */}
+                <h7 onClick={goRegister} class="text-muted">
+                  <u>Register Now</u>
+                </h7>
+                {/* </Link> */}
               </div>
             </Form>
           </Card.Body>
