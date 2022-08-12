@@ -381,6 +381,7 @@ function CustomerInformation() {
                   <br />
                   <Form.Label>Address</Form.Label>
                   <GooglePlacesAutocomplete
+                    data-cy = "formBillingAddress"
                     apiKey="AIzaSyDJ25yShYJEzncqorEAo0JlESxZZaPF9uo"
                     selectProps={{
                       isClearable: true,
@@ -396,6 +397,7 @@ function CustomerInformation() {
                       <Form.Group className="mb-3" controlId="formBasicCity">
                         <Form.Label>City</Form.Label>
                         <Form.Control
+                          controlId = "billingAddressCity"
                           type="string"
                           value={addressObj.city}
                           //   onChange={(e) => setCity(e.target.value)}
@@ -415,6 +417,7 @@ function CustomerInformation() {
                       <Form.Group className="mb-3" controlId="formBasicZip">
                         <Form.Label>Zip/Post code</Form.Label>
                         <Form.Control
+                          controlId = "billingAddressZip"
                           type="string"
                           value={addressObj.postal_code}
                           // onChange={(e) => setZipcode(e.target.value)}
@@ -434,6 +437,7 @@ function CustomerInformation() {
                       <Form.Group className="mb-3" controlId="formBasicCountry">
                         <Form.Label>Country</Form.Label>
                         <Form.Control
+                          controlId = "billingAddressCountry"
                           type="string"
                           value={addressObj.country}
                           //   onChange={(e) => setCountryBill(e.target.value)}

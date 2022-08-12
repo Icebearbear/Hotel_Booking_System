@@ -444,10 +444,12 @@ app.post("/mail", async (req, res) => {
 // get current session of loged in user
 app.get("/getSession", async (req, res) => {
   console.log("ses");
+
   var data = { login: false };
 
-  const log = await new Promise(function (resolve) {
+  const logged = await new Promise(function (resolve) {
     onAuthStateChanged(auth, (user) => {
+      // console.log(user);
       if (user) {
         // data = { login: true, uid: user.id };
         data = { login: true };
@@ -462,6 +464,7 @@ app.get("/getSession", async (req, res) => {
     });
   });
   console.log(data);
+
   res.status(200).json(data);
 });
 
@@ -539,8 +542,8 @@ app.post("/edituser", async (req, res) => {
 });
 
 // logout user
-app.post("/logout", (req, res) => {
-  signOut(auth);
+app.post("/logout", async (req, res) => {
+  await signOut(auth);
   console.log("signout");
   res.status(200).send("signed out");
 });
@@ -549,7 +552,7 @@ app.post("/logout", (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const r = await signInWithEmailAndPassword(auth, email, password).then(
+    await signInWithEmailAndPassword(auth, email, password).then(
       (userCredentials) => {
         var data = userCredentials.user.reloadUserInfo;
         // console.log(data.localId, data.email);

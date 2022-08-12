@@ -29,12 +29,13 @@ const App = () => {
               <Route path="/payinfo" element={<PaymentInformation />} />
               <Route path="/searchhotel" element={<SearchHotel />} />
 
-              <Route path="/userspage" element={<UsersPage />} />
+              
             </Route>
 
             <Route path="/searchhotelresult" element={<SearchHotelResult />} />
             <Route path="/viewhotel" element={<ViewHotel />} />
             <Route element={<WithoutNavBar />}>
+              <Route path="/userspage" element={<UsersPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/registration" element={<Register />} />
               <Route path="/success" element={<Success />} />
