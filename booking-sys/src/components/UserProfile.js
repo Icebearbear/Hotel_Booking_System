@@ -1,8 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./context/auth";
 
 function UserProfile() {
+  const { setLoginSesh } = useAuth();
+
   const navigate = useNavigate();
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
@@ -44,6 +47,7 @@ function UserProfile() {
     axios
       .post("http://localhost:3001/logout")
       .then((res) => {
+        setLoginSesh(false);
         navigate("/searchhotel");
         console.log(res);
       })

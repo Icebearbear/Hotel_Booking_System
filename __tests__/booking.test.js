@@ -6,7 +6,7 @@ const infoCheckout = {
   hotelName: "Puri Asri Villa",
   price: 796,
   noNight: 2,
-  email: "a@gmail.com",
+  email: "sas@gmail.com",
 };
 const infoObject = {
   bookingInfo: {
@@ -41,26 +41,46 @@ const infoObject = {
   uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
 };
 
-const current_total = 2;
-const after_delete = current_total - 1;
+var current_total = 0;
+
+describe("POST /bookhotel", () => {
+  beforeAll(async () => {
+    const loginDetails = {
+      email: "sas@gmail.com",
+      password: "123qwe",
+    };
+    const response = await request(baseURL).post("/login").send(loginDetails);
+    infoObject.uid = response.body.userId;
+  });
+
+  it("should return booked", async () => {
+    const response = await request(baseURL).post("/bookhotel").send(infoObject);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe("booked");
+    expect(response.body.docId).toBeDefined();
+  });
+});
 describe("POST /getBook", () => {
   beforeEach(async () => {
     const userDetails = {
-      email: "a@gmail.com",
+      email: "sas@gmail.com",
       password: "123qwe",
     };
-    await request(baseURL).post("/login").send(userDetails);
+    const r = await request(baseURL).post("/login").send(userDetails);
+
+    const response = await request(baseURL).get("/getBook").query(userDetails);
   });
 
-  var userDetails = {
-    uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
-  };
-  var wrongUserDetails = {
-    uid: "wrong_uid",
-  };
   it("should return booking data with matched uid", async () => {
+    var userDetails = {
+      uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
+    };
+
     const response = await request(baseURL).get("/getBook").query(userDetails);
-    console.log(response.body);
+    if (typeof response.body.finalData != "undefined") {
+      console.log(response.body.finalData);
+      current_total = response.body.finalData.length;
+    }
     expect(response.statusCode).toBe(200);
     expect(response.body.finalData.length).toBe(current_total); // returned booking data by user uid
     // check if all of the uid from data returned matches the input uid
@@ -70,6 +90,9 @@ describe("POST /getBook", () => {
   });
 
   it("should return not-found because unmatched uid", async () => {
+    var wrongUserDetails = {
+      uid: "wrong_uid",
+    };
     const response = await request(baseURL)
       .get("/getBook")
       .query(wrongUserDetails);
@@ -78,18 +101,21 @@ describe("POST /getBook", () => {
   });
 });
 
+var booking_id = "";
 describe("POST /deleteBook", () => {
-  var totalBooking = 0;
   var bookingList = [];
-
-  beforeAll(async () => {
+  var current_total;
+  beforeEach(async () => {
     const userDetails = {
       uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
     };
     const response = await request(baseURL).get("/getBook").query(userDetails);
-    totalBooking = response.body.finalData.length;
-    for (var i = 0; i < totalBooking; i++) {
-      bookingList.push(response.body.finalData[i][0]);
+    if (typeof response.body.finalData != "undefined") {
+      console.log(response.body.finalData);
+      current_total = response.body.finalData.length;
+      for (var i = 0; i < current_total; i++) {
+        bookingList.push(response.body.finalData[i][0]);
+      }
     }
   });
 
@@ -103,30 +129,24 @@ describe("POST /deleteBook", () => {
     const response = await request(baseURL)
       .post("/deleteBook")
       .send(delDetails);
-    expect(response.statusCode).toBe(200);
-    expect(response.body.finalData.length).toBe(after_delete); // returned booking data by user uid
-    // check if all of the uid from data returned matches the input uid
-    for (var i = 0; i < response.body.finalData.length; i++) {
-      expect(response.body.finalData[i][1]["uid"]).toBe(delDetails.userID);
+    console.log(current_total);
+    if (current_total == 0) {
+      expect(response.statusCode).toBe(500);
+    } else {
+      var after_delete = current_total - 1;
+      expect(response.statusCode).toBe(200);
+      expect(response.body.finalData.length).toBe(after_delete); // returned booking data by user uid
+      // check if all of the uid from data returned matches the input uid
+      for (var i = 0; i < response.body.finalData.length; i++) {
+        expect(response.body.finalData[i][1]["uid"]).toBe(delDetails.userID);
+      }
     }
   });
 
   it("should return not found if booking doesn't exists", async () => {
     const delDetails = {
-      docId: "baPbIwiKm6h1EVhfwYx9",
+      docId: "wrong_id",
       userID: "CiX8KlN9UtBvsEFcCoLa",
-    };
-    const response = await request(baseURL)
-      .post("/deleteBook")
-      .send(delDetails);
-    expect(response.statusCode).toBe(404);
-    expect(response.text).toBe("No such booking found");
-  });
-
-  it("should return not found if booking doesn't exists", async () => {
-    const delDetails = {
-      docId: "FDIqJyMi757RJOFeEaCh",
-      userID: "wrong_id",
     };
     const response = await request(baseURL)
       .post("/deleteBook")
@@ -151,7 +171,7 @@ describe("POST /bookhotel login error", () => {
 describe("POST /bookhotel", () => {
   beforeAll(async () => {
     const loginDetails = {
-      email: "a@gmail.com",
+      email: "sas@gmail.com",
       password: "123qwe",
     };
     const response = await request(baseURL).post("/login").send(loginDetails);
@@ -167,6 +187,26 @@ describe("POST /bookhotel", () => {
 });
 
 describe("POST /create-checkout-session", () => {
+  it("should return booked", async () => {
+    const response = await request(baseURL)
+      .post("/create-checkout-session")
+      .send(infoCheckout);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.url).toBeDefined();
+    expect(response.body.paymentID).toBeDefined();
+  });
+});
+
+describe("POST /create-checkout-session", () => {
+  beforeAll(async () => {
+    const loginDetails = {
+      email: "tester@gmail.com",
+      password: "123qwe",
+    };
+    const response = await request(baseURL).post("/login").send(loginDetails);
+    infoObject.uid = response.body.userId;
+  });
+
   it("should return booked", async () => {
     const response = await request(baseURL)
       .post("/create-checkout-session")

@@ -31,10 +31,12 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 // import MarkerStyle from "./MapComponents/MarkerStyle";
 
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 
 function ViewHotel() {
+  const location = useLocation();
+
   const [hotelId, setHotelId] = useState(localStorage.getItem("HOTEL_ID"));
   const [hotelData, setHotelData] = useState(
     JSON.parse(localStorage.getItem("HOTEL_DETAILS"))
@@ -72,10 +74,6 @@ function ViewHotel() {
   };
 
   // hotel info from api
-
-
-
-
 
   // FUNCTIONS FOR HOTEL DISPLAY
   const getHotelData = () => {
@@ -255,17 +253,20 @@ function ViewHotel() {
 
   const onClose = () => {
     setWarning(false);
+    localStorage.setItem("RETURN_PATH", location.pathname);
+
+    navigate("/login");
   };
 
   const getLogin = () => {
-    const lin = localStorage.getItem("LOGIN");
+    const lin = sessionStorage.getItem("LOGIN");
     console.log("linn", lin);
     setLogin(lin);
   };
   function onClick(event, key) {
     getLogin();
     console.log("LOGINNNN ", login);
-    if (login == "false") {
+    if (login == "null") {
       setWarning(true);
       event.preventDefault();
       event.stopPropagation();
@@ -404,7 +405,11 @@ function ViewHotel() {
                     <h3>
                       <strong>Hotel Overview</strong>
                     </h3>
-                    <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: hotelData.description,
+                      }}
+                    />
                   </Card.Text>
                 </Card.Body>
               </Card>
@@ -561,7 +566,10 @@ function ViewHotel() {
                       placement="bottom"
                       rootClose={true}
                       overlay={
-                        <Popover style={{ maxWidth: 700 }} id={`popover-positioned-bottom`}>
+                        <Popover
+                          style={{ maxWidth: 700 }}
+                          id={`popover-positioned-bottom`}
+                        >
                           <Popover.Header as="h3">Room details</Popover.Header>
                           <Popover.Body>
                             <div

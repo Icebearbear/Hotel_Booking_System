@@ -442,24 +442,30 @@ app.post("/mail", async (req, res) => {
   });
 });
 // get current session of loged in user
-app.get("/getSession", (req, res) => {
+app.get("/getSession", async (req, res) => {
   console.log("ses");
-  var data = { login: false, uid: null };
 
-  new Promise(function (resolve) {
+  var data = { login: false };
+
+  const logged = await new Promise(function (resolve) {
     onAuthStateChanged(auth, (user) => {
+      // console.log(user);
       if (user) {
         // data = { login: true, uid: user.id };
-
-        resolve(res.status(200).json({ login: true, uid: user.id }));
+        data = { login: true };
+        // console.log("in");
+        resolve(true);
         return;
       } else {
-        resolve(res.status(200).json(data));
+        resolve(false);
         // resolve("no login");
         return;
       }
     });
   });
+  console.log(data);
+
+  res.status(200).json(data);
 });
 
 // get user info (not fully working)
@@ -536,8 +542,8 @@ app.post("/edituser", async (req, res) => {
 });
 
 // logout user
-app.post("/logout", (req, res) => {
-  signOut(auth);
+app.post("/logout", async (req, res) => {
+  await signOut(auth);
   console.log("signout");
   res.status(200).send("signed out");
 });
@@ -546,7 +552,7 @@ app.post("/logout", (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const r = await signInWithEmailAndPassword(auth, email, password).then(
+    await signInWithEmailAndPassword(auth, email, password).then(
       (userCredentials) => {
         var data = userCredentials.user.reloadUserInfo;
         // console.log(data.localId, data.email);
@@ -575,16 +581,17 @@ app.post("/register", async (req, res) => {
     }
     const r = await createUserWithEmailAndPassword(auth, email, password);
     const user = r.user;
-    addDoc(collection(db, "users"), {
+    const docRef = await addDoc(collection(db, "users"), {
       uid: user.uid,
       first_name,
       last_name,
       email,
     });
     console.log("registered user");
-    res
-      .status(200)
-      .json({ data: JSON.stringify("user added with email: " + email) });
+    res.status(200).send({
+      uId: user.uid,
+      data: email,
+    });
   } catch (error) {
     console.log("ERROR ", error);
     res.status(500).json(error.message);

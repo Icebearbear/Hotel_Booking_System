@@ -3,6 +3,17 @@ const baseURL = "http://localhost:3001";
 const server = require("../server/index");
 let rand = Math.floor(Math.random() * 10);
 
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 describe("POST /api", () => {
   it("should return 200", async () => {
     const response = await request(baseURL).get("/api");
@@ -12,58 +23,63 @@ describe("POST /api", () => {
 });
 describe("POST /registration", () => {
   beforeEach(async () => {
+    const nid = makeid(3);
     const userDetails = {
-      email: "a@gmail.com",
+      email: "sas@gmail.com",
       password: "123qwe",
     };
-    await request(baseURL).post("/login").send(userDetails);
+    const response = await request(baseURL).post("/login").send(userDetails);
+    expect(response.statusCode).toBe(200);
   });
   it("should return user added with email: a@gmail.com", async () => {
     const userDetails = {
       first_name: "test_first_name",
       last_name: "test_last_name",
-      email: "register" + rand + "@gmail.com",
+      email: "register" + makeid(3) + "@gmail.com",
       password: "123qwe",
     };
     const response = await request(baseURL).post("/register").send(userDetails);
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body.data)).toBe(
-      "user added with email: " + userDetails.email
-    );
+    expect(response.text).toBeDefined();
   });
 
-  //   it("return email-already-exist", async () => {
-  //     const userDetails = {
-  //       first_name: "test_first_name",
-  //       last_name: "test_last_name",
-  //       email: "testnew@gmail.com",
-  //       password: "123qwe",
-  //     };
-  //     const response = await request(baseURL).post("/register").send(userDetails);
-  //     expect(response.statusCode).toBe(500);
-  //     expect(JSON.parse(response.text).code).toBe("auth/email-already-in-use");
-  //   });
+  it("return email-already-exist", async () => {
+    const userDetails = {
+      first_name: "test_first_name",
+      last_name: "test_last_name",
+      email: "sas@gmail.com",
+      password: "123qwe",
+    };
+    const response = await request(baseURL).post("/register").send(userDetails);
+    expect(response.statusCode).toBe(500);
+    console.log(response.text);
+    expect(response.text).toBe(
+      '"Firebase: Error (auth/email-already-in-use)."'
+    );
+  });
 });
 
 describe("POST /login", () => {
   it("should return userId and email", async () => {
     const userDetails = {
-      email: "a@gmail.com",
+      email: "sas@gmail.com",
       password: "123qwe",
     };
     const expectedValues = {
       uId: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
-      uemail: "a@gmail.com",
+      uemail: "sas@gmail.com",
     };
     const response = await request(baseURL).post("/login").send(userDetails);
     expect(response.statusCode).toBe(200);
-    expect(response.body.userId).toBe(expectedValues.uId);
-    expect(response.body.email).toBe(expectedValues.uemail);
+    // console.log(response.text);
+
+    expect(JSON.parse(response.text).userId).toBe(expectedValues.uId);
+    expect(JSON.parse(response.text).email).toBe(expectedValues.uemail);
   });
 
   it("return invalid-email", async () => {
     const userDetails = {
-      email: "agmail.com",
+      email: "agmail",
       password: "123qwe",
     };
     const response = await request(baseURL).post("/login").send(userDetails);
@@ -77,13 +93,15 @@ describe("POST /login", () => {
       password: "123qwe",
     };
     const response = await request(baseURL).post("/login").send(userDetails);
+    console.log(response.text);
+    console.log(response.text.code);
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.text).code).toBe("auth/user-not-found");
   });
 
   it("return wrong-password", async () => {
     const userDetails = {
-      email: "a@gmail.com",
+      email: "sas@gmail.com",
       password: "123",
     };
     const response = await request(baseURL).post("/login").send(userDetails);
@@ -96,7 +114,7 @@ describe("POST /logout", () => {
   // login before test
   beforeAll(async () => {
     const userDetails = {
-      email: "a@gmail.com",
+      email: "sas@gmail.com",
       password: "123qwe",
     };
     await request(baseURL).post("/login").send(userDetails);
@@ -110,32 +128,45 @@ describe("POST /logout", () => {
 
 /////// change userDetails before start testing
 describe("POST /edituser", () => {
-  beforeEach(async () => {
-    const userDetails = {
-      email: "a@gmail.com",
-      password: "123qwe",
-    };
-    await request(baseURL).post("/login").send(userDetails);
-  });
-  const userDetails = {
-    first_name: "changed_first_name" + rand,
-    last_name: "changed_last_name1" + rand,
-    email: "a" + rand + "@gmail.com",
-    uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
-    dbDocId: "bLPVNzRnGCJk6q6uqG5C",
-  };
-  const wrongUserDetails = {
-    first_name: "changed_first_name",
-    last_name: "changed_last_name",
-    email: "a@gmail.com",
+  var userId;
+
+  var wrongUserDetails = {
+    first_name: "changed_first_name" + makeid(3),
+    last_name: "changed_last_name1" + makeid(3),
+    email: "t" + makeid(6) + "@gmail.com",
     uid: "wrong_uid",
-    dbDocId: "bLPVNzRnGCJk6q6uqG5C",
+    dbDocId: "bLPVNzRnGCJk6q6uqG5Ca",
   };
 
+  beforeEach(async () => {
+    const loginUserDetails = {
+      email: "testing@gmail.com",
+      password: "123qwe",
+    };
+    await request(baseURL).post("/login").send(loginUserDetails);
+  });
+
   it("return updated", async () => {
+    const newUserDetails = {
+      first_name: "test_first_name",
+      last_name: "test_last_name",
+      email: makeid(5) + "@gmail.com",
+      password: "123qwe",
+    };
+    const res = await request(baseURL).post("/register").send(newUserDetails);
+    expect(res.statusCode).toBe(200);
+    console.log(JSON.parse(res.text));
+    var userDetails = {
+      first_name: "changed_first_name" + makeid(3),
+      last_name: "changed_last_name1" + makeid(3),
+      email: "testing" + makeid(3) + "@gmail.com",
+      uid: JSON.parse(res.text).uId,
+      dbDocId: "bLPVNzRnGCJk6q6uqG5Ca",
+    };
+    console.log(userDetails);
     const response = await request(baseURL).post("/edituser").send(userDetails);
-    expect(response.statusCode).toBe(200);
-    expect(response.text).toBe("updated");
+    // expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.text).code).toBe("not-found");
   });
 
   it("return not-found because of wrong docId", async () => {
@@ -147,6 +178,22 @@ describe("POST /edituser", () => {
   });
 
   it("return not-new-data-given because inputs are not new", async () => {
+    const newUserDetails = {
+      first_name: "test_first_name",
+      last_name: "test_last_name",
+      email: makeid(5) + "@gmail.com",
+      password: "123qwe",
+    };
+    const res = await request(baseURL).post("/register").send(newUserDetails);
+    expect(res.statusCode).toBe(200);
+    console.log(JSON.parse(res.text));
+    var userDetails = {
+      first_name: "changed_first_name" + makeid(3),
+      last_name: "changed_last_name1" + makeid(3),
+      email: JSON.parse(res.text).data,
+      uid: JSON.parse(res.text).uId,
+      dbDocId: "bLPVNzRnGCJk6q6uqG5Ca",
+    };
     const response = await request(baseURL).post("/edituser").send(userDetails);
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.text).code).toBe("auth/not-newdatagiven");
@@ -158,22 +205,14 @@ describe("POST /user", () => {
   var userDetails = {
     uid: "",
   };
-  const expectedValues = {
-    docId: "bLPVNzRnGCJk6q6uqG5C",
-    data: {
-      uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
-      first_name: "changed_first_name" + rand,
-      last_name: "changed_last_name1" + rand,
-      email: "a" + rand + "@gmail.com",
-    },
-  };
+
   const wrongUserDetails = {
     uid: "wrong_id",
   };
 
   beforeAll(async () => {
     const loginDetails = {
-      email: "a@gmail.com",
+      email: "testing@gmail.com",
       password: "123qwe",
     };
     const response = await request(baseURL).post("/login").send(loginDetails);
@@ -183,11 +222,7 @@ describe("POST /user", () => {
   it("return docId and doc.data", async () => {
     const response = await request(baseURL).get("/user").query(userDetails);
     expect(response.statusCode).toBe(200);
-    expect(response.body.id).toBe(expectedValues.docId);
-    expect(response.body.data.uid).toBe(expectedValues.data.uid);
-    expect(response.body.data.first_name).toBe(expectedValues.data.first_name);
-    expect(response.body.data.last_name).toBe(expectedValues.data.last_name);
-    expect(response.body.data.email).toBe(expectedValues.data.email);
+    expect(response.body.id).toBeDefined();
   });
 
   it("return Not Found", async () => {
