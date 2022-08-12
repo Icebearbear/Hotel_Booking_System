@@ -9,8 +9,7 @@ import GooglePlacesAutocomplete, {
   geocodeByPlaceId,
 } from "react-google-places-autocomplete";
 import "../css/user.min.css";
-import BillingAddress from "./BillingAddress";
-
+s;
 function CustomerInformation() {
   const API_KEY = process.env.REACT_APP_ADDRESS_SEARCH_API_KEY;
   console.log(API_KEY);

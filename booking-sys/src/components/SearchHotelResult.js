@@ -29,7 +29,9 @@ function SearchHotelResult() {
 
   /// for lazy loading
   const NUM_PER_PAGE = 10;
-  const TOTAL_PAGES = Math.ceil(finalHotels.length/NUM_PER_PAGE)+Math.ceil(tobequeried/NUM_PER_PAGE);
+  const TOTAL_PAGES =
+    Math.ceil(finalHotels.length / NUM_PER_PAGE) +
+    Math.ceil(tobequeried / NUM_PER_PAGE);
   const triggerRef = useRef(null);
   /////////////////////////////
   var searchData = {};
@@ -121,22 +123,23 @@ function SearchHotelResult() {
     if (dataloaded >= hotelQ) {
       return [null, dataloaded];
     }
-    
-    if (dataloaded<finalHotels.length){
+
+    if (dataloaded < finalHotels.length) {
       const cut = dataloaded;
-      var cut2 = dataloaded+NUM_PER_PAGE;
-      if (cut2>finalHotels.length){
-        cut2 = finalHotels.length}
-      const data = finalHotels.slice(cut, cut2)
-      setLoaded(cut2); 
+      var cut2 = dataloaded + NUM_PER_PAGE;
+      if (cut2 > finalHotels.length) {
+        cut2 = finalHotels.length;
+      }
+      const data = finalHotels.slice(cut, cut2);
+      setLoaded(cut2);
       setCalling(false);
-      return [data, cut2]
+      return [data, cut2];
     }
-    const cut = dataloaded-finalHotels.length;
-    var cut2 = cut+NUM_PER_PAGE;
-    if ( cut2 >= tobequeried.length) {
+    const cut = dataloaded - finalHotels.length;
+    var cut2 = cut + NUM_PER_PAGE;
+    if (cut2 >= tobequeried.length) {
       var cut2 = hotelQ - finalHotels.length;
-    } 
+    }
     setLoaded(finalHotels.length + cut2);
     console.log(finalHotels.length + cut2);
     console.log("VVVVV ", cut, " MMMMMM ", cut2);
@@ -162,7 +165,7 @@ function SearchHotelResult() {
   // console.log("lazyload");
   var ref = triggerRef;
   const { data, loading } = useLazyLoad({ triggerRef, onGrabData });
-  
+
   if (loaded >= hotelQ) {
     console.log(loaded);
     console.log(hotelQ);
@@ -305,6 +308,7 @@ function HotelDisplay(props) {
                 <Row>
                   <div style={{ display: "flex" }}>
                     <h5
+                      id="address"
                       class="text-secondary"
                       className="float-left"
                       style={{ marginRight: "auto" }}
@@ -317,7 +321,7 @@ function HotelDisplay(props) {
                 <br />
 
                 <Row>
-                  <div style={{ display: "flex" }}>
+                  <div id="starRating" style={{ display: "flex" }}>
                     {starRating(info.rating)}
                   </div>
                 </Row>
@@ -333,7 +337,7 @@ function HotelDisplay(props) {
                     >
                       SGD
                     </h6>
-                    <h3 className="float-right">
+                    <h3 className="float-right" id="price">
                       <strong>{" " + info.price}</strong>
                     </h3>
                   </div>
