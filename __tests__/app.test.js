@@ -10,57 +10,40 @@ describe("POST /api", () => {
     // expect(response.body.error).toBe(null);
   });
 });
-// describe("POST /registration", () => {
-//   it("should return user added with email: a@gmail.com", async () => {
-//     const userDetails = {
-//       first_name: "test_first_name",
-//       last_name: "test_last_name",
-//       email: "aa" + rand + "@gmail.com",
-//       password: "123qwe",
-//     };
-//     const response = await request(baseURL).post("/register").send(userDetails);
-//     expect(response.statusCode).toBe(200);
-//     expect(JSON.parse(response.body.data)).toBe(
-//       "user added with email: " + userDetails.email
-//     );
-//   });
+describe("POST /registration", () => {
+  beforeEach(async () => {
+    const userDetails = {
+      email: "a@gmail.com",
+      password: "123qwe",
+    };
+    await request(baseURL).post("/login").send(userDetails);
+  });
+  it("should return user added with email: a@gmail.com", async () => {
+    const userDetails = {
+      first_name: "test_first_name",
+      last_name: "test_last_name",
+      email: "register" + rand + "@gmail.com",
+      password: "123qwe",
+    };
+    const response = await request(baseURL).post("/register").send(userDetails);
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body.data)).toBe(
+      "user added with email: " + userDetails.email
+    );
+  });
 
-//   it("return email-already-exist", async () => {
-//     const userDetails = {
-//       first_name: "test_first_name",
-//       last_name: "test_last_name",
-//       email: "a@gmail.com",
-//       password: "123qwe",
-//     };
-//     const response = await request(baseURL).post("/register").send(userDetails);
-//     expect(response.statusCode).toBe(500);
-//     expect(JSON.parse(response.text).code).toBe("auth/email-already-in-use");
-//   });
-
-//   it("return invalid-email", async () => {
-//     const userDetails = {
-//       first_name: "test_first_name",
-//       last_name: "test_last_name",
-//       email: "agmail.com",
-//       password: "123qwe",
-//     };
-//     const response = await request(baseURL).post("/register").send(userDetails);
-//     expect(response.statusCode).toBe(500);
-//     expect(JSON.parse(response.text).code).toBe("auth/invalid-email");
-//   });
-
-//   it("return weak-password", async () => {
-//     const userDetails = {
-//       first_name: "test_first_name",
-//       last_name: "test_last_name",
-//       email: "a@gmail.com",
-//       password: "123",
-//     };
-//     const response = await request(baseURL).post("/register").send(userDetails);
-//     expect(response.statusCode).toBe(500);
-//     expect(JSON.parse(response.text).code).toBe("auth/weak-password");
-//   });
-// });
+  //   it("return email-already-exist", async () => {
+  //     const userDetails = {
+  //       first_name: "test_first_name",
+  //       last_name: "test_last_name",
+  //       email: "testnew@gmail.com",
+  //       password: "123qwe",
+  //     };
+  //     const response = await request(baseURL).post("/register").send(userDetails);
+  //     expect(response.statusCode).toBe(500);
+  //     expect(JSON.parse(response.text).code).toBe("auth/email-already-in-use");
+  //   });
+});
 
 describe("POST /login", () => {
   it("should return userId and email", async () => {
@@ -90,7 +73,7 @@ describe("POST /login", () => {
 
   it("return user-not-found", async () => {
     const userDetails = {
-      email: "b@gmail.com",
+      email: "doesntexist@gmail.com",
       password: "123qwe",
     };
     const response = await request(baseURL).post("/login").send(userDetails);
@@ -127,6 +110,13 @@ describe("POST /logout", () => {
 
 /////// change userDetails before start testing
 describe("POST /edituser", () => {
+  beforeEach(async () => {
+    const userDetails = {
+      email: "a@gmail.com",
+      password: "123qwe",
+    };
+    await request(baseURL).post("/login").send(userDetails);
+  });
   const userDetails = {
     first_name: "changed_first_name" + rand,
     last_name: "changed_last_name1" + rand,
@@ -153,13 +143,13 @@ describe("POST /edituser", () => {
       .post("/edituser")
       .send(wrongUserDetails);
     expect(response.statusCode).toBe(404);
-    expect(response.text).toBe("not-found");
+    expect(JSON.parse(response.text).code).toBe("auth/not-found");
   });
 
   it("return not-new-data-given because inputs are not new", async () => {
     const response = await request(baseURL).post("/edituser").send(userDetails);
     expect(response.statusCode).toBe(500);
-    expect(JSON.parse(response.text).code).toBe("not-new-data-given");
+    expect(JSON.parse(response.text).code).toBe("auth/not-newdatagiven");
   });
 });
 

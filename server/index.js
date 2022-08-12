@@ -358,7 +358,7 @@ app.get("/getBook", async (req, res) => {
     console.log(docSnapshot.docs.length);
     if (docSnapshot.docs.length == 0) {
       console.log("ala");
-      res.status(404).send("auth/not-found");
+      res.status(404).send({ code: "auth/not-found" });
       return;
     } else {
       const d = docSnapshot.docs.map((doc) => {
@@ -567,7 +567,12 @@ app.post("/register", async (req, res) => {
 
   try {
     //firebase.registerWithEmailAndPassword("icebear", email, password);
-
+    const q = query(collection(db, "users"), where("email", "==", email));
+    const docSnapshot = await getDocs(q);
+    if (docSnapshot.docs.length != 0) {
+      res.status(500).send({ code: "auth/email-already-in-use" });
+      return;
+    }
     const r = await createUserWithEmailAndPassword(auth, email, password);
     const user = r.user;
     addDoc(collection(db, "users"), {
@@ -582,7 +587,7 @@ app.post("/register", async (req, res) => {
       .json({ data: JSON.stringify("user added with email: " + email) });
   } catch (error) {
     console.log("ERROR ", error);
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 });
 

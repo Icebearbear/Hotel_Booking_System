@@ -2,48 +2,56 @@ const request = require("supertest");
 const baseURL = "http://localhost:3001";
 const server = require("../server/index");
 // it("return booked with 200 status code", async () => {
+const infoCheckout = {
+  hotelName: "Puri Asri Villa",
+  price: 796,
+  noNight: 2,
+  email: "a@gmail.com",
+};
 const infoObject = {
-  destinationID: "destId",
-  hotelID: "hotelId",
   bookingInfo: {
-    noNight: 2,
-    startDate: "checkInDate",
-    endDate: "checkOutDate",
-    noAdult: 2,
-    noChildren: 2,
-    message: "booking for birthday celebration",
-    roomType: "hotelRoomType",
-    bookForSomeone: true,
-    smoking: false,
-    bedType: "bed",
-    highFloor: true,
-    quiteRoom: true,
-    babyCotReq: true,
     airportTransfer: false,
-    extraReq: "extraReq",
+    babyCotReq: false,
+    bedType: "large",
+    bookForSomeone: false,
+    endDate: "2022-08-03",
+    extraReq: "staycay",
+    highFloor: true,
+    message: "booking for birthday celebration",
+    noAdult: "2",
+    noChildren: "0",
+    noNight: 2,
+    quiteRoom: true,
+    roomType: "Superior Room",
+    smoking: false,
+    startDate: "2022-07-26",
   },
-  price: 3000,
-  supplierBookingID: "sbID",
-  supplierBookingRespond: "sbrID",
-  bookingReference: "bref",
   guestInformation: {
-    userID: "uid",
+    country: "sg",
+    email: "yuliatiyuli39@gmail.com",
+    firstName: "yu",
+    lastName: "li",
+    phone: "12345",
     salutation: "Ms",
-    firstName: "firstName",
-    lastName: "lastName",
-    email: "yu@gmail.com",
-    phone: 12345678,
-    country: "country",
+    userID: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
   },
-  payeeInformation: {
-    paymentID: "",
-    payeeID: "uid",
-  },
+  hotelID: "y6jp",
+  hotelName: "Puri Asri Villa",
+  price: 796,
   uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
 };
 
+const current_total = 2;
+const after_delete = current_total - 1;
 describe("POST /getBook", () => {
-  const current_total = 12;
+  beforeEach(async () => {
+    const userDetails = {
+      email: "a@gmail.com",
+      password: "123qwe",
+    };
+    await request(baseURL).post("/login").send(userDetails);
+  });
+
   var userDetails = {
     uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
   };
@@ -52,6 +60,7 @@ describe("POST /getBook", () => {
   };
   it("should return booking data with matched uid", async () => {
     const response = await request(baseURL).get("/getBook").query(userDetails);
+    console.log(response.body);
     expect(response.statusCode).toBe(200);
     expect(response.body.finalData.length).toBe(current_total); // returned booking data by user uid
     // check if all of the uid from data returned matches the input uid
@@ -65,7 +74,7 @@ describe("POST /getBook", () => {
       .get("/getBook")
       .query(wrongUserDetails);
     expect(response.statusCode).toBe(404);
-    expect(response.text).toBe("Not Found");
+    expect(JSON.parse(response.text).code).toBe("auth/not-found");
   });
 });
 
@@ -95,7 +104,7 @@ describe("POST /deleteBook", () => {
       .post("/deleteBook")
       .send(delDetails);
     expect(response.statusCode).toBe(200);
-    expect(response.body.finalData.length).toBe(totalBooking - 1); // returned booking data by user uid
+    expect(response.body.finalData.length).toBe(after_delete); // returned booking data by user uid
     // check if all of the uid from data returned matches the input uid
     for (var i = 0; i < response.body.finalData.length; i++) {
       expect(response.body.finalData[i][1]["uid"]).toBe(delDetails.userID);
@@ -104,7 +113,7 @@ describe("POST /deleteBook", () => {
 
   it("should return not found if booking doesn't exists", async () => {
     const delDetails = {
-      docId: "FDIqJyMi757RJOFeEaCh",
+      docId: "baPbIwiKm6h1EVhfwYx9",
       userID: "CiX8KlN9UtBvsEFcCoLa",
     };
     const response = await request(baseURL)
@@ -135,7 +144,7 @@ describe("POST /bookhotel login error", () => {
   it("should return login required", async () => {
     const response = await request(baseURL).post("/bookhotel").send(infoObject);
     expect(response.statusCode).toBe(500);
-    expect(response.text).toBe("Login required");
+    expect(JSON.parse(response.text).code).toBe("permission-denied");
   });
 });
 
@@ -157,13 +166,13 @@ describe("POST /bookhotel", () => {
   });
 });
 
-// describe("POST /create-checkout-session", () => {
-//   it("should return booked", async () => {
-//     const response = await request(baseURL)
-//       .post("/create-checkout-session")
-//       .send(infoObject);
-//     expect(response.statusCode).toBe(200);
-//     expect(response.body.url).toBeDefined();
-//     expect(response.body.paymentID).toBeDefined();
-//   });
-// });
+describe("POST /create-checkout-session", () => {
+  it("should return booked", async () => {
+    const response = await request(baseURL)
+      .post("/create-checkout-session")
+      .send(infoCheckout);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.url).toBeDefined();
+    expect(response.body.paymentID).toBeDefined();
+  });
+});
