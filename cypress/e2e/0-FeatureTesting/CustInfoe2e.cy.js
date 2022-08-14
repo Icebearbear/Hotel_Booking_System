@@ -29,29 +29,30 @@ describe("User looking at the hotel page", () => {
   });
 
   it("views custinfo page", () => {
-    cy.get("h5[controlId='hotelname']").should(
+    cy.get("h4[controlId='hotelname']").should(
       "contain",
       "Grand Copthorne Waterfront"
     );
-    cy.get("h5[id='roomtype']").should("contain", "Beautiful Balcony");
+    cy.get("h4[id='roomtype']").should("contain", "Beautiful Balcony");
     cy.contains("300").scrollIntoView().should("be.visible");
+    cy.contains("Proceed to checkout").should("exist");
   });
 
-  it("logs in", () => {
-    cy.contains("Login/Register").scrollIntoView().click();
-    cy.location("pathname").should("eq", "/login");
-    cy.wait(1000);
+  // it("logs in", () => {
+  //   cy.contains("Login/Register").scrollIntoView().click();
+  //   cy.location("pathname").should("eq", "/login");
+  //   cy.wait(1000);
 
-    // at login page
-    cy.get("#formBasicEmail").type("testone@gmail.com");
-    cy.get("#formBasicPassword").type("123456");
-    cy.contains("Submit").click();
-    cy.visit("http://localhost:3000/custinfo");
-    cy.wait(1000);
-    // should go back to custinfo
-    cy.location("pathname").should("eq", "/custinfo");
-    cy.contains("User Profile").should("be.visible");
-  });
+  //   // at login page
+  //   cy.get("#formBasicEmail").type("testone@gmail.com");
+  //   cy.get("#formBasicPassword").type("123456");
+  //   cy.contains("Submit").click();
+  //   cy.visit("http://localhost:3000/custinfo");
+  //   cy.wait(1000);
+  //   // should go back to custinfo
+  //   cy.location("pathname").should("eq", "/custinfo");
+  //   cy.contains("User Profile").should("be.visible");
+  // });
 
   it("interacts with all interactables and input is visible", () => {
     // Customer Info Page
@@ -114,14 +115,17 @@ describe("User looking at the hotel page", () => {
     cy.get("input#formBasicEmail.form-control").eq(1).type("Watson");
     cy.get("input#formBasicEmail.form-control").eq(2).type("jwatson@gmail.com");
     cy.get("#formBasicCountry").type("England");
-
-    cy.contains("Proceed to next step").scrollIntoView().click({ force: true });
-    cy.request("https://checkout.stripe.com/").its("status").should("eq", 200);
+    cy.contains('Select...').click().type("as");
+    cy.contains("Aspen, CO, USA").click();
+    cy.wait(500);
+    cy.contains("Proceed to checkout").scrollIntoView().click();
+    cy.contains("Head to Stripe page to make Payment").should("exist");
+    // cy.request("https://checkout.stripe.com/")
     // cy.contains("Powered by stripe").should('be.visible');
   });
 
   it("did not fill up required info", () => {
-    cy.contains("Proceed to next step").scrollIntoView().click({ force: true });
+    cy.contains("Proceed to checkout").scrollIntoView().click();
     cy.location("pathname").should("eq", "/custinfo");
     cy.contains("Please input valid first name")
       .scrollIntoView()
@@ -135,13 +139,14 @@ describe("User looking at the hotel page", () => {
     cy.contains("Please input valid country")
       .scrollIntoView()
       .should("be.visible");
+      
   });
 
   it("only filled up some required info", () => {
     cy.get("#formBasicEmail").type("Bob");
     cy.get("#formBasicCountry").type("USA");
 
-    cy.contains("Proceed to next step").scrollIntoView().click({ force: true });
+    cy.contains("Proceed to checkout").scrollIntoView().click();
 
     cy.location("pathname").should("eq", "/custinfo");
     cy.contains("Please input valid last name")

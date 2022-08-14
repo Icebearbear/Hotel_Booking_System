@@ -67,7 +67,7 @@ function UserProfile() {
               width="100"
             />
           </button>
-          <span class="name mt-3">{fname + " " + lname}</span>
+          <span data-cy = "name" class="name mt-3">{fname + " " + lname}</span>
           <span class="idd">{userID}</span>
           <div class="d-flex flex-row justify-content-center align-items-center gap-2">
             <span class="idd1">{email}</span>

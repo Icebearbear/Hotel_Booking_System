@@ -50,13 +50,13 @@ const ImageSlider = (props) => {
   };
   return (
     <div style={sliderStyle}>
-      <div style={rightArrow} onClick={goToNext}>
+      <div data-cy = "right arrow" style={rightArrow} onClick={goToNext}>
         {">"}
       </div>
-      <div style={leftArrow} onClick={goToPrevious}>
+      <div data-cy = "left arrow" style={leftArrow} onClick={goToPrevious}>
         {"<"}
       </div>
-      <div style={slideStyle}></div>
+      <div data-cy = "image" style={slideStyle}></div>
     </div>
   );
 };
