@@ -354,6 +354,7 @@ function HotelDisplay(props) {
                           "HOTEL_DETAILS",
                           JSON.stringify(info)
                         );
+                        console.log(info);
                         navigate("/viewhotel");
                       }}
                     >

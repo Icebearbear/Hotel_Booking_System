@@ -36,10 +36,10 @@ describe("User look at search page", () => {
   ];
 
   const userData = {
-    email: "a2@gmail.com",
-    first_name: "changed_first_name2",
-    last_name: "changed_last_name12",
-    uid: "EdPDTW6cmVhsBICgZNYWxHCPIDi2",
+    email: "registeroup@gmail.com",
+    first_name: "test_first_name",
+    last_name: "test_last_name",
+    uid: "yyJbA5LPIOdaPPyMImcd7Q0BH4J2",
   };
 
   beforeEach(() => {
@@ -52,10 +52,10 @@ describe("User look at search page", () => {
     cy.wait(1000);
 
     // at login page
-    cy.get("#formBasicEmail").type("a@gmail.com");
-    cy.get("#formBasicPassword").type("123qwe");
+    cy.get("#email").type("registeroup@gmail.com");
+    cy.get("#pw").type("123qwe");
     cy.contains("Submit").click();
-    cy.wait(10000);
+    cy.wait(1000);
     cy.location("pathname").should("eq", "/");
   });
 
@@ -64,7 +64,7 @@ describe("User look at search page", () => {
     cy.contains("User Profile").scrollIntoView().click();
     // cy.location("pathname").should("eq", "/searchhotel");
     // cy.wait(500);
-    cy.get("#names").should(
+    cy.get('[data-cy = "name"]').should(
       "contain",
       userData.first_name + " " + userData.last_name
     );

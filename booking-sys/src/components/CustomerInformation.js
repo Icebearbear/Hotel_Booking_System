@@ -9,6 +9,8 @@ import GooglePlacesAutocomplete, {
   geocodeByPlaceId,
 } from "react-google-places-autocomplete";
 import "../css/user.min.css";
+import { Modal, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 function CustomerInformation() {
   const API_KEY = process.env.REACT_APP_ADDRESS_SEARCH_API_KEY;
@@ -28,13 +30,14 @@ function CustomerInformation() {
   const [babyCotReq, setBabyCotRequest] = useState(false);
   const [airportTransfer, setAirportTransfer] = useState(false);
   const [extraReq, setExtraReq] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const uid = localStorage.getItem("USER_ID"); // get data from localStorage temporarily
 
   // for input fields validation
   const [validity, setValidity] = useState(false); //for input field validation
   const [validated, setValidated] = useState(false); //for input field validation
-  const [noInput, setNoInput] = useState(true);
+  // const [noInput, setNoInput] = useState(false);
 
   /// Booking Information
   const [hotelInfo, setHotelInfo] = useState([]);
@@ -43,7 +46,7 @@ function CustomerInformation() {
     hotelInfo.roomRate * noNight + hotelInfo.surcharges
   );
   ///
-
+  const navigate = useNavigate();
   /// Billing information
   let f_address = {
     street_number: "",
@@ -167,6 +170,8 @@ function CustomerInformation() {
     return address;
   };
 
+  const handleClose = () => setSuccess(false);
+
   useEffect(() => {
     const func = async () => {
       const geocodeObj =
@@ -208,18 +213,21 @@ function CustomerInformation() {
   };
 
   const onSubmit = (event) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
+    var noInput = false;
+    const custinfo = document.getElementById("customer info");
+    const billadd = document.getElementById("billing address");
+    if (custinfo.checkValidity() === false|| billadd.checkValidity()===false) {
       event.preventDefault();
       event.stopPropagation();
-      setNoInput(true);
+      noInput = true
       console.log("stuck");
-      setValidity(form.checkValidity());
+      setValidity(false);
     } else {
-      setNoInput(false);
+      setSuccess(true);
     }
     setValidated(true);
-    console.log(validity);
+    console.log(noInput);
+    
     if (noInput === false) {
       console.log(infoObject);
       axios
@@ -231,25 +239,46 @@ function CustomerInformation() {
             JSON.stringify(infoObject)
           ); // store to local storage within react
           window.open(res.data.url); // serve the checkout page URL returned by Stripe
+          console.log("opened"); 
+          setTimeout( navigate("/") ,5000)
         })
         .catch((error) => {
           console.log(error);
         });
     }
+    
   };
   return (
     <div data-testid="customer-info-page">
+      <Modal
+        show = {success}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Payment
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Head to Stripe page to make Payment</h4>
+        </Modal.Body>
+        <Modal.Footer>
+          This page will redirect to search page
+        </Modal.Footer>
+      </Modal>
       <Row>
         <Col md={{ span: 6, offset: 1 }}>
           <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
             <Card style={{ width: "40rem", height: "fit-content" }}>
               <Card.Body>
                 <h1>Customer Information Page</h1>
-                <Form noValidate validated={validated}>
+                <Form id= "customer info" validated={validated}>
                   <Row className="mb-3">
                     <Col md={2}>
                       <div>
-                        <Form.Label>Salutation</Form.Label>
+                        <Form.Label></Form.Label>
                         <Form.Select
                           data-testid="combobox-rooms"
                           id="rooms"
@@ -374,11 +403,12 @@ function CustomerInformation() {
           <div className="container mt-4 mb-4 p-3 d-flex justify-content-center">
             <Card style={{ width: "40rem", height: "fit-content" }}>
               <Card.Body>
-                <Form noValidate validated={validated}>
+                <Form id= "billing address" validated={validated}>
                   <h1>Billing Address</h1>
                   <br />
                   <Form.Label>Address</Form.Label>
                   <GooglePlacesAutocomplete
+                    required
                     data-cy="formBillingAddress"
                     apiKey="AIzaSyDJ25yShYJEzncqorEAo0JlESxZZaPF9uo"
                     selectProps={{
@@ -501,8 +531,8 @@ function CustomerInformation() {
                   <Row>
                     {[
                       ["High floor room please", 1],
-                      ["Quite room", 2],
-                      ["I Want Baby Bot (additional charges may apply)", 3],
+                      ["Quiet room", 2],
+                      ["I Want Baby Cot (additional charges may apply)", 3],
                       ["Airport transfer", 4],
                     ].map((lbl) => (
                       <Col sm={20}>

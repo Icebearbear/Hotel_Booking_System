@@ -21,14 +21,14 @@ describe('Login Test', () => {
     cy.contains("invalid email");
 
     // correct email , Misuse 3 invalid password
-    cy.get("#email").clear().type('tester@gmail.com');
+    cy.get("#email").clear().type('registeroup@gmail.com');
     cy.get("#pw").type('wrongpassword');
     cy.get("#submit").click();
     cy.contains("wrong password");
     cy.url().should('include', '/login');
 
     // correct password and login, back to search page
-    cy.get("#pw").type('test123');
+    cy.get("#pw").type('123qwe');
     cy.get("#submit").click();
     cy.url().should('include', '/searchhotel');
 

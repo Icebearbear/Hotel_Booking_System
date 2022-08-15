@@ -310,6 +310,7 @@ function ViewHotel() {
           <Row>
             {/* IMAGE SLIDER COL */}
             <Col
+              data-cy = "image slides"
               style={{
                 backgroundImage:
                   "url(https://instant.space/hotel-placeholder.png)",
@@ -330,7 +331,7 @@ function ViewHotel() {
                         <strong>{hotelData.name} </strong>
                       </h4>
                     </Col>
-                    <Col className="m-3" style={{ textAlign: "right" }}>
+                    <Col data-cy = "star rating" className="m-3" style={{ textAlign: "right" }}>
                       {starRating(hotelData.rating)}
                     </Col>
                   </Row>
@@ -522,6 +523,7 @@ function ViewHotel() {
 
           {Object.entries(roomsDetails).map(([key, value]) => (
             <Card
+              data-cy = "rooms"
               className="flex-fill"
               style={{
                 height: "20rem",
@@ -644,7 +646,7 @@ function ViewHotel() {
         <Modal.Body>Login is required to book hotel</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onClose}>
-            Back
+            Go to Login/Register
           </Button>
         </Modal.Footer>
       </Modal>
