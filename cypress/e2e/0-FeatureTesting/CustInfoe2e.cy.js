@@ -1,4 +1,7 @@
+
+
 describe("User looking at the hotel page", () => {
+
   // set up
   const uid = "testuid";
   const dudData = {

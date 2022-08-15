@@ -6,9 +6,12 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import SearchHotel from "./SearchHotel";
 import Modal from "react-bootstrap/Modal";
+import { useAuth } from "./context/auth";
 
-const NavigationBar = () => {
-  const [login, setLogin] = useState(false);
+const NavigationBar = (props) => {
+  const { setLoginSesh } = useAuth();
+  const login = sessionStorage.getItem("LOGIN");
+  console.log(login);
   const [uid, setUid] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const location = useLocation();
@@ -17,6 +20,26 @@ const NavigationBar = () => {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const getUser = () => {
+    try {
+      axios.get("http://localhost:3001/getSession").then((res) => {
+        // setLogin(res.data.login);
+        console.log("navaaaaa", res.data);
+        if (res.data.login == true) {
+          setLoginSesh(res.data.login);
+          //localStorage.setItem("LOGIN", true); // read by other pages to handle user session
+        } else {
+          setLoginSesh();
+
+          // localStorage.setItem("LOGIN", false); // read by other pages to handle user session
+        }
+        console.log("navaaaaLLa", sessionStorage.getItem("LOGIN"));
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const checkpath = () => {
     console.log("Location pathname", location.pathname);
@@ -55,29 +78,14 @@ const NavigationBar = () => {
     setSearchData(data);
   }
 
-  const getUser = async () => {
-    try {
-      await axios.get("http://localhost:3001/getSession").then((res) => {
-        setLogin(res.data.login);
-        console.log("b4 login check", res.data.login);
-        if (login == true) {
-          localStorage.setItem("LOGIN", true); // read by other pages to handle user session
-        } else {
-          localStorage.setItem("LOGIN", false); // read by other pages to handle user session
-        }
-        console.log("aft login check", localStorage.getItem("LOGIN"));
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    console.log("VAVBAR LOGIN ", login);
+    // setInterval(()=>)
+
     getUser();
     checkpath();
     getSearchData();
-  }, [login]);
+    // };
+  }, []);
 
   return (
     <div data-testid="userprofile">
@@ -122,12 +130,18 @@ const NavigationBar = () => {
           <></>
         )}
         <Navbar.Collapse className="justify-content-end">
-          {login ? (
+          {login != "null" ? (
             <Nav.Link href="/userspage">
               <Button variant="warning">User Profile</Button>
             </Nav.Link>
           ) : (
-            <Nav.Link href="/login" data-testid="loginreg">
+            <Nav.Link
+              href="/login"
+              data-testid="loginreg"
+              onClick={() => {
+                localStorage.setItem("RETURN_PATH", location.pathname);
+              }}
+            >
               <Button variant="warning">Login/Register</Button>
             </Nav.Link>
           )}

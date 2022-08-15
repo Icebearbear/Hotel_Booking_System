@@ -86,3 +86,4 @@ describe("Test Login button shown when not loged in", async () => {
     });
   });
 });
+console.log("");
