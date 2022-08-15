@@ -18,7 +18,6 @@ describe("POST /mail to empty email shows unsuccessful", () => {
   it("should show status 500", async () => {
     const response = await request(baseURL).post("/mail").send(infoObject);
     expect(response.statusCode).toBe(500);
-    console.log(response.body);
     expect(response.body.msg).toBe("fail");
   });
 });
@@ -39,7 +38,6 @@ describe("POST /mail to invalid email shows unsuccessful", () => {
   it("should show status 500", async () => {
     const response = await request(baseURL).post("/mail").send(infoObject);
     expect(response.statusCode).toBe(500);
-    console.log(response.body);
     expect(response.body.msg).toBe("fail");
   });
 });
@@ -60,7 +58,6 @@ describe("POST /mail to send email", () => {
   it("should show status 200", async () => {
     const response = await request(baseURL).post("/mail").send(infoObject);
     expect(response.statusCode).toBe(200);
-    console.log(response.body.msg);
     expect(response.body.msg).toBe("success");
   });
 });

@@ -31,7 +31,7 @@ describe("POST /registration", () => {
     const response = await request(baseURL).post("/login").send(userDetails);
     expect(response.statusCode).toBe(200);
   });
-  it("should return user added with email: a@gmail.com", async () => {
+  it("should return user added with email", async () => {
     const userDetails = {
       first_name: "test_first_name",
       last_name: "test_last_name",
@@ -52,7 +52,6 @@ describe("POST /registration", () => {
     };
     const response = await request(baseURL).post("/register").send(userDetails);
     expect(response.statusCode).toBe(500);
-    console.log(response.text);
     expect(response.text).toBe(
       '"Firebase: Error (auth/email-already-in-use)."'
     );
@@ -71,7 +70,6 @@ describe("POST /login", () => {
     };
     const response = await request(baseURL).post("/login").send(userDetails);
     expect(response.statusCode).toBe(200);
-    // console.log(response.text);
 
     expect(JSON.parse(response.text).userId).toBe(expectedValues.uId);
     expect(JSON.parse(response.text).email).toBe(expectedValues.uemail);
@@ -93,8 +91,6 @@ describe("POST /login", () => {
       password: "123qwe",
     };
     const response = await request(baseURL).post("/login").send(userDetails);
-    console.log(response.text);
-    console.log(response.text.code);
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.text).code).toBe("auth/user-not-found");
   });
@@ -155,7 +151,6 @@ describe("POST /edituser", () => {
     };
     const res = await request(baseURL).post("/register").send(newUserDetails);
     expect(res.statusCode).toBe(200);
-    console.log(JSON.parse(res.text));
     var userDetails = {
       first_name: "changed_first_name" + makeid(3),
       last_name: "changed_last_name1" + makeid(3),
@@ -163,7 +158,6 @@ describe("POST /edituser", () => {
       uid: JSON.parse(res.text).uId,
       dbDocId: "bLPVNzRnGCJk6q6uqG5Ca",
     };
-    console.log(userDetails);
     const response = await request(baseURL).post("/edituser").send(userDetails);
     // expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.text).code).toBe("not-found");
@@ -186,7 +180,6 @@ describe("POST /edituser", () => {
     };
     const res = await request(baseURL).post("/register").send(newUserDetails);
     expect(res.statusCode).toBe(200);
-    console.log(JSON.parse(res.text));
     var userDetails = {
       first_name: "changed_first_name" + makeid(3),
       last_name: "changed_last_name1" + makeid(3),

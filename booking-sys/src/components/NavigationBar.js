@@ -81,7 +81,7 @@ const NavigationBar = (props) => {
   useEffect(() => {
     // setInterval(()=>)
 
-    getUser();
+    //getUser();
     checkpath();
     getSearchData();
     // };

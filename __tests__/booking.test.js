@@ -78,7 +78,6 @@ describe("POST /getBook", () => {
 
     const response = await request(baseURL).get("/getBook").query(userDetails);
     if (typeof response.body.finalData != "undefined") {
-      console.log(response.body.finalData);
       current_total = response.body.finalData.length;
     }
     expect(response.statusCode).toBe(200);
@@ -111,7 +110,6 @@ describe("POST /deleteBook", () => {
     };
     const response = await request(baseURL).get("/getBook").query(userDetails);
     if (typeof response.body.finalData != "undefined") {
-      console.log(response.body.finalData);
       current_total = response.body.finalData.length;
       for (var i = 0; i < current_total; i++) {
         bookingList.push(response.body.finalData[i][0]);
@@ -129,7 +127,6 @@ describe("POST /deleteBook", () => {
     const response = await request(baseURL)
       .post("/deleteBook")
       .send(delDetails);
-    console.log(current_total);
     if (current_total == 0) {
       expect(response.statusCode).toBe(500);
     } else {
@@ -187,26 +184,6 @@ describe("POST /bookhotel", () => {
 });
 
 describe("POST /create-checkout-session", () => {
-  it("should return booked", async () => {
-    const response = await request(baseURL)
-      .post("/create-checkout-session")
-      .send(infoCheckout);
-    expect(response.statusCode).toBe(200);
-    expect(response.body.url).toBeDefined();
-    expect(response.body.paymentID).toBeDefined();
-  });
-});
-
-describe("POST /create-checkout-session", () => {
-  beforeAll(async () => {
-    const loginDetails = {
-      email: "tester@gmail.com",
-      password: "123qwe",
-    };
-    const response = await request(baseURL).post("/login").send(loginDetails);
-    infoObject.uid = response.body.userId;
-  });
-
   it("should return booked", async () => {
     const response = await request(baseURL)
       .post("/create-checkout-session")
