@@ -44,7 +44,7 @@ describe('Feature 1', () => {
 
     // Fill up the other fields, replace default values
     cy.get("#rooms").select("2");
-    cy.get('[data-testid="combobox-adults"]').eq(1).select("3");
+    cy.get('[data-testid="combobox-adults"]').eq(1).select("3"); // ensuring that 2 fields are available and changing the second field to 3
     cy.get("#startdate").click();
     // testing datepicker by clicking
     cy.contains("25").click();
