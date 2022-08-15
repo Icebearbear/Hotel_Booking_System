@@ -27,14 +27,14 @@ npm install
 npm start
 ```
 
-## Run UI tests and e2e tests 
+## Run UI tests and e2e tests (run the app before the test)
 1. install all required modules if you haven't done so
 2. run the tests 
 ```
 npx cypress open
 ```
 
-## Run Unit tests
+## Run Unit tests (run the app before the test)
 1. go to unittest-branch
 2. install all required modules if you haven't done so
 3. run the tests
