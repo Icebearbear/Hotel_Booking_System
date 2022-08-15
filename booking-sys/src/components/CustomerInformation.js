@@ -10,6 +10,7 @@ import GooglePlacesAutocomplete, {
 } from "react-google-places-autocomplete";
 import "../css/user.min.css";
 import { Modal, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 function CustomerInformation() {
   const API_KEY = process.env.REACT_APP_ADDRESS_SEARCH_API_KEY;
@@ -45,7 +46,7 @@ function CustomerInformation() {
     hotelInfo.roomRate * noNight + hotelInfo.surcharges
   );
   ///
-
+  const navigate = useNavigate();
   /// Billing information
   let f_address = {
     street_number: "",
@@ -238,7 +239,8 @@ function CustomerInformation() {
             JSON.stringify(infoObject)
           ); // store to local storage within react
           window.open(res.data.url); // serve the checkout page URL returned by Stripe
-          console.log("opened");
+          console.log("opened"); 
+          setTimeout( navigate("/") ,5000)
         })
         .catch((error) => {
           console.log(error);
@@ -263,9 +265,7 @@ function CustomerInformation() {
           <h4>Head to Stripe page to make Payment</h4>
         </Modal.Body>
         <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
+          This page will redirect to search page
         </Modal.Footer>
       </Modal>
       <Row>
@@ -531,8 +531,8 @@ function CustomerInformation() {
                   <Row>
                     {[
                       ["High floor room please", 1],
-                      ["Quite room", 2],
-                      ["I Want Baby Bot (additional charges may apply)", 3],
+                      ["Quiet room", 2],
+                      ["I Want Baby Cot (additional charges may apply)", 3],
                       ["Airport transfer", 4],
                     ].map((lbl) => (
                       <Col sm={20}>

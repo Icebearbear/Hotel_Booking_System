@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Alert } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 
 function Success() {
-  const navigate = useNavigate();
+  
   const [time, setTime] = useState(3);
   const info = localStorage.getItem("HOTEL_BOOKING_INFO");
 
@@ -19,7 +18,7 @@ function Success() {
       setTime(time - 1);
       if (time == 1) {
         clearInterval(interval);
-        navigate("/searchhotel");
+        window.close()
       }
     }, 1000);
     return () => {
@@ -75,7 +74,7 @@ function Success() {
                   <span className="visually-hidden">Loading...</span>
                 </Spinner>
                 <div class="space"></div>
-                <p>{"Back to Search hotel in " + time}</p>
+                <p>{"Tab will close in " + time}</p>
               </div>
             </div>
           </Alert>
