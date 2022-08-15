@@ -3,8 +3,8 @@
   const passData = {
     name: "Amsterdam ArenA, Amsterdam, Netherlands",
     destination_id: "5qq3",
-    checkin: "2022-08-14T08:05:11.957Z",
-    checkout: "2022-08-23T16:00:00.000Z",
+    checkin: "2022-08-24T08:05:11.957Z",
+    checkout: "2022-08-28T16:00:00.000Z",
     lang: "en_US",
     currency: "SGD",
     rooms: "1",
